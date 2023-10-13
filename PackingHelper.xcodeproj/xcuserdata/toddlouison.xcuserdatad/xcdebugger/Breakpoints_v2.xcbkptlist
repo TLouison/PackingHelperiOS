@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "7BABCBC4-80E1-41F6-8FA4-788ED1AC72EC"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F61F13B5-07E2-459F-8D2A-56FA5C24697A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../var/folders/_v/zmwknkq9479cdb89y63vcyn40000gn/T/swift-generated-sources/@__swiftmacro_13PackingHelper4Trip5ModelfMm_.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1"
+            endingLineNumber = "1"
+            landmarkName = "unknown"
+            landmarkType = "0">
+            <Locations>
+               <Location
+                  uuid = "F61F13B5-07E2-459F-8D2A-56FA5C24697A - a94f60c913d4d9f5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PackingHelper.Trip.init(name: Swift.String, complete: Swift.Bool, beginDate: Foundation.Date, endDate: Foundation.Date) -&gt; PackingHelper.Trip"
+                  moduleName = "PackingHelper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///var/folders/_v/zmwknkq9479cdb89y63vcyn40000gn/T/swift-generated-sources/@__swiftmacro_13PackingHelper4Trip5ModelfMm_.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "2"
+                  endingLineNumber = "2"
+                  offsetFromSymbolStart = "188">
+               </Location>
+               <Location
+                  uuid = "F61F13B5-07E2-459F-8D2A-56FA5C24697A - 418eb34eaca340cd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PackingHelper.Trip.init(name: Swift.String, complete: Swift.Bool, beginDate: Foundation.Date, endDate: Foundation.Date, latitude: Swift.Double, longitude: Swift.Double) -&gt; PackingHelper.Trip"
+                  moduleName = "PackingHelper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///var/folders/_v/zmwknkq9479cdb89y63vcyn40000gn/T/swift-generated-sources/@__swiftmacro_13PackingHelper4Trip5ModelfMm_.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "2"
+                  endingLineNumber = "2"
+                  offsetFromSymbolStart = "220">
+               </Location>
+               <Location
+                  uuid = "F61F13B5-07E2-459F-8D2A-56FA5C24697A - 418eb34eaca340cd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PackingHelper.Trip.init(name: Swift.String, complete: Swift.Bool, beginDate: Foundation.Date, endDate: Foundation.Date, latitude: Swift.Double, longitude: Swift.Double) -&gt; PackingHelper.Trip"
+                  moduleName = "PackingHelper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///var/folders/_v/zmwknkq9479cdb89y63vcyn40000gn/T/swift-generated-sources/@__swiftmacro_13PackingHelper4Trip5ModelfMm_.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "2"
+                  endingLineNumber = "2"
+                  offsetFromSymbolStart = "240">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "648956AE-69D4-42CB-A696-466E50CDF8C5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PackingHelper/Views/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

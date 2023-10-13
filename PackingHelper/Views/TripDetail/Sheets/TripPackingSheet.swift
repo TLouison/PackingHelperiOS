@@ -12,11 +12,11 @@ struct TripPackingSheet: View {
     
     var body: some View {
         VStack {
-            Text("Settings go here")
+            Text("Packing info goes here")
         }
     }
 }
 
 #Preview {
-    TripDetailSheet(trip: Trip(name: "Paraguay", complete: false))
+    TripDetailSheet(trip: Trip.sampleTrip)
 }

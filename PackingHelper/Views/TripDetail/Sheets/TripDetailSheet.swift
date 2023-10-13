@@ -18,5 +18,5 @@ struct TripDetailSheet: View {
 }
 
 #Preview {
-    TripDetailSheet(trip: Trip(name: "Paraguay", complete: false))
+    TripDetailSheet(trip: Trip.sampleTrip)
 }
