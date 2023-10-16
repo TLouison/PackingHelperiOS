@@ -16,7 +16,6 @@ final class Trip {
     }
     
     var name: String
-    var complete: Bool
     
     @Relationship(deleteRule: .cascade) var destination: TripDestination?
     @Relationship(deleteRule: .cascade) var packingList: PackingList
@@ -25,9 +24,8 @@ final class Trip {
     var beginDate: Date
     var endDate: Date
     
-    init(name: String, complete: Bool, beginDate: Date, endDate: Date) {
+    init(name: String, beginDate: Date, endDate: Date) {
         self.name = name
-        self.complete = complete
         
         self.createdDate = Date.now
         self.beginDate = beginDate
@@ -38,6 +36,10 @@ final class Trip {
 }
 
 extension Trip {
+    var complete: Bool {
+        return Date.now >= self.endDate
+    }
+    
     var status: TripStatus {
         if Date.now < self.beginDate {
             return .upcoming
@@ -65,7 +67,7 @@ extension Trip {
 }
 
 extension Trip {
-    static var sampleTrip = Trip(name: "Paraguay", complete: false, beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400))
+    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400))
 }
 
 extension Trip {

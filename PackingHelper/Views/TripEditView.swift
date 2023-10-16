@@ -40,7 +40,6 @@ struct TripEditView: View {
                 Form {
                     Section {
                         TextField("Name", text: $name)
-                        Toggle("Completed", isOn: $complete.animation())
                     } header: {
                         Text("Basic Details")
                     }
@@ -52,6 +51,11 @@ struct TripEditView: View {
                                 VStack {
                                     Text("Begins")
                                     DatePicker("Trip Begins", selection: $beginDate, displayedComponents: [.date])
+                                        .onChange(of: beginDate) {
+                                            if endDate < beginDate {
+                                                endDate = beginDate
+                                            }
+                                        }
                                 }
                             }
                             Spacer()
@@ -59,7 +63,12 @@ struct TripEditView: View {
                                 Image(systemName: Trip.endIcon)
                                 VStack {
                                     Text("Ends")
-                                    DatePicker("Trip Ends", selection: $endDate, displayedComponents: [.date])
+                                    DatePicker(
+                                        "Trip Ends",
+                                        selection: $endDate,
+                                        in: beginDate...,
+                                        displayedComponents: [.date]
+                                    )
                                 }
                             }
                         }
@@ -135,23 +144,23 @@ struct TripEditView: View {
                 }
             }
         }
+        .presentationDetents([.height(500), .large])
     }
     
     private var formIsValid: Bool {
-        return name != ""
+        return name != "" && beginDate <= endDate
     }
     
     private func save() {
         if let trip {
             trip.name = name
-            trip.complete = complete
             
             trip.beginDate = beginDate
             trip.endDate = endDate
             
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, complete: complete, beginDate: beginDate, endDate: endDate)
+            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate)
             newTrip.destination = destination
             newTrip.packingList = PackingList()
             
