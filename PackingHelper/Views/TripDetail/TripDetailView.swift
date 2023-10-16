@@ -28,7 +28,7 @@ struct SheetModifier: ViewModifier {
 }
 
 struct TripDetailView: View {
-    var trip: Trip
+    @State var trip: Trip
     
     @State private var isShowingTripDetailSheet: Bool = false
     @State private var isShowingTripSettingsSheet: Bool = false
@@ -36,12 +36,70 @@ struct TripDetailView: View {
     
     @State private var cameraPosition: MapCameraPosition = .automatic
     
+    @GestureState private var isDetectingLongPress = false
+    @State private var completedLongPress = false
+    @State private var isShowingTapAnywherePrompt = false
+    
+    
+    var longPress: some Gesture {
+        LongPressGesture(maximumDistance: 100)
+            .updating($isDetectingLongPress) { currentState, gestureState,
+                transaction in
+                gestureState = currentState
+            }
+            .onEnded { finished in
+                self.completedLongPress = finished
+                if self.completedLongPress {
+                    withAnimation {
+                        isShowingTapAnywherePrompt = true
+                    }
+                }
+            }
+    }
+    
     var body: some View {
-        Map(position: $cameraPosition, interactionModes: .zoom)
-            .opacity(0.7)
+        Map(position: $cameraPosition, interactionModes: .all)
             .background(Color.black)
             .overlay {
-                TripDetailOverlay(trip: trip, isShowingTripDetailSheet: $isShowingTripDetailSheet, isShowingPackingDetailSheet: $isShowingPackingDetailSheet, isShowingTripSettingsSheet: $isShowingTripSettingsSheet)
+                if completedLongPress {
+                    VStack {
+                        Spacer()
+                        if isShowingTapAnywherePrompt {
+                            Text("Tap here to show details again.")
+                                .font(.callout)
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .ignoresSafeArea()
+                                .transition(
+                                    .asymmetric(
+                                        insertion: .scale.animation(.bouncy),
+                                        removal: .scale.animation(.easeOut)
+                                    )
+                                )
+                                .onTapGesture {
+                                    withAnimation {
+                                        completedLongPress = false
+                                        isShowingTapAnywherePrompt = false
+                                    }
+                                }
+                        }
+                    }
+                } else {
+                    TripDetailOverlay(
+                        trip: $trip,
+                        isShowingTripDetailSheet: $isShowingTripDetailSheet,
+                        isShowingPackingDetailSheet: $isShowingPackingDetailSheet,
+                        isShowingTripSettingsSheet: $isShowingTripSettingsSheet
+                    )
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity.animation(.bouncy),
+                            removal: .opacity.animation(.easeOut)
+                        )
+                    )
+                    .animation(.easeInOut, value: isDetectingLongPress)
+                }
             }
             .sheet(isPresented: $isShowingTripDetailSheet) {
                 TripDetailSheet(trip: trip)
@@ -51,14 +109,14 @@ struct TripDetailView: View {
                 TripEditView(trip: trip)
             }
             .sheet(isPresented: $isShowingPackingDetailSheet) {
-                TripPackingSheet(trip: trip)
+                TripPackingSheet(packingList: $trip.packingList)
                     .modifier(SheetModifier())
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 cameraPosition = MapCameraPosition.region(
                     MKCoordinateRegion(
-                        center:  trip.destinationCoordinate,
+                        center:  trip.destination?.coordinates ?? TripDestination.sampleData.coordinates,
                         span: MKCoordinateSpan(
                             latitudeDelta: 0.5,
                             longitudeDelta: 0.5
@@ -66,6 +124,7 @@ struct TripDetailView: View {
                     )
                 )
             }
+            .gesture(longPress)
     }
 }
 

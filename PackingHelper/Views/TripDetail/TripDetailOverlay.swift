@@ -9,11 +9,43 @@ import SwiftUI
 
 struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
-    var trip: Trip
+    @Binding var trip: Trip
     
     @Binding var isShowingTripDetailSheet: Bool
     @Binding var isShowingPackingDetailSheet: Bool
     @Binding var isShowingTripSettingsSheet: Bool
+    
+    @State private var showTitle: Bool = false
+    @State private var showSubtitle: Bool = false
+    
+    struct RoundedBox: ViewModifier {
+        func body(content: Content) -> some View {
+            content
+                .padding()
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+    }
+    
+    @ViewBuilder func departureInfo() -> some View {
+        let now = Date.now
+        let beginDateString = trip.beginDate.formatted(date: .abbreviated, time: .omitted)
+        let endDateString = trip.endDate.formatted(date: .abbreviated, time: .omitted)
+        
+        HStack {
+            if now < trip.beginDate {
+                Label("Departing on \(beginDateString)", systemImage: "airplane.departure")
+            } else if now == trip.beginDate {
+                Label("Departing today.", systemImage: "airplane.departure")
+            } else if  trip.beginDate < now && now < trip.endDate {
+                Label("Returning on \(endDateString)", systemImage: "airplane")
+            } else if now == trip.endDate {
+                Label("Trip ended today", systemImage: "airplane.arrival")
+            } else if now > trip.endDate{
+                Label("Returned on \(endDateString)", systemImage: "airplane.arrival")
+            }
+        }
+    }
     
     var body: some View {
         VStack {
@@ -26,9 +58,9 @@ struct TripDetailOverlay: View {
                             .labelStyle(.iconOnly)
                             .frame(width: 20, height: 20)
                     }
-                    .padding()
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .modifier(RoundedBox())
+                    .shadow(radius: 4)
+                    
                     
                     Spacer()
                     
@@ -39,24 +71,32 @@ struct TripDetailOverlay: View {
                             .labelStyle(.iconOnly)
                             .frame(width: 20, height: 20)
                     }
-                    .padding()
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .modifier(RoundedBox())
+                    .shadow(radius: 4)
                 }
                 
-                VStack {
-                    Text(trip.name).font(.title)
-                    
-                    HStack {
-                        Image(systemName: "airplane.departure")
-                        Text("Departing on December 11, 2023").font(.headline).bold()
+                if showTitle {
+                    VStack {
+                        Text(trip.name).font(.largeTitle)
+                            .frame(maxWidth: .infinity)
+                            .modifier(RoundedBox())
+                            .shadow(radius: 4)
+                            .onAppear {
+                                withAnimation {
+                                    showSubtitle = true
+                                }
+                            }
                         
+                        if showSubtitle {
+                            departureInfo()
+                                .frame(maxWidth: .infinity)
+                                .modifier(RoundedBox())
+                                .shadow(radius: 4)
+                                .transition(.opacity)
+                        }
                     }
+                    .transition(.opacity)
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
             
             Spacer()
@@ -66,28 +106,33 @@ struct TripDetailOverlay: View {
                     .font(.headline)
                 
                 HStack {
-                    Button("Trip") {
+                    Button {
                         isShowingTripDetailSheet.toggle()
+                    } label: {
+                        Label("Trip", systemImage: "list.clipboard")
                     }
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(.background.opacity(0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .modifier(RoundedBox())
                     
-                    Button("Packing") {
+                    Button {
                         isShowingPackingDetailSheet.toggle()
+                    } label: {
+                        Label("Packing", systemImage: "bag")
                     }
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(.background.opacity(0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .modifier(RoundedBox())
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .modifier(RoundedBox())
+            .shadow(radius: 4)
         }
         .padding()
+        .onAppear {
+            print("SHOWING SUBTITLE")
+            withAnimation {
+                showTitle = true
+            }
+        }
     }
 }

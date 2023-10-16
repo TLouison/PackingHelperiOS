@@ -15,13 +15,17 @@
 		51289F2C2AD4E19B00545115 /* TripDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F2B2AD4E19B00545115 /* TripDetailSheet.swift */; };
 		51289F2E2AD4E65800545115 /* TripDetailOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F2D2AD4E65800545115 /* TripDetailOverlay.swift */; };
 		51289F312AD4EA5A00545115 /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F302AD4EA5A00545115 /* Trip.swift */; };
+		51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51466B332ADB3EA200258ABB /* TransitionUtilities.swift */; };
 		515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85992AD7693C002D614F /* PreviewContainer.swift */; };
 		515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */; };
 		515B859E2AD76F64002D614F /* TripPackingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859D2AD76F64002D614F /* TripPackingSheet.swift */; };
 		515B85A22AD77273002D614F /* TripEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A12AD77273002D614F /* TripEditView.swift */; };
-		515B85A72AD8D1DC002D614F /* LocationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A62AD8D1DC002D614F /* LocationUtils.swift */; };
 		515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A82AD8D28E002D614F /* LocationSelectionView.swift */; };
 		515B85AB2AD8D395002D614F /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AA2AD8D395002D614F /* LocationService.swift */; };
+		515B85AD2AD8FF45002D614F /* TripDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AC2AD8FF45002D614F /* TripDestination.swift */; };
+		519B72572ADA06C3009401C0 /* TripListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72562ADA06C3009401C0 /* TripListView.swift */; };
+		519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72582ADA1BF7009401C0 /* PackingList.swift */; };
+		519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B725A2ADA3535009401C0 /* TripListRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,13 +38,18 @@
 		51289F2B2AD4E19B00545115 /* TripDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailSheet.swift; sourceTree = "<group>"; };
 		51289F2D2AD4E65800545115 /* TripDetailOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailOverlay.swift; sourceTree = "<group>"; };
 		51289F302AD4EA5A00545115 /* Trip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		51466B332ADB3EA200258ABB /* TransitionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionUtilities.swift; sourceTree = "<group>"; };
 		515B85992AD7693C002D614F /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSettingsSheet.swift; sourceTree = "<group>"; };
 		515B859D2AD76F64002D614F /* TripPackingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPackingSheet.swift; sourceTree = "<group>"; };
 		515B85A12AD77273002D614F /* TripEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEditView.swift; sourceTree = "<group>"; };
-		515B85A62AD8D1DC002D614F /* LocationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationUtils.swift; sourceTree = "<group>"; };
 		515B85A82AD8D28E002D614F /* LocationSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionView.swift; sourceTree = "<group>"; };
 		515B85AA2AD8D395002D614F /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		515B85AC2AD8FF45002D614F /* TripDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestination.swift; sourceTree = "<group>"; };
+		519B72562ADA06C3009401C0 /* TripListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListView.swift; sourceTree = "<group>"; };
+		519B72582ADA1BF7009401C0 /* PackingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList.swift; sourceTree = "<group>"; };
+		519B725A2ADA3535009401C0 /* TripListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListRowView.swift; sourceTree = "<group>"; };
+		519B725D2ADB2D94009401C0 /* Symbols.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Symbols.framework; path = System/Library/Frameworks/Symbols.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +69,7 @@
 				515B85AA2AD8D395002D614F /* LocationService.swift */,
 				51289F182AD3B6CD00545115 /* PackingHelper */,
 				51289F172AD3B6CD00545115 /* Products */,
+				519B725C2ADB2D94009401C0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,6 +98,7 @@
 		51289F1F2AD3B6CF00545115 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				515B85992AD7693C002D614F /* PreviewContainer.swift */,
 				51289F202AD3B6CF00545115 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -100,6 +111,8 @@
 				51289F1B2AD3B6CD00545115 /* ContentView.swift */,
 				515B85A12AD77273002D614F /* TripEditView.swift */,
 				515B85A82AD8D28E002D614F /* LocationSelectionView.swift */,
+				519B72562ADA06C3009401C0 /* TripListView.swift */,
+				519B725A2ADA3535009401C0 /* TripListRowView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -118,6 +131,8 @@
 			isa = PBXGroup;
 			children = (
 				51289F302AD4EA5A00545115 /* Trip.swift */,
+				515B85AC2AD8FF45002D614F /* TripDestination.swift */,
+				519B72582ADA1BF7009401C0 /* PackingList.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -125,8 +140,7 @@
 		515B85982AD76930002D614F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				515B85992AD7693C002D614F /* PreviewContainer.swift */,
-				515B85A62AD8D1DC002D614F /* LocationUtils.swift */,
+				51466B332ADB3EA200258ABB /* TransitionUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -146,6 +160,14 @@
 			children = (
 			);
 			path = PackingEngine;
+			sourceTree = "<group>";
+		};
+		519B725C2ADB2D94009401C0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				519B725D2ADB2D94009401C0 /* Symbols.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,6 +197,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
@@ -221,15 +246,19 @@
 				51289F312AD4EA5A00545115 /* Trip.swift in Sources */,
 				51289F1C2AD3B6CD00545115 /* ContentView.swift in Sources */,
 				51289F1A2AD3B6CD00545115 /* PackingHelperApp.swift in Sources */,
+				515B85AD2AD8FF45002D614F /* TripDestination.swift in Sources */,
 				51289F2E2AD4E65800545115 /* TripDetailOverlay.swift in Sources */,
 				515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */,
+				519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
+				519B72572ADA06C3009401C0 /* TripListView.swift in Sources */,
 				515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */,
 				515B85A22AD77273002D614F /* TripEditView.swift in Sources */,
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
+				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
-				515B85A72AD8D1DC002D614F /* LocationUtils.swift in Sources */,
 				515B859E2AD76F64002D614F /* TripPackingSheet.swift in Sources */,
+				519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */,
 				51289F2C2AD4E19B00545115 /* TripDetailSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,11 +396,12 @@
 				DEVELOPMENT_TEAM = 49K677HL7Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -396,11 +426,12 @@
 				DEVELOPMENT_TEAM = 49K677HL7Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

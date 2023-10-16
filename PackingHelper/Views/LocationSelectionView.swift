@@ -10,53 +10,65 @@ import MapKit
 
 struct LocationSelectionView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
     
     @ObservedObject var locationService: LocationService
     
-    @Binding var latitude: Double
-    @Binding var longitude: Double
+    @Binding var destination: TripDestination
     
     var body: some View {
-        VStack {
-            Form {
-                Section(header: Text("Location Search")) {
-                    ZStack(alignment: .trailing) {
-                        TextField("Search", text: $locationService.queryFragment)
-                        // This is optional and simply displays an icon during an active search
-                        if locationService.status == .isSearching {
-                            Image(systemName: "clock")
-                                .foregroundColor(Color.gray)
-                        }
+        Form {
+            Section {
+                ZStack(alignment: .trailing) {
+                    TextField("Search", text: $locationService.queryFragment)
+                    // This is optional and simply displays an icon during an active search
+                    if locationService.status == .isSearching {
+                        Image(systemName: "magnifyingglass.circle.fill")
+                            .symbolRenderingMode(.hierarchical)
+                            .symbolEffect(.pulse, options: .repeating)
+                            .imageScale(.large)
                     }
                 }
-                Section(header: Text("Results")) {
-                    List {
-                        switch locationService.status {
-                            case .noResults: AnyView(Text("No Results"))
-                            case .error(let description):  AnyView(Text("Error: \(description)"))
-                            default: AnyView(EmptyView())
-                        }
-                        
-                        ForEach(locationService.searchResults, id: \.self) { completionResult in
-                            // This simply lists the results, use a button in case you'd like to perform an action
-                            // or use a NavigationLink to move to the next view upon selection.
-                            Button(completionResult.title) {
-                                Task {
-                                    await getCoordsFromAddress(completionResult.title)
-                                }
+            } header: {
+                Text("Location Search")
+            }
+            
+            Section {
+                List {
+                    switch locationService.status {
+                    case .noResults: AnyView(Text("No Results"))
+                    case .error(let description):  AnyView(Text("Error: \(description)"))
+                    default: AnyView(EmptyView())
+                    }
+                    
+                    ForEach(locationService.searchResults, id: \.self) { completionResult in
+                        Button(completionResult.title) {
+                            Task {
+                                await getCoordsFromAddress(completionResult.title)
                             }
                         }
                     }
                 }
+            } header: {
+                Text("Results")
             }
         }
+        .navigationTitle("Find Destination")
+        .toolbarTitleDisplayMode(.inline)
     }
     
     func getCoordsFromAddress(_ address: String) async {
         do {
             let result = try await CLGeocoder().geocodeAddressString(address)
-            latitude = (result[0].location?.coordinate.latitude)!
-            longitude = (result[0].location?.coordinate.longitude)!
+            let latitude = (result[0].location?.coordinate.latitude)!
+            let longitude = (result[0].location?.coordinate.longitude)!
+            let locationName = result[0].name ?? "Unknown"
+            
+            let newDestination = TripDestination(name: locationName, latitude: latitude, longitude: longitude)
+            modelContext.insert(newDestination)
+            
+            destination = newDestination
+            
             dismiss()
         } catch {
             print(error.localizedDescription)

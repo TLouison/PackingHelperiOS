@@ -14,6 +14,7 @@
 
 import SwiftUI
 import SwiftData
+import MapKit
 
 struct TripEditView: View {
     @Environment(\.dismiss) var dismiss
@@ -25,8 +26,7 @@ struct TripEditView: View {
     @State private var beginDate = Date.now
     @State private var endDate = Date.now
     
-    @State private var latitude = Trip.sampleTrip.destinationLatitude
-    @State private var longitude = Trip.sampleTrip.destinationLongitude
+    @State private var destination: TripDestination = TripDestination.sampleData
     
     let trip: Trip?
     
@@ -38,28 +38,62 @@ struct TripEditView: View {
         NavigationStack {
             VStack {
                 Form {
-                    Section("Basic Details") {
+                    Section {
                         TextField("Name", text: $name)
                         Toggle("Completed", isOn: $complete.animation())
+                    } header: {
+                        Text("Basic Details")
                     }
                     
-                    Section("Trip Dates") {
-                        DatePicker("Trip Begins", selection: $beginDate, displayedComponents: [.date])
-                        DatePicker("Trip Ends", selection: $endDate, displayedComponents: [.date])
-                    }
-                    
-                    Section("Trip Location") {
-                        NavigationLink("Select Destination") {
-                            LocationSelectionView(locationService: LocationService(), latitude: $latitude, longitude: $longitude)
-                        }
+                    Section {
                         HStack {
-                            Text("Current Coordinates")
-                            Text("\(latitude.formatted(.number)), \(longitude.formatted(.number))")
+                            HStack {
+                                Image(systemName: Trip.startIcon)
+                                VStack {
+                                    Text("Begins")
+                                    DatePicker("Trip Begins", selection: $beginDate, displayedComponents: [.date])
+                                }
+                            }
+                            Spacer()
+                            HStack {
+                                Image(systemName: Trip.endIcon)
+                                VStack {
+                                    Text("Ends")
+                                    DatePicker("Trip Ends", selection: $endDate, displayedComponents: [.date])
+                                }
+                            }
                         }
-                        
+                        .imageScale(.large)
+                        .labelsHidden()
+                    } header: {
+                        Text("Trip Dates")
+                    }
+                    
+                    Section {
+                        ZStack {
+                            NavigationLink {
+                                LocationSelectionView(locationService: LocationService(), destination: $destination)
+                            } label: {
+                                EmptyView()
+                            }
+                            VStack {
+                                HStack {
+                                    Text(destination.name).bold()
+                                    Spacer()
+                                    Image(systemName: "magnifyingglass.circle")
+                                        .foregroundStyle(.blue.gradient)
+                                }
+                                
+                                Map(position: destination.mapCameraPositionBinding)
+                                    .frame(height: 80)
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            }
+                        }
+                    } header: {
+                        Text("Trip Destination")
                     }
                 }
-                .background(.background)
+//                .background(.background)
                 if trip != nil {
                     Button(role: .destructive) {
                         deleteTrip()
@@ -95,8 +129,9 @@ struct TripEditView: View {
                     beginDate = trip.beginDate
                     endDate = trip.endDate
                     
-                    latitude = trip.destinationLatitude
-                    longitude = trip.destinationLongitude
+                    if let d = trip.destination {
+                        destination = d
+                    }
                 }
             }
         }
@@ -114,10 +149,11 @@ struct TripEditView: View {
             trip.beginDate = beginDate
             trip.endDate = endDate
             
-            trip.destinationLatitude = latitude
-            trip.destinationLongitude = longitude
+            trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, complete: complete, beginDate: beginDate, endDate: endDate, latitude: latitude, longitude: longitude)
+            let newTrip = Trip(name: name, complete: complete, beginDate: beginDate, endDate: endDate)
+            newTrip.destination = destination
+            newTrip.packingList = PackingList()
             
             modelContext.insert(newTrip)
         }
