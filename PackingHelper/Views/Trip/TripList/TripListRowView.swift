@@ -11,6 +11,8 @@ import MapKit
 struct TripListRowView: View {
     @Binding var path: [Trip]
     
+    @State private var mapPosition: MapCameraPosition = .automatic
+    
     var trip: Trip
     var height: Int
  
@@ -78,7 +80,7 @@ struct TripListRowView: View {
     
     var body: some View {
         Map(
-            initialPosition: trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition,
+            position: $mapPosition,
             interactionModes: []
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -92,6 +94,9 @@ struct TripListRowView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .shadow(radius: 4)
+        .onAppear {
+            mapPosition = trip.destination.mapCameraPosition
+        }
     }
 }
 

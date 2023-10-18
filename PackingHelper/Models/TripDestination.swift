@@ -5,6 +5,7 @@
 //  Created by Todd Louison on 10/13/23.
 //
 
+import Observation
 import SwiftData
 import SwiftUI
 import MapKit
@@ -20,15 +21,27 @@ final class TripDestination {
         self.latitude = latitude
         self.longitude = longitude
     }
+    
+    func update(name: String, latitude: Double, longitude: Double) {
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+    
+    func update(_ destination: TripDestination) {
+        self.name = destination.name
+        self.latitude = destination.latitude
+        self.longitude = destination.longitude
+    }
 }
 
 extension TripDestination {
     var coordinates: CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
+        CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
     }
     
     var mapCameraPosition: MapCameraPosition {
-        return MapCameraPosition.region(
+        MapCameraPosition.region(
             MKCoordinateRegion(
                 center:  self.coordinates,
                 span: MKCoordinateSpan(
@@ -37,14 +50,6 @@ extension TripDestination {
                 )
             )
         )
-    }
-    
-    var mapCameraPositionBinding: Binding<MapCameraPosition> {
-        Binding {
-            return self.mapCameraPosition
-        } set: { newCameraPosition in
-            print("Uh")
-        }
     }
 }
 

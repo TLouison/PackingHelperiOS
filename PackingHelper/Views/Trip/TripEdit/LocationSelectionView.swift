@@ -55,6 +55,7 @@ struct LocationSelectionView: View {
         }
         .navigationTitle("Find Destination")
         .toolbarTitleDisplayMode(.inline)
+        .presentationDetents([.large])
     }
     
     func getCoordsFromAddress(_ address: String) async {
@@ -65,7 +66,6 @@ struct LocationSelectionView: View {
             let locationName = result[0].name ?? "Unknown"
             
             let newDestination = TripDestination(name: locationName, latitude: latitude, longitude: longitude)
-            modelContext.insert(newDestination)
             
             destination = newDestination
             

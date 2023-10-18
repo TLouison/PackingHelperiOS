@@ -87,7 +87,7 @@ struct TripDetailView: View {
                     }
                 } else {
                     TripDetailOverlay(
-                        trip: $trip,
+                        trip: trip,
                         isShowingTripDetailSheet: $isShowingTripDetailSheet,
                         isShowingPackingDetailSheet: $isShowingPackingDetailSheet,
                         isShowingTripSettingsSheet: $isShowingTripSettingsSheet
@@ -109,20 +109,12 @@ struct TripDetailView: View {
                 TripEditView(trip: trip)
             }
             .sheet(isPresented: $isShowingPackingDetailSheet) {
-                TripPackingSheet(packingList: $trip.packingList)
-                    .modifier(SheetModifier())
+                TripPackingSheet(packingList: trip.packingList)
+//                    .modifier(SheetModifier())
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
-                cameraPosition = MapCameraPosition.region(
-                    MKCoordinateRegion(
-                        center:  trip.destination?.coordinates ?? TripDestination.sampleData.coordinates,
-                        span: MKCoordinateSpan(
-                            latitudeDelta: 0.5,
-                            longitudeDelta: 0.5
-                        )
-                    )
-                )
+                cameraPosition = trip.destination.mapCameraPosition
             }
             .gesture(longPress)
     }

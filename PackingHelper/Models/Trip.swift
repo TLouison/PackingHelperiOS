@@ -5,7 +5,6 @@
 //  Created by Todd Louison on 10/9/23.
 //
 
-import Foundation
 import SwiftData
 import SwiftUI
 
@@ -17,20 +16,22 @@ final class Trip {
     
     var name: String
     
-    @Relationship(deleteRule: .cascade) var destination: TripDestination?
+    
+    @Relationship(deleteRule: .cascade) var destination: TripDestination
     @Relationship(deleteRule: .cascade) var packingList: PackingList
     
     var createdDate: Date
     var beginDate: Date
     var endDate: Date
     
-    init(name: String, beginDate: Date, endDate: Date) {
+    init(name: String, beginDate: Date, endDate: Date, destination: TripDestination) {
         self.name = name
         
         self.createdDate = Date.now
         self.beginDate = beginDate
         self.endDate = endDate
         
+        self.destination = destination
         self.packingList = PackingList()
     }
 }
@@ -67,7 +68,7 @@ extension Trip {
 }
 
 extension Trip {
-    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400))
+    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), destination: TripDestination.sampleData)
 }
 
 extension Trip {

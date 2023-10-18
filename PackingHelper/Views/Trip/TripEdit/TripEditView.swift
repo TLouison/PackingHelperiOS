@@ -27,6 +27,7 @@ struct TripEditView: View {
     @State private var endDate = Date.now
     
     @State private var destination: TripDestination = TripDestination.sampleData
+    @State private var mapCameraPosition: MapCameraPosition = TripDestination.sampleData.mapCameraPosition
     
     let trip: Trip?
     
@@ -93,9 +94,13 @@ struct TripEditView: View {
                                         .foregroundStyle(.blue.gradient)
                                 }
                                 
-                                Map(position: destination.mapCameraPositionBinding)
+                                Map(position: $mapCameraPosition)
                                     .frame(height: 80)
                                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                                    .onChange(of: destination) {
+                                        print("NEW DESTINATION FOUND")
+                                        mapCameraPosition = destination.mapCameraPosition
+                                    }
                             }
                         }
                     } header: {
@@ -138,9 +143,8 @@ struct TripEditView: View {
                     beginDate = trip.beginDate
                     endDate = trip.endDate
                     
-                    if let d = trip.destination {
-                        destination = d
-                    }
+                    destination = trip.destination
+                    mapCameraPosition = trip.destination.mapCameraPosition
                 }
             }
         }
@@ -160,9 +164,7 @@ struct TripEditView: View {
             
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate)
-            newTrip.destination = destination
-            newTrip.packingList = PackingList()
+            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, destination: destination)
             
             modelContext.insert(newTrip)
         }

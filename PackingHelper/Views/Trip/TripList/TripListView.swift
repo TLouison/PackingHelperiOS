@@ -11,8 +11,8 @@ import MapKit
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query var trips: [Trip]
     
+    @State private var activeTrip: Trip?
     @State private var path: [Trip] = []
     
     @State private var isShowingAddTripSheet: Bool = false
@@ -20,14 +20,21 @@ struct TripListView: View {
     @State private var isCompletedTripDropdownOpen: Bool = false
     
     @State var visibleTripsSymbol: Symbol = .upcoming
+   
+    private static var now: Date { Date.now }
+    @Query(FetchDescriptor(
+        predicate: #Predicate<Trip>{ $0.endDate > now },
+        sortBy: [SortDescriptor(\.name, order: .forward)]
+    ),
+           animation: .snappy
+    ) var upcomingTrips: [Trip]
     
-    var upcomingTrips: [Trip] {
-        return trips.filter { $0.complete == false }
-    }
-    
-    var completedTrips: [Trip] {
-        return trips.filter { $0.complete == true }
-    }
+    @Query(FetchDescriptor(
+        predicate: #Predicate<Trip>{ $0.endDate <= now },
+        sortBy: [SortDescriptor(\.name, order: .forward)]
+    ),
+           animation: .snappy
+    ) var completedTrips: [Trip]
     
     @ViewBuilder func TripListRow(_ trips: [Trip]) -> some View {
         ScrollView(.horizontal) {
@@ -61,14 +68,27 @@ struct TripListView: View {
                     }
                     .transition(.pushAndPull(.leading))
                 } else {
-                    VStack(alignment: .leading) {
-                        Text("Upcoming Trips")
-                            .font(.largeTitle)
-                            .padding(.horizontal)
-                        
-                        TripListRow(upcomingTrips)
+                    if !completedTrips.isEmpty && upcomingTrips.isEmpty {
+                        ContentUnavailableView {
+                            Label("No Upcoming Trips", systemImage: Trip.startIcon)
+                        } description: {
+                            Text("You've completed all of your trips! Add a new one to start packing.")
+                            //                                .frame(maxWidth: .infinity)
+                        } actions: {
+                            Button("Create Trip", systemImage: "folder.badge.plus") {
+                                isShowingAddTripSheet.toggle()
+                            }
+                        }
+                    } else {
+                        VStack(alignment: .leading) {
+                            Text("Upcoming Trips")
+                                .font(.largeTitle)
+                                .padding(.horizontal)
+                            
+                            TripListRow(upcomingTrips)
+                        }
+                        .transition(.pushAndPull(.trailing))
                     }
-                    .transition(.pushAndPull(.trailing))
                 }
             }
             .navigationDestination(for: Trip.self) { trip in
@@ -78,12 +98,12 @@ struct TripListView: View {
                 TripEditView(trip: nil)
             }
             .overlay {
-                if trips.isEmpty {
+                if completedTrips.isEmpty && upcomingTrips.isEmpty{
                     ContentUnavailableView {
                         Label("No Trips", systemImage: "airplane")
                     } description: {
                         Text("Add a trip to get started with your packing!")
-                            .frame(maxWidth: .infinity)
+                        //                            .frame(maxWidth: .infinity)
                     } actions: {
                         Button("Create Trip", systemImage: "folder.badge.plus") {
                             isShowingAddTripSheet.toggle()
@@ -105,9 +125,10 @@ struct TripListView: View {
                                 .contentTransition(
                                     .symbolEffect(.replace.downUp.byLayer)
                                 )
+                                .symbolEffect(.bounce, value: visibleTripsSymbol == .completed ? upcomingTrips.count : completedTrips.count)
                         }
                     }
-
+                    
                     Button {
                         isShowingAddTripSheet.toggle()
                     } label: {
@@ -125,21 +146,21 @@ struct TripListView: View {
         isShowingCompletedTrips.toggle()
         // Toggle symbol to other symbol
         visibleTripsSymbol = switch visibleTripsSymbol {
-            case .completed: .upcoming
-            case .upcoming: .completed
+        case .completed: .upcoming
+        case .upcoming: .completed
         }
     }
     
     enum Symbol: Hashable, CaseIterable {
-           case completed, upcoming
-
-           var name: String {
-               switch self {
-               case .completed: return "airplane.arrival"
-               case .upcoming: return "airplane.departure"
-               }
-           }
-       }
+        case completed, upcoming
+        
+        var name: String {
+            switch self {
+            case .completed: return "airplane.arrival"
+            case .upcoming: return "airplane.departure"
+            }
+        }
+    }
 }
 
 #Preview {

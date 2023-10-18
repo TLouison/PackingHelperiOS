@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var trip: Trip
+    @Bindable var trip: Trip
     
     @Binding var isShowingTripDetailSheet: Bool
     @Binding var isShowingPackingDetailSheet: Bool
@@ -129,7 +129,6 @@ struct TripDetailOverlay: View {
         }
         .padding()
         .onAppear {
-            print("SHOWING SUBTITLE")
             withAnimation {
                 showTitle = true
             }
