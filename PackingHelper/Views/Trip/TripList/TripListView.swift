@@ -12,15 +12,14 @@ import MapKit
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @State private var activeTrip: Trip?
     @State private var path: [Trip] = []
     
     @State private var isShowingAddTripSheet: Bool = false
     @State private var isShowingCompletedTrips: Bool = false
     @State private var isCompletedTripDropdownOpen: Bool = false
     
-    @State var visibleTripsSymbol: Symbol = .upcoming
-   
+    @State private var visibleTripsSymbol: Symbol = .upcoming
+    
     private static var now: Date { Date.now }
     @Query(FetchDescriptor(
         predicate: #Predicate<Trip>{ $0.endDate > now },
@@ -36,58 +35,48 @@ struct TripListView: View {
            animation: .snappy
     ) var completedTrips: [Trip]
     
-    @ViewBuilder func TripListRow(_ trips: [Trip]) -> some View {
-        ScrollView(.horizontal) {
-            LazyHStack {
-                ForEach(trips) { trip in
-                    TripListRowView(path: $path, trip: trip, height: 400)
-                        .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
-                        .scrollTransition { content, phase in
-                            content
-                                .opacity(phase.isIdentity ? 1.0 : 0.8)
-                                .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
-                        }
-                }
+    enum Symbol: Hashable, CaseIterable {
+        case completed, upcoming
+        
+        var name: String {
+            switch self {
+            case .completed: return "airplane.arrival"
+            case .upcoming: return "airplane.departure"
             }
-            .scrollTargetLayout()
         }
-        .contentMargins(.horizontal, 24, for: .scrollContent)
-        .scrollTargetBehavior(.paging)
     }
     
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
-                if isShowingCompletedTrips {
+                if !completedTrips.isEmpty && isShowingCompletedTrips {
                     VStack(alignment: .leading) {
                         Text("Completed Trips")
                             .font(.largeTitle)
                             .padding(.horizontal)
                         
-                        TripListRow(completedTrips)
+                        TripListScrollView(path: $path, trips: completedTrips)
                     }
                     .transition(.pushAndPull(.leading))
+                } else if !upcomingTrips.isEmpty {
+                    VStack(alignment: .leading) {
+                        Text("Upcoming Trips")
+                            .font(.largeTitle)
+                            .padding(.horizontal)
+                        
+                        TripListScrollView(path: $path, trips: upcomingTrips)
+                    }
+                    .transition(.pushAndPull(.trailing))
                 } else {
-                    if !completedTrips.isEmpty && upcomingTrips.isEmpty {
-                        ContentUnavailableView {
-                            Label("No Upcoming Trips", systemImage: Trip.startIcon)
-                        } description: {
-                            Text("You've completed all of your trips! Add a new one to start packing.")
-                            //                                .frame(maxWidth: .infinity)
-                        } actions: {
-                            Button("Create Trip", systemImage: "folder.badge.plus") {
-                                isShowingAddTripSheet.toggle()
-                            }
+                    ContentUnavailableView {
+                        Label("No Upcoming Trips", systemImage: Trip.startIcon)
+                    } description: {
+                        Text("You've completed all of your trips! Add a new one to start packing.")
+                        //                                .frame(maxWidth: .infinity)
+                    } actions: {
+                        Button("Create Trip", systemImage: "folder.badge.plus") {
+                            isShowingAddTripSheet.toggle()
                         }
-                    } else {
-                        VStack(alignment: .leading) {
-                            Text("Upcoming Trips")
-                                .font(.largeTitle)
-                                .padding(.horizontal)
-                            
-                            TripListRow(upcomingTrips)
-                        }
-                        .transition(.pushAndPull(.trailing))
                     }
                 }
             }
@@ -103,7 +92,6 @@ struct TripListView: View {
                         Label("No Trips", systemImage: "airplane")
                     } description: {
                         Text("Add a trip to get started with your packing!")
-                        //                            .frame(maxWidth: .infinity)
                     } actions: {
                         Button("Create Trip", systemImage: "folder.badge.plus") {
                             isShowingAddTripSheet.toggle()
@@ -150,19 +138,4 @@ struct TripListView: View {
         case .upcoming: .completed
         }
     }
-    
-    enum Symbol: Hashable, CaseIterable {
-        case completed, upcoming
-        
-        var name: String {
-            switch self {
-            case .completed: return "airplane.arrival"
-            case .upcoming: return "airplane.departure"
-            }
-        }
-    }
-}
-
-#Preview {
-    TripListView()
 }

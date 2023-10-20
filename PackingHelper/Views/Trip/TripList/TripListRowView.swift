@@ -13,8 +13,7 @@ struct TripListRowView: View {
     
     @State private var mapPosition: MapCameraPosition = .automatic
     
-    var trip: Trip
-    var height: Int
+    @Bindable var trip: Trip
  
     @ViewBuilder private func dateInfo() -> some View {
         trip.getStatusLabel()
@@ -35,33 +34,13 @@ struct TripListRowView: View {
     }
     
     @ViewBuilder func tripRowOverlay(_ trip: Trip) -> some View {
-        if height < 100 {
-            HStack {
-                Text(trip.name)
-                    .font(.headline)
-                    .padding()
-                    .background(.thickMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                
-                Spacer()
-            
-                VStack(alignment: .trailing) {
-                    dateInfo()
-                }
-                .font(.headline)
-                .padding()
-                .background(.thickMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-        }  else {
+        ViewThatFits {
             VStack {
                 HStack {
                     Spacer()
                     Text(trip.name)
                         .font(.headline)
-                        .padding()
-                        .background(.thickMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .roundedBox()
                 }
                 Spacer()
                 HStack {
@@ -70,10 +49,22 @@ struct TripListRowView: View {
                         dateInfo()
                     }
                     .font(.headline)
-                    .padding()
-                    .background(.thickMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .roundedBox()
                 }
+            }
+            
+            HStack {
+                Text(trip.name)
+                    .font(.headline)
+                    .roundedBox()
+                
+                Spacer()
+            
+                VStack(alignment: .trailing) {
+                    dateInfo()
+                }
+                .font(.headline)
+                .roundedBox()
             }
         }
     }

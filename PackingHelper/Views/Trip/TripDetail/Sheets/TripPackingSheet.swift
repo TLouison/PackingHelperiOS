@@ -10,11 +10,42 @@ import SwiftUI
 import SwiftData
 
 struct TripPackingSheet: View {
-    let packingList: PackingList
+    @State var packingList: PackingList
     
     var body: some View {
-        TripPackingView(packingList: packingList)
-            .padding(.vertical)
+        VStack {
+            VStack {
+                Text("Packing Data")
+                    .font(.largeTitle)
+                
+                Divider()
+                
+                HStack {
+                    HStack {
+                        Text("Packed")
+                            .font(.callout)
+                        Text("\(packingList.packedItems.count)")
+                            .font(.title)
+                    }
+                    Divider()
+                    HStack {
+                        Text("\(packingList.unpackedItems.count)")
+                            .font(.title)
+                        Text("Remaining")
+                            .font(.callout)
+                    }
+                }
+            }
+            
+            NavigationLink {
+                TripPackingView(packingList: $packingList)
+                    .padding(.vertical)
+            } label: {
+                Label("View Packing List", systemImage: "bag.fill")
+                    .roundedBox(background: .ultraThickMaterial)
+            }
+        }
+        .roundedBox()
     }
 }
 

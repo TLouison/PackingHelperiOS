@@ -7,48 +7,48 @@
 
 import SwiftUI
 
+
 struct TripPackingView: View {
-    @Bindable var packingList: PackingList
+    @Binding var packingList: PackingList
     
     @State private var newItemName: String = ""
     @State private var newItemCount: Int = 1
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
     
-    var unpackedItems: [Item] {
-        packingList.items.filter { $0.packed == false }
-    }
-    
-    var packedItems: [Item] {
-        packingList.items.filter { $0.packed == true }
+    @ViewBuilder
+    func itemCheckbox(_ item: Item) -> some View {
+        Image(systemName: item.isPacked ? Symbol.packed.name : Symbol.unpacked.name)
+            .resizable()
+            .frame(width: 30, height: 30)
+            .offset(x: item.type == .packed ? 0 : -2)
+            .symbolRenderingMode(.multicolor)
+            .foregroundStyle(item.isPacked ? .green : .secondary)
+            .onTapGesture {
+                withAnimation {
+                    packingList.togglePacked(item)
+                }
+            }
+            .contentTransition(.symbolEffect(.replace))
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .padding(.trailing)
     }
     
     var body: some View {
         VStack {
             List {
                 Section("Unpacked") {
-                    ForEach(unpackedItems) { item in
+                    ForEach(packingList.unpackedItems) { item in
                         HStack {
-                            Image(systemName: item.packed ? Symbol.packed.name : Symbol.unpacked.name)
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                                .offset(x: item.packed ? 0 : -2)
-                                .symbolRenderingMode(.multicolor)
-                                .foregroundStyle(item.packed ? .green : .secondary)
-                                .onTapGesture {
-                                    item.packed.toggle()
-                                }
-                                .contentTransition(.symbolEffect(.replace))
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .padding(.trailing)
+                            itemCheckbox(item)
                             
                             Group {
                                 Text(item.name).font(.title)
                                 Spacer()
                                 Text(String(item.count)).font(.largeTitle).bold()
                             }
-                            .strikethrough(item.packed)
+                            .strikethrough(item.isPacked)
                         }
                     }
                     .onDelete(perform: { indexSet in
@@ -58,29 +58,16 @@ struct TripPackingView: View {
                     })
                 }
                 Section("Packed") {
-                    ForEach(packedItems) { item in
+                    ForEach(packingList.packedItems) { item in
                         HStack {
-                            Image(systemName: item.packed ? Symbol.packed.name : Symbol.unpacked.name)
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                                .offset(x: item.packed ? 0 : -2)
-                                .symbolRenderingMode(.multicolor)
-                                .foregroundStyle(item.packed ? .green : .secondary)
-                                .onTapGesture {
-                                    item.packed.toggle()
-                                }
-                                .contentTransition(.symbolEffect(.replace))
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .padding(.trailing)
+                            itemCheckbox(item)
                             
                             Group {
                                 Text(item.name).font(.title)
                                 Spacer()
                                 Text(String(item.count)).font(.largeTitle).bold()
                             }
-                            .strikethrough(item.packed)
+                            .strikethrough(item.isPacked)
                         }
                         .transition(.scale)
 
@@ -92,7 +79,7 @@ struct TripPackingView: View {
                     })
                 }
             }
-            .listStyle(.plain)
+            .listStyle(.grouped)
             
             Spacer()
             
@@ -104,10 +91,12 @@ struct TripPackingView: View {
                             packingRecommendation = PackingEngine.suggest()
                         }
                     Spacer()
+                    Divider()
                     TextField("Count", value: $newItemCount, format: .number)
+                        .font(.largeTitle)
                         .keyboardType(.numberPad)
-                        .background(Color(.tertiarySystemBackground))
                         .frame(maxWidth: 40)
+                        .padding()
 //                        .onReceive(Just(newItemCount)) { newValue in
 //                            let filtered = newValue.filter { "0123456789".contains($0) }
 //                            if filtered != newValue {
@@ -115,6 +104,7 @@ struct TripPackingView: View {
 //                            }
 //                        }
                 }
+                .frame(maxHeight: 60)
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 
@@ -138,10 +128,14 @@ struct TripPackingView: View {
                     }
                 }
                 .padding()
+                .frame(maxWidth: .infinity)
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
+            .padding(.horizontal)
         }
+        .navigationTitle("Packing List")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     enum Symbol: Hashable, CaseIterable {

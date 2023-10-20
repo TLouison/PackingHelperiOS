@@ -11,23 +11,13 @@ struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
     @Bindable var trip: Trip
     
-    @Binding var isShowingTripDetailSheet: Bool
-    @Binding var isShowingPackingDetailSheet: Bool
     @Binding var isShowingTripSettingsSheet: Bool
     
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
     
-    struct RoundedBox: ViewModifier {
-        func body(content: Content) -> some View {
-            content
-                .padding()
-                .background(.regularMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-        }
-    }
-    
-    @ViewBuilder func departureInfo() -> some View {
+    @ViewBuilder 
+    func departureInfo() -> some View {
         let now = Date.now
         let beginDateString = trip.beginDate.formatted(date: .abbreviated, time: .omitted)
         let endDateString = trip.endDate.formatted(date: .abbreviated, time: .omitted)
@@ -58,7 +48,7 @@ struct TripDetailOverlay: View {
                             .labelStyle(.iconOnly)
                             .frame(width: 20, height: 20)
                     }
-                    .modifier(RoundedBox())
+                    .roundedBox()
                     .shadow(radius: 4)
                     
                     
@@ -71,16 +61,17 @@ struct TripDetailOverlay: View {
                             .labelStyle(.iconOnly)
                             .frame(width: 20, height: 20)
                     }
-                    .modifier(RoundedBox())
+                    .roundedBox()
                     .shadow(radius: 4)
                 }
+                .padding()
+                
+                Spacer()
                 
                 if showTitle {
                     VStack {
                         Text(trip.name).font(.largeTitle)
                             .frame(maxWidth: .infinity)
-                            .modifier(RoundedBox())
-                            .shadow(radius: 4)
                             .onAppear {
                                 withAnimation {
                                     showSubtitle = true
@@ -90,44 +81,14 @@ struct TripDetailOverlay: View {
                         if showSubtitle {
                             departureInfo()
                                 .frame(maxWidth: .infinity)
-                                .modifier(RoundedBox())
-                                .shadow(radius: 4)
                                 .transition(.opacity)
                         }
                     }
                     .transition(.opacity)
+                    .roundedBox()
                 }
             }
-            
-            Spacer()
-            
-            VStack {
-                Text("Details")
-                    .font(.headline)
-                
-                HStack {
-                    Button {
-                        isShowingTripDetailSheet.toggle()
-                    } label: {
-                        Label("Trip", systemImage: "list.clipboard")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .modifier(RoundedBox())
-                    
-                    Button {
-                        isShowingPackingDetailSheet.toggle()
-                    } label: {
-                        Label("Packing", systemImage: "bag")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .modifier(RoundedBox())
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .modifier(RoundedBox())
-            .shadow(radius: 4)
         }
-        .padding()
         .onAppear {
             withAnimation {
                 showTitle = true

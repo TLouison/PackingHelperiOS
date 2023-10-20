@@ -22,19 +22,16 @@ struct RoundedModifier: ViewModifier {
 struct SheetModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .presentationDetents([.height(200), .medium, .large])
+            .presentationDetents([.height(500), .large])
             .presentationDragIndicator(.automatic)
     }
 }
 
 struct TripDetailView: View {
-    @State var trip: Trip
+    let trip: Trip
     
     @State private var isShowingTripDetailSheet: Bool = false
     @State private var isShowingTripSettingsSheet: Bool = false
-    @State private var isShowingPackingDetailSheet: Bool = false
-    
-    @State private var cameraPosition: MapCameraPosition = .automatic
     
     @GestureState private var isDetectingLongPress = false
     @State private var completedLongPress = false
@@ -58,65 +55,29 @@ struct TripDetailView: View {
     }
     
     var body: some View {
-        Map(position: $cameraPosition, interactionModes: .all)
-            .background(Color.black)
-            .overlay {
-                if completedLongPress {
-                    VStack {
-                        Spacer()
-                        if isShowingTapAnywherePrompt {
-                            Text("Tap here to show details again.")
-                                .font(.callout)
-                                .padding()
-                                .background(.ultraThinMaterial)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .ignoresSafeArea()
-                                .transition(
-                                    .asymmetric(
-                                        insertion: .scale.animation(.bouncy),
-                                        removal: .scale.animation(.easeOut)
-                                    )
-                                )
-                                .onTapGesture {
-                                    withAnimation {
-                                        completedLongPress = false
-                                        isShowingTapAnywherePrompt = false
-                                    }
-                                }
-                        }
-                    }
-                } else {
-                    TripDetailOverlay(
-                        trip: trip,
-                        isShowingTripDetailSheet: $isShowingTripDetailSheet,
-                        isShowingPackingDetailSheet: $isShowingPackingDetailSheet,
-                        isShowingTripSettingsSheet: $isShowingTripSettingsSheet
-                    )
-                    .transition(
-                        .asymmetric(
-                            insertion: .opacity.animation(.bouncy),
-                            removal: .opacity.animation(.easeOut)
-                        )
-                    )
-                    .animation(.easeInOut, value: isDetectingLongPress)
-                }
+        ScrollView {
+            VStack(spacing: 20) {
+                TripDetailHero(
+                    trip: trip,
+                    isShowingTripSettingsSheet: $isShowingTripSettingsSheet
+                )
+                    .shadow(radius: 4)
+                
+                TripPackingSheet(packingList: trip.packingList)
+                    .shadow(radius: 4)
             }
+            .padding()
             .sheet(isPresented: $isShowingTripDetailSheet) {
                 TripDetailSheet(trip: trip)
                     .modifier(SheetModifier())
             }
             .sheet(isPresented: $isShowingTripSettingsSheet) {
                 TripEditView(trip: trip)
-            }
-            .sheet(isPresented: $isShowingPackingDetailSheet) {
-                TripPackingSheet(packingList: trip.packingList)
-//                    .modifier(SheetModifier())
+                    .modifier(SheetModifier())
             }
             .toolbar(.hidden, for: .navigationBar)
-            .onAppear {
-                cameraPosition = trip.destination.mapCameraPosition
-            }
             .gesture(longPress)
+        }
     }
 }
 

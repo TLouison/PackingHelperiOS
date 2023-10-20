@@ -13,7 +13,7 @@ struct PackingHelperApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [Trip.self, TripDestination.self, PackingList.self, Item.self])
         }
+        .modelContainer(for: [Trip.self, TripDestination.self, PackingList.self, Item.self])
     }
 }

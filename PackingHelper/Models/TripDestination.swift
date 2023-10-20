@@ -13,6 +13,7 @@ import MapKit
 @Model
 final class TripDestination {
     var name: String
+    
     var latitude: Double
     var longitude: Double
     
