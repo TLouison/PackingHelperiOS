@@ -57,13 +57,16 @@ struct TripDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                TripDetailHero(
+                TripDetailHeroView(
                     trip: trip,
                     isShowingTripSettingsSheet: $isShowingTripSettingsSheet
                 )
                     .shadow(radius: 4)
                 
                 TripPackingSheet(packingList: trip.packingList)
+                    .shadow(radius: 4)
+                
+                TripDetailInfoView(trip: trip)
                     .shadow(radius: 4)
             }
             .padding()

@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-struct TripDetailHero: View {
+struct TripDetailHeroView: View {
     @Bindable var trip: Trip
     
     @Binding var isShowingTripSettingsSheet: Bool
@@ -34,6 +34,7 @@ struct TripDetailHero: View {
                 }
                 .frame(minHeight: 400)
         }
+        
     }
 }
 //

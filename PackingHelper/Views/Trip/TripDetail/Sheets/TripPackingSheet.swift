@@ -12,30 +12,25 @@ import SwiftData
 struct TripPackingSheet: View {
     @State var packingList: PackingList
     
+    @State private var gaugeLevel: Double = 0.0
+    
     var body: some View {
         VStack {
-            VStack {
-                Text("Packing Data")
-                    .font(.largeTitle)
+            HStack {
+                Text("Packing Info")
+                    .font(.title)
+                Spacer()
                 
-                Divider()
-                
-                HStack {
-                    HStack {
-                        Text("Packed")
-                            .font(.callout)
-                        Text("\(packingList.packedItems.count)")
-                            .font(.title)
-                    }
-                    Divider()
-                    HStack {
-                        Text("\(packingList.unpackedItems.count)")
-                            .font(.title)
-                        Text("Remaining")
-                            .font(.callout)
-                    }
+                Gauge(value: Double(gaugeLevel), in: 0...Double(packingList.items.count)) {
+                    EmptyView()
                 }
+                .onChange(of: packingList.items, initial: true) {
+                    gaugeLevel = Double(packingList.packedItems.count)
+                }
+                .frame(maxWidth: 60)
             }
+            
+            Divider()
             
             NavigationLink {
                 TripPackingView(packingList: $packingList)
@@ -52,11 +47,11 @@ struct TripPackingSheet: View {
 //#Preview {
 //    let config = ModelConfiguration(isStoredInMemoryOnly: true)
 //    let container = try! ModelContainer(for: Trip.self, TripDestination.self, PackingList.self, configurations: config)
-//    
+//
 //    let trip = Trip.sampleTrip
 //    trip.packingList.items.append(Item(name: "Shirts", count: 7))
 //    trip.packingList.items.append(Item(name:"Pants", count: 2))
-//    
+//
 //    return TripPackingSheet(packingList: .constant(trip.packingList))
 //        .modelContainer(container)
 //}
