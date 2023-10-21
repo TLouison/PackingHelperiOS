@@ -19,7 +19,7 @@ final class Trip {
     var name: String
     
     @Relationship(deleteRule: .cascade) var destination: TripDestination
-    @Relationship(deleteRule: .cascade) var packingList: PackingList
+    @Relationship(deleteRule: .cascade) var packingList: PackingList?
     
     var beginDate: Date
     var endDate: Date
@@ -33,7 +33,6 @@ final class Trip {
         self.endDate = endDate
         
         self.destination = destination
-        self.packingList = PackingList()
     }
 }
 
@@ -82,10 +81,4 @@ extension Trip {
 extension Trip {
     static let endIcon = "airplane.arrival"
     static let startIcon = "airplane.departure"
-}
-
-extension Trip {
-    var unpackedItems: [Item] {
-        self.packingList.unpackedItems
-    }
 }

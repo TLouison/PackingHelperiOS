@@ -21,22 +21,28 @@ struct TripPackingSheet: View {
                     .font(.title)
                 Spacer()
                 
-                Gauge(value: Double(gaugeLevel), in: 0...Double(packingList.items.count)) {
-                    EmptyView()
+                if !packingList.items.isEmpty {
+                    HStack {
+                        Image(systemName: "suitcase.rolling")
+                        
+                        Gauge(value: Double(gaugeLevel), in: 0...Double(packingList.items.count)) {
+                            EmptyView()
+                        }
+                        .onChange(of: packingList.items, initial: true) {
+                            gaugeLevel = Double(packingList.packedItems.count)
+                        }
+                        .frame(maxWidth: 60)
+                    }
                 }
-                .onChange(of: packingList.items, initial: true) {
-                    gaugeLevel = Double(packingList.packedItems.count)
-                }
-                .frame(maxWidth: 60)
             }
             
             Divider()
             
             NavigationLink {
-                TripPackingView(packingList: $packingList)
+                PackingListEditView(packingList: packingList)
                     .padding(.vertical)
             } label: {
-                Label("View Packing List", systemImage: "bag.fill")
+                Label("View Packing List", systemImage: "suitcase.rolling.fill")
                     .roundedBox(background: .ultraThickMaterial)
             }
         }

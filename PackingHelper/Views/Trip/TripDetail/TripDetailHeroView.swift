@@ -19,8 +19,8 @@ struct TripDetailHeroView: View {
         ZStack {
             Map(position: $cameraPosition, interactionModes: .all)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea(edges: .top)
                 .clipShape(.rect(cornerRadius: 16))
+                .allowsHitTesting(false)
             
             TripDetailOverlay(trip: trip, isShowingTripSettingsSheet: $isShowingTripSettingsSheet)
                 .transition(

@@ -58,6 +58,7 @@ struct PackingAddItemView: View {
             Button("Add Item") {
                 if newItemName != "" {
                     packingList.items.append(Item(name: newItemName, count: newItemCount))
+                    newItemName = ""
                 }
             }
             .padding()

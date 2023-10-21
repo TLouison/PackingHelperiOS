@@ -29,6 +29,15 @@ struct TripEditView: View {
     @State private var destination: TripDestination = TripDestination.sampleData
     @State private var mapCameraPosition: MapCameraPosition = TripDestination.sampleData.mapCameraPosition
     
+    @Query(
+        FetchDescriptor(
+            predicate: #Predicate<PackingList>{ $0.template == true },
+            sortBy: [SortDescriptor(\.created, order: .reverse)]
+        ),
+        animation: .snappy
+    ) private var defaultPackingListOptions: [PackingList]
+    @State private var defaultPackingList: PackingList? = nil
+    
     let trip: Trip?
     
     private var editorTitle: String {
@@ -101,10 +110,27 @@ struct TripEditView: View {
                                         print("NEW DESTINATION FOUND")
                                         mapCameraPosition = destination.mapCameraPosition
                                     }
+                                    .allowsHitTesting(false)
                             }
                         }
                     } header: {
                         Text("Trip Destination")
+                    }
+                    
+                    if trip == nil {
+                        Section {
+                            Picker("Default Packing List", selection: $defaultPackingList) {
+                                Text("No Default").tag(nil as PackingList?)
+                                ForEach(defaultPackingListOptions) { packingList in
+                                    Text(packingList.nameString)
+                                        .tag(packingList as PackingList?)
+                                }
+                            }
+                        } header: {
+                            Text("Default Packing List")
+                        } footer: {
+                            Text("Adding a default packing list will automatically add the items from that packing list to this trip as a starting point. You can create these lists on the main screen.")
+                        }
                     }
                 }
 //                .background(.background)
@@ -148,7 +174,6 @@ struct TripEditView: View {
                 }
             }
         }
-        .presentationDetents([.height(500), .large])
     }
     
     private var formIsValid: Bool {
@@ -165,6 +190,12 @@ struct TripEditView: View {
             trip.destination = destination
         } else {
             let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, destination: destination)
+            
+            if let defaultPackingList {
+                newTrip.packingList = PackingList.copyForTrip(defaultPackingList)
+            } else {
+                newTrip.packingList = PackingList(template: false, name: nil)
+            }
             
             modelContext.insert(newTrip)
         }

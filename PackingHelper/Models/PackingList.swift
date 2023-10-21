@@ -21,9 +21,21 @@ final class PackingList {
     
     var items: [Item]
     
-    init() {
-        self.items = []
+    var template: Bool
+    var name: String?
+    
+    init(template: Bool, name: String?) {
         self.created = Date.now
+        self.items = []
+        self.template = template
+        
+        if template {
+            self.name = name
+        }
+    }
+    
+    var nameString: String {
+        return self.name ?? "Packing List"
     }
     
     var unpackedItems: [Item] {
@@ -48,6 +60,23 @@ final class PackingList {
     }
 }
 
+extension PackingList {
+    static func copy(_ packingList: PackingList) -> PackingList {
+        let newList = PackingList(template: packingList.template, name: packingList.name)
+        newList.items = packingList.items
+        return newList
+    }
+    
+    /// Special case copy function to create a version of the list without the template variables so
+    /// it can be used as the packing list for a trip.
+    static func copyForTrip(_ packingList: PackingList) -> PackingList {
+        let newList = PackingList.copy(packingList)
+        newList.template = false
+        newList.name = nil
+        return newList
+    }
+}
+
 @Model
 class Item {
     var name: String
@@ -62,5 +91,11 @@ class Item {
     
     var isPacked: Bool {
         self.type == .packed
+    }
+    
+    static func copy(_ item: Item) -> Item {
+        var newItem = Item(name: item.name, count: item.count)
+        newItem.type = item.type
+        return newItem
     }
 }

@@ -63,21 +63,15 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: 4)
                 
-                TripPackingSheet(packingList: trip.packingList)
+                TripPackingSheet(packingList: trip.packingList!)
                     .shadow(radius: 4)
                 
                 TripDetailInfoView(trip: trip)
                     .shadow(radius: 4)
             }
             .padding()
-            .sheet(isPresented: $isShowingTripDetailSheet) {
-                TripDetailSheet(trip: trip)
-                    .modifier(SheetModifier())
-            }
-            .sheet(isPresented: $isShowingTripSettingsSheet) {
-                TripEditView(trip: trip)
-                    .modifier(SheetModifier())
-            }
+            .sheet(isPresented: $isShowingTripDetailSheet) { TripDetailSheet(trip: trip) }
+            .sheet(isPresented: $isShowingTripSettingsSheet) { TripEditView(trip: trip) }
             .toolbar(.hidden, for: .navigationBar)
             .gesture(longPress)
         }
