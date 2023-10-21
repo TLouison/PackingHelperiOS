@@ -9,10 +9,18 @@ import SwiftUI
 import SwiftData
 import MapKit
 
+@Observable class TripsViewModel {
+    var path: [Trip] = []
+    
+    init() {
+        self.path = []
+    }
+}
+
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-    
-    @State private var path: [Trip] = []
+//    @Environment(TripsViewModel.self) private var viewModel = TripsViewModel()
+    @State private var viewModel = TripsViewModel()
     
     @State private var isShowingAddTripSheet: Bool = false
     @State private var isShowingCompletedTrips: Bool = false
@@ -47,7 +55,7 @@ struct TripListView: View {
     }
     
     var viewTitle: String {
-        if isShowingCompletedTrips {
+        if isShowingCompletedTrips && !completedTrips.isEmpty {
             return "Completed Trips"
         } else if !upcomingTrips.isEmpty {
             return "Upcoming Trips"
@@ -57,13 +65,13 @@ struct TripListView: View {
     }
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $viewModel.path) {
             VStack {
                 if !completedTrips.isEmpty && isShowingCompletedTrips {
-                    TripListScrollView(path: $path, trips: completedTrips)
+                    TripListScrollView(path: $viewModel.path, trips: completedTrips)
                         .transition(.pushAndPull(.leading))
                 } else if !upcomingTrips.isEmpty {
-                    TripListScrollView(path: $path, trips: upcomingTrips)
+                    TripListScrollView(path: $viewModel.path, trips: upcomingTrips)
                         .transition(.pushAndPull(.trailing))
                 } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
                     ContentUnavailableView {
@@ -107,7 +115,7 @@ struct TripListView: View {
                         if !completedTrips.isEmpty {
                             Image(systemName: visibleTripsSymbol.name)
                                 .symbolRenderingMode(.palette)
-                                .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.blue.gradient)
+                                .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.accentColor.gradient)
                                 .contentTransition(
                                     .symbolEffect(.replace.downUp.byLayer)
                                 )
@@ -137,6 +145,7 @@ struct TripListView: View {
             }
             .toolbarBackground(.hidden)
         }
+        .environment(viewModel)
     }
     
     func toggleVisibleTrips() {

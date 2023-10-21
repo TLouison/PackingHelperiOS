@@ -18,7 +18,7 @@ final class Trip {
     
     var name: String
     
-    @Relationship(deleteRule: .cascade) var destination: TripDestination
+    @Relationship(deleteRule: .cascade, inverse: \TripDestination.trip) var destination: TripDestination?
     @Relationship(deleteRule: .cascade) var packingList: PackingList?
     
     var beginDate: Date

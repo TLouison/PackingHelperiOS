@@ -86,7 +86,7 @@ struct TripListRowView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .shadow(radius: 4)
         .onAppear {
-            mapPosition = trip.destination.mapCameraPosition
+            mapPosition = trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition
         }
     }
 }

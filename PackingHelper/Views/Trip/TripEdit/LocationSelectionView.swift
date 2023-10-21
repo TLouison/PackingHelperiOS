@@ -65,7 +65,7 @@ struct LocationSelectionView: View {
             let longitude = (result[0].location?.coordinate.longitude)!
             let locationName = result[0].name ?? "Unknown"
             
-            let newDestination = TripDestination(name: locationName, latitude: latitude, longitude: longitude)
+            let newDestination = TripDestination(trip: nil, name: locationName, latitude: latitude, longitude: longitude)
             
             destination = newDestination
             

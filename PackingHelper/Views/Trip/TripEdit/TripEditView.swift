@@ -19,6 +19,7 @@ import MapKit
 struct TripEditView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(TripsViewModel.self) private var viewModel
     
     @State private var name = ""
     @State private var complete: Bool = false
@@ -169,8 +170,8 @@ struct TripEditView: View {
                     beginDate = trip.beginDate
                     endDate = trip.endDate
                     
-                    destination = trip.destination
-                    mapCameraPosition = trip.destination.mapCameraPosition
+                    destination = trip.destination!
+                    mapCameraPosition = trip.destination!.mapCameraPosition
                 }
             }
         }
@@ -203,7 +204,11 @@ struct TripEditView: View {
     
     private func deleteTrip() {
         modelContext.delete(trip!)
-        dismiss()
+        if viewModel.path.count > 0 {
+            viewModel.path = []
+        } else {
+            dismiss()
+        }
     }
 }
 

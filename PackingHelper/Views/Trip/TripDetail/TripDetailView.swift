@@ -28,6 +28,9 @@ struct SheetModifier: ViewModifier {
 }
 
 struct TripDetailView: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(TripsViewModel.self) private var path
+    
     let trip: Trip
     
     @State private var isShowingTripDetailSheet: Bool = false
@@ -63,7 +66,7 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: 4)
                 
-                TripPackingSheet(packingList: trip.packingList!)
+                TripPackingSheet(packingList: trip.packingList ?? PackingList(template: false, name: "Placeholder"))
                     .shadow(radius: 4)
                 
                 TripDetailInfoView(trip: trip)

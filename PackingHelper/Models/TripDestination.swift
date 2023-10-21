@@ -12,12 +12,14 @@ import MapKit
 
 @Model
 final class TripDestination {
+    var trip: Trip?
     var name: String
     
     var latitude: Double
     var longitude: Double
     
-    init(name: String, latitude: Double, longitude: Double) {
+    init(trip: Trip?, name: String, latitude: Double, longitude: Double) {
+        self.trip = trip
         self.name = name
         self.latitude = latitude
         self.longitude = longitude
@@ -56,6 +58,6 @@ extension TripDestination {
 
 extension TripDestination {
     static var sampleData: TripDestination {
-        TripDestination(name: "New York City", latitude: 40.7128, longitude: -74.0060)
+        TripDestination(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060)
     }
 }

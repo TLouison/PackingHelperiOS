@@ -29,8 +29,8 @@ struct TripDetailHeroView: View {
                         removal: .opacity.animation(.easeOut)
                     )
                 )
-                .onChange(of: trip.destination.mapCameraPosition, initial: true) {
-                    cameraPosition = trip.destination.mapCameraPosition
+                .onChange(of: trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition,  initial: true) {
+                    cameraPosition = trip.destination!.mapCameraPosition
                 }
                 .frame(minHeight: 400)
         }
