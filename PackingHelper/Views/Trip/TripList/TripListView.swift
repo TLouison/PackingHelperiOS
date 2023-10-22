@@ -126,7 +126,7 @@ struct TripListView: View {
                     NavigationLink {
                         DefaultPackingListView()
                     } label: {
-                        Label("Default Packing Lists", systemImage: "suitcase.rolling.fill")
+                        Label("Default Packing Lists", systemImage: "suitcase.cart.fill")
                     }
                     .id(UUID())
                 }

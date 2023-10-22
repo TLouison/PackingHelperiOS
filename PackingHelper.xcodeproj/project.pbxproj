@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6312AE5B028002742D0 /* CalendarUtilities.swift */; };
 		51289F1A2AD3B6CD00545115 /* PackingHelperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F192AD3B6CD00545115 /* PackingHelperApp.swift */; };
 		51289F1C2AD3B6CD00545115 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F1B2AD3B6CD00545115 /* ContentView.swift */; };
 		51289F1E2AD3B6CF00545115 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51289F1D2AD3B6CF00545115 /* Assets.xcassets */; };
@@ -40,6 +41,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5110C6312AE5B028002742D0 /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		51289F162AD3B6CD00545115 /* PackingHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PackingHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51289F192AD3B6CD00545115 /* PackingHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingHelperApp.swift; sourceTree = "<group>"; };
 		51289F1B2AD3B6CD00545115 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				515B85AA2AD8D395002D614F /* LocationService.swift */,
+				5110C6312AE5B028002742D0 /* CalendarUtilities.swift */,
 				51466B332ADB3EA200258ABB /* TransitionUtilities.swift */,
 				51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */,
 			);
@@ -337,6 +340,7 @@
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				51748B5A2ADE3B45009E919B /* PackingListEditView.swift in Sources */,
+				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
 				5132E84C2AE22CA2002575AC /* TripDetailInfoView.swift in Sources */,
 				5132E8512AE38575002575AC /* DefaultPackingListAddSheet.swift in Sources */,

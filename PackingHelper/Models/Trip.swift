@@ -70,7 +70,7 @@ extension Trip {
 extension Trip {
     /// Duration of trip in number of days
     var duration: Int {
-        return Int(self.beginDate.distance(to: self.endDate))
+        return Calendar.current.numberOfDaysBetween(self.beginDate, and: self.endDate)
     }
 }
 

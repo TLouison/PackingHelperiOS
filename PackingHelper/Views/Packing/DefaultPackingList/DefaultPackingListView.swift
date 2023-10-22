@@ -29,7 +29,7 @@ struct DefaultPackingListView: View {
                                 PackingListEditView(packingList: packingList)
                                     .padding(.vertical)
                             } label: {
-                                Label(packingList.nameString, systemImage: "suitcase.rolling.fill")
+                                Text(packingList.nameString)
                             }
                         }
                         .onDelete { indexSet in
