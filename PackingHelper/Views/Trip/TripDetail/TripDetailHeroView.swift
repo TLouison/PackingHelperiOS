@@ -30,7 +30,7 @@ struct TripDetailHeroView: View {
                     )
                 )
                 .onChange(of: trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition,  initial: true) {
-                    cameraPosition = trip.destination!.mapCameraPosition
+                    cameraPosition = trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition
                 }
                 .frame(minHeight: 400)
         }

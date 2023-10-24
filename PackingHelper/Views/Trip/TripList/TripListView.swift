@@ -19,7 +19,7 @@ import MapKit
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-//    @Environment(TripsViewModel.self) private var viewModel = TripsViewModel()
+    //    @Environment(TripsViewModel.self) private var viewModel = TripsViewModel()
     @State private var viewModel = TripsViewModel()
     
     @State private var isShowingAddTripSheet: Bool = false
@@ -107,12 +107,13 @@ struct TripListView: View {
             }
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    Button {
-                        withAnimation {
-                            toggleVisibleTrips()
-                        }
-                    } label: {
-                        if !completedTrips.isEmpty {
+                    if !completedTrips.isEmpty {
+                        Button {
+                            withAnimation {
+                                toggleVisibleTrips()
+                            }
+                        } label: {
+                            
                             Image(systemName: visibleTripsSymbol.name)
                                 .symbolRenderingMode(.palette)
                                 .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.accentColor.gradient)
