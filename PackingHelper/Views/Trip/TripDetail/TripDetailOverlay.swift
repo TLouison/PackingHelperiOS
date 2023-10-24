@@ -49,7 +49,7 @@ struct TripDetailOverlay: View {
                             .frame(width: 20, height: 20)
                     }
                     .roundedBox()
-                    .shadow(radius: 4)
+                    .shadow(radius: defaultShadowRadius)
                     
                     
                     Spacer()
@@ -62,7 +62,7 @@ struct TripDetailOverlay: View {
                             .frame(width: 20, height: 20)
                     }
                     .roundedBox()
-                    .shadow(radius: 4)
+                    .shadow(radius: defaultShadowRadius)
                 }
                 .padding()
                 
@@ -90,7 +90,7 @@ struct TripDetailOverlay: View {
             }
         }
         .onAppear {
-            withAnimation {
+            withAnimation(.easeIn(duration: 0.5)) {
                 showTitle = true
             }
         }

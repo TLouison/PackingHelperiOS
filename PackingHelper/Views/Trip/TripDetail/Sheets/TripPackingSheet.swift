@@ -12,12 +12,13 @@ import SwiftData
 struct TripPackingSheet: View {
     @State var packingList: PackingList
     
+    @State private var packedItemCount: Int = 0
     @State private var gaugeLevel: Double = 0.0
     
     var body: some View {
         VStack {
             HStack {
-                Text("Packing Info")
+                Text("Packing Lists")
                     .font(.title)
                 Spacer()
                 
@@ -29,7 +30,8 @@ struct TripPackingSheet: View {
                             EmptyView()
                         }
                         .onChange(of: packingList.items, initial: true) {
-                            gaugeLevel = Double(packingList.packedItems.count)
+                            packedItemCount = packingList.packedItems.count
+                            gaugeLevel = Double(packedItemCount)
                         }
                         .frame(maxWidth: 60)
                     }
@@ -38,12 +40,28 @@ struct TripPackingSheet: View {
             
             Divider()
             
-            NavigationLink {
-                PackingListEditView(packingList: packingList)
-                    .padding(.vertical)
-            } label: {
-                Label("View Packing List", systemImage: "suitcase.rolling.fill")
-                    .roundedBox(background: .ultraThickMaterial)
+            HStack {
+                NavigationLink {
+                    PackingListEditView(packingList: packingList)
+                        .padding(.vertical)
+                } label: {
+                    Label("Packing", systemImage: "suitcase.rolling.fill")
+                }
+                .frame(height: 30)
+                .frame(maxWidth: .infinity)
+                .roundedBox(background: .ultraThickMaterial)
+                .shadow(radius: defaultShadowRadius)
+                
+                NavigationLink {
+                    PackingListEditView(packingList: packingList, isDayOf: true)
+                        .padding(.vertical)
+                } label: {
+                    Label("Day-Of", systemImage: "sun.horizon")
+                }
+                .frame(height: 30)
+                .frame(maxWidth: .infinity)
+                .roundedBox(background: .ultraThickMaterial)
+                .shadow(radius: defaultShadowRadius)
             }
         }
         .roundedBox()

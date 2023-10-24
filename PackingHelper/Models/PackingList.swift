@@ -8,13 +8,6 @@
 import Foundation
 import SwiftData
 
-
-enum PackingListType: String, Codable {
-    case unpacked = "Unpacked"
-    case packed = "Packed"
-    case dayOf = "Day-of"
-}
-
 @Model
 final class PackingList {
     var created: Date
@@ -39,26 +32,16 @@ final class PackingList {
     }
     
     var unpackedItems: [Item] {
-        self.items.filter{ $0.type == .unpacked }
+        self.items.filter{ $0.isPacked == false && $0.type == .regular }
     }
     var packedItems: [Item] {
-        self.items.filter{ $0.type == .packed }
+        self.items.filter{ $0.isPacked == true && $0.type == .regular}
     }
     var dayOfItems: [Item] {
         self.items.filter{ $0.type == .dayOf }
     }
-    
-    func togglePacked(_ item: Item) {
-        switch item.type {
-        case .unpacked:
-            item.type = .packed
-        case .packed:
-            item.type = .unpacked
-        case .dayOf:
-            print("UNEXPECTED BEHAVIOR")
-        }
-    }
 }
+
 
 extension PackingList {
     static func copy(_ packingList: PackingList) -> PackingList {
@@ -77,25 +60,3 @@ extension PackingList {
     }
 }
 
-@Model
-class Item {
-    var name: String
-    var count: Int
-    var type: PackingListType
-    
-    init(name: String, count: Int) {
-        self.name = name
-        self.count = count
-        self.type = .unpacked
-    }
-    
-    var isPacked: Bool {
-        self.type == .packed
-    }
-    
-    static func copy(_ item: Item) -> Item {
-        var newItem = Item(name: item.name, count: item.count)
-        newItem.type = item.type
-        return newItem
-    }
-}

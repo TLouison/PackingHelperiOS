@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PackingAddItemView: View {
     let packingList: PackingList
+    let isDayOf: Bool
     
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
     
@@ -17,18 +18,19 @@ struct PackingAddItemView: View {
     
     var body: some View {
         VStack {
-            if newItemName != "" {
+            if newItemName != "" && FeatureFlags.showingRecommendations {
                 PackingRecommendationView(recommendation: packingRecommendation)
-                    .transition(.pushAndPull(.bottom).animation(.easeInOut))
                     .onAppear {
                         packingRecommendation = PackingEngine.suggest()
                     }
                     .onTapGesture {
                         packingList.items.append(
-                            Item(name: packingRecommendation.item, count: packingRecommendation.count)
+                            Item(name: packingRecommendation.item, count: packingRecommendation.count, isPacked: false, type: isDayOf ? .dayOf : .regular)
                         )
                         self.newItemName = ""
+                        self.newItemCount = 1
                     }
+                    .transition(.pushAndPull(.bottom))
             }
             
             HStack {
@@ -39,32 +41,31 @@ struct PackingAddItemView: View {
                     }
                 Spacer()
                 Divider()
-                TextField("Count", value: $newItemCount, format: .number)
-                    .font(.largeTitle)
-                    .keyboardType(.numberPad)
-                    .frame(maxWidth: 40)
-                    .padding()
-//                        .onReceive(Just(newItemCount)) { newValue in
-//                            let filtered = newValue.filter { "0123456789".contains($0) }
-//                            if filtered != newValue {
-//                                self.newItemCount = filtered
-//                            }
-//                        }
+                Picker("Count", selection: $newItemCount) {
+                    ForEach(1..<100) { val in
+                        Text("\(val)").tag(val)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(maxWidth: 60, maxHeight: 60)
+                .padding(.trailing, 10)
             }
             .frame(maxHeight: 60)
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(.thickMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             
             Button("Add Item") {
                 if newItemName != "" {
-                    packingList.items.append(Item(name: newItemName, count: newItemCount))
+                    let newItem = Item(name: newItemName, count: newItemCount, isPacked: false, type: isDayOf ? .dayOf : .regular)
+                    packingList.items.append(newItem)
                     newItemName = ""
+                    newItemCount = 1
                 }
             }
             .padding()
             .frame(maxWidth: .infinity)
             .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         }
         .padding(.horizontal)
     }

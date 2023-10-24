@@ -74,7 +74,7 @@ struct TripListRowView: View {
             position: $mapPosition,
             interactionModes: []
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         .overlay {
             tripRowOverlay(trip)
                 .frame(maxWidth: .infinity)
@@ -84,7 +84,7 @@ struct TripListRowView: View {
             path.append(trip)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .shadow(radius: 4)
+        .shadow(radius: defaultShadowRadius)
         .onAppear {
             mapPosition = trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition
         }

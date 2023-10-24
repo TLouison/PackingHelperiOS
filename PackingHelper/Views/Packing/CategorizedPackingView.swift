@@ -7,87 +7,40 @@
 
 import SwiftUI
 
-fileprivate enum Symbol: Hashable, CaseIterable {
-    case packed, unpacked
-
-    var name: String {
-        switch self {
-            case .packed: return "suitcase.rolling.fill"
-            case .unpacked: return "suitcase.rolling"
-        }
-    }
-}
-
 struct CategorizedPackingView: View {
     let packingList: PackingList
     
     @ViewBuilder
-    func itemCheckbox(_ item: Item) -> some View {
-        Image(systemName: item.isPacked ? Symbol.packed.name : Symbol.unpacked.name)
-            .resizable()
-            .frame(width: 30, height: 30)
-            .offset(x: item.type == .packed ? 0 : -2)
-            .symbolRenderingMode(.multicolor)
-            .foregroundStyle(item.isPacked ? .green : .secondary)
-            .onTapGesture {
-                withAnimation {
-                    packingList.togglePacked(item)
-                }
+    func packingListSection(items: [Item], isUnpackedSection: Bool) -> some View {
+        Section(isUnpackedSection ? "Unpacked" : "Packed") {
+            ForEach(items) { item in
+                PackingListEditSectionRowView(item: item)
             }
-            .contentTransition(.symbolEffect(.replace))
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .padding(.trailing)
+            .onDelete(perform: { indexSet in
+                for index in indexSet {
+                    let realIndex: Int
+                    switch isUnpackedSection {
+                        case true:
+                            realIndex = packingList.items.firstIndex(of: packingList.unpackedItems[index])!
+                        case false:
+                            realIndex = packingList.items.firstIndex(of: packingList.packedItems[index])!
+                    }
+                    packingList.items.remove(at: realIndex)
+                }
+            })
+        }
     }
     
     var body: some View {
         List {
-            Section("Unpacked") {
-                ForEach(packingList.unpackedItems) { item in
-                    HStack {
-                        itemCheckbox(item)
-                        
-                        Group {
-                            Text(item.name).font(.title)
-                            Spacer()
-                            Text(String(item.count)).font(.largeTitle).bold()
-                        }
-                        .strikethrough(item.isPacked)
-                    }
-                }
-                .onDelete(perform: { indexSet in
-                    for index in indexSet {
-                        packingList.items.remove(at: index)
-                    }
-                })
+            if !packingList.unpackedItems.isEmpty {
+                packingListSection(items: packingList.unpackedItems, isUnpackedSection: true)
             }
-            Section("Packed") {
-                ForEach(packingList.packedItems) { item in
-                    HStack {
-                        itemCheckbox(item)
-                        
-                        Group {
-                            Text(item.name).font(.title)
-                            Spacer()
-                            Text(String(item.count)).font(.largeTitle).bold()
-                        }
-                        .strikethrough(item.isPacked)
-                    }
-                    .transition(.scale)
-                    
-                }
-                .onDelete(perform: { indexSet in
-                    for index in indexSet {
-                        packingList.items.remove(at: index)
-                    }
-                })
+            if !packingList.packedItems.isEmpty {
+                packingListSection(items: packingList.packedItems, isUnpackedSection: false)
             }
         }
         .listStyle(.grouped)
+        .scrollContentBackground(.hidden)
     }
 }
-
-//#Preview {
-//    CategorizedPackingView()
-//}

@@ -27,7 +27,7 @@ struct PackingRecommendationView: View {
         }
         .padding()
         .background(.ultraThickMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
     }
 }
 

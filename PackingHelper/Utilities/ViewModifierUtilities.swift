@@ -14,7 +14,7 @@ struct RoundedBox: ViewModifier {
         content
             .padding()
             .background(background)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             .contentShape(.rect)
     }
 }

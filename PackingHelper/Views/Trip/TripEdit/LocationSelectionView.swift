@@ -61,13 +61,9 @@ struct LocationSelectionView: View {
     func getCoordsFromAddress(_ address: String) async {
         do {
             let result = try await CLGeocoder().geocodeAddressString(address)
-            let latitude = (result[0].location?.coordinate.latitude)!
-            let longitude = (result[0].location?.coordinate.longitude)!
-            let locationName = result[0].name ?? "Unknown"
-            
-            let newDestination = TripDestination(trip: nil, name: locationName, latitude: latitude, longitude: longitude)
-            
-            destination = newDestination
+            destination.latitude = (result[0].location?.coordinate.latitude)!
+            destination.longitude = (result[0].location?.coordinate.longitude)!
+            destination.name = result[0].name ?? "Unknown"
             
             dismiss()
         } catch {

@@ -10,6 +10,22 @@ import SwiftUI
 
 struct PackingListEditView: View {
     var packingList: PackingList
+    var isDayOf: Bool = false
+    
+    var visibleItems: [Item] {
+        if self.isDayOf {
+            return packingList.dayOfItems
+        } else {
+            return packingList.items.filter{ $0.type != .dayOf }
+        }
+    }
+    
+    var pageTitle: String {
+        switch isDayOf {
+        case true: return "Day-Of Packing List"
+        case false: return packingList.nameString
+        }
+    }
     
     var body: some View {
         VStack {
@@ -20,26 +36,41 @@ struct PackingListEditView: View {
                     Text("You haven't added any items to your list. Add one now to track your packing!")
                 }
             } else {
-                if packingList.template {
+                if packingList.template{
                     List {
-                        ForEach(packingList.items) { item in
+                        ForEach(visibleItems) { item in
                             HStack {
                                 Text(item.name)
                                 Spacer()
                                 Text("\(item.count)")
                             }
                         }
+                        .listRowBackground(Color(.secondarySystemBackground))
                     }
+                    .scrollContentBackground(.hidden)
+                } else if isDayOf {
+                    List {
+                        ForEach(visibleItems) { item in
+                            HStack {
+                                Text(item.name)
+                                Spacer()
+                                Text("\(item.count)")
+                            }
+                        }
+                        .listRowBackground(Color(.secondarySystemBackground))
+                    }
+                    .scrollContentBackground(.hidden)
                 } else {
                     CategorizedPackingView(packingList: packingList)
                 }
             }
+            
+            Spacer()
+            
+            PackingAddItemView(packingList: packingList, isDayOf: isDayOf)
         }
-        .navigationTitle(packingList.nameString)
+        .navigationTitle(pageTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .overlay(alignment: .bottom) {
-            PackingAddItemView(packingList: packingList)
-        }
     }
 }
 

@@ -90,12 +90,13 @@ struct TripEditView: View {
                     }
                     
                     Section {
-                        ZStack {
+                        ZStack { // Hack to remove the > from the navigation link view
                             NavigationLink {
                                 LocationSelectionView(locationService: LocationService(), destination: $destination)
                             } label: {
                                 EmptyView()
                             }
+                            
                             VStack {
                                 HStack {
                                     Text(destination.name).bold()
@@ -106,9 +107,8 @@ struct TripEditView: View {
                                 
                                 Map(position: $mapCameraPosition)
                                     .frame(height: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                                    .onChange(of: destination) {
-                                        print("NEW DESTINATION FOUND")
+                                    .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+                                    .onChange(of: destination, initial: true) {
                                         mapCameraPosition = destination.mapCameraPosition
                                     }
                                     .allowsHitTesting(false)

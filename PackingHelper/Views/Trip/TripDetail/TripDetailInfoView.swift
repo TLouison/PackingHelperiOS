@@ -29,7 +29,7 @@ struct TripDetailInfoView: View {
                 .padding()
                 .background(.thickMaterial)
                 .clipShape(.capsule)
-                .shadow(radius: 4)
+                .shadow(radius: defaultShadowRadius)
                 
                 HStack {
                     Text("Added on")
@@ -39,7 +39,7 @@ struct TripDetailInfoView: View {
                 .padding()
                 .background(.thickMaterial)
                 .clipShape(.capsule)
-                .shadow(radius: 4)
+                .shadow(radius: defaultShadowRadius)
                 
                 HStack {
                     Text("Status")
@@ -49,7 +49,7 @@ struct TripDetailInfoView: View {
                 .padding()
                 .background(.thickMaterial)
                 .clipShape(.capsule)
-                .shadow(radius: 4)
+                .shadow(radius: defaultShadowRadius)
             }
         }
         .roundedBox()

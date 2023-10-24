@@ -46,8 +46,7 @@ struct DefaultPackingListView: View {
                         Text("You haven't created any default packing lists! Create one to simplify your trip creation.")
                     } actions: {
                         Button("Create Default Packing List", systemImage: "folder.badge.plus") {
-                            let newPackingList = PackingList(template: true, name: "Default")
-                            modelContext.insert(newPackingList)
+                            isShowingDefaultPackingListAddSheet.toggle()
                         }
                     }
                 }
