@@ -40,6 +40,12 @@ final class PackingList {
     var dayOfItems: [Item] {
         self.items.filter{ $0.type == .dayOf }
     }
+    
+    func deleteItem(_ item: Item) {
+        if self.items.contains(item) {
+            self.items.remove(at: self.items.firstIndex(of: item)!)
+        }
+    }
 }
 
 

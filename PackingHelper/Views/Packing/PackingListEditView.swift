@@ -36,7 +36,7 @@ struct PackingListEditView: View {
                     Text("You haven't added any items to your list. Add one now to track your packing!")
                 }
             } else {
-                if packingList.template{
+                if packingList.template || isDayOf {
                     List {
                         ForEach(visibleItems) { item in
                             HStack {
@@ -45,16 +45,9 @@ struct PackingListEditView: View {
                                 Text("\(item.count)")
                             }
                         }
-                        .listRowBackground(Color(.secondarySystemBackground))
-                    }
-                    .scrollContentBackground(.hidden)
-                } else if isDayOf {
-                    List {
-                        ForEach(visibleItems) { item in
-                            HStack {
-                                Text(item.name)
-                                Spacer()
-                                Text("\(item.count)")
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                packingList.deleteItem(visibleItems[index])
                             }
                         }
                         .listRowBackground(Color(.secondarySystemBackground))
