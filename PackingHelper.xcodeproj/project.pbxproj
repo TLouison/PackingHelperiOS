@@ -12,6 +12,7 @@
 		5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */; };
 		5110C6382AE5E378002742D0 /* PackingListEditSectionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */; };
 		5110C63A2AE5E5A6002742D0 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6392AE5E5A6002742D0 /* Item.swift */; };
+		5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */; };
 		51289F1A2AD3B6CD00545115 /* PackingHelperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F192AD3B6CD00545115 /* PackingHelperApp.swift */; };
 		51289F1C2AD3B6CD00545115 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F1B2AD3B6CD00545115 /* ContentView.swift */; };
 		51289F1E2AD3B6CF00545115 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51289F1D2AD3B6CF00545115 /* Assets.xcassets */; };
@@ -50,6 +51,7 @@
 		5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditSectionRowView.swift; sourceTree = "<group>"; };
 		5110C6392AE5E5A6002742D0 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationUtilities.swift; sourceTree = "<group>"; };
 		51289F162AD3B6CD00545115 /* PackingHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PackingHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51289F192AD3B6CD00545115 /* PackingHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingHelperApp.swift; sourceTree = "<group>"; };
 		51289F1B2AD3B6CD00545115 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				51466B332ADB3EA200258ABB /* TransitionUtilities.swift */,
 				51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */,
 				5110C6332AE5DA70002742D0 /* StyleUtilities.swift */,
+				5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -356,6 +359,7 @@
 				51748B5A2ADE3B45009E919B /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
+				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
 				5132E84C2AE22CA2002575AC /* TripDetailInfoView.swift in Sources */,
 				5132E8512AE38575002575AC /* DefaultPackingListAddSheet.swift in Sources */,

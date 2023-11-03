@@ -5,6 +5,7 @@
 //  Created by Todd Louison on 10/9/23.
 //
 
+import Foundation
 import SwiftData
 import SwiftUI
 
@@ -24,6 +25,8 @@ final class Trip {
     var beginDate: Date
     var endDate: Date
     
+    var dayOfNotificationUUID: String?
+    
     init(name: String, beginDate: Date, endDate: Date, destination: TripDestination) {
         self.createdDate = Date.now
         
@@ -33,6 +36,8 @@ final class Trip {
         self.endDate = endDate
         
         self.destination = destination
+        
+        self.createDayOfPackingNotification()
     }
 }
 
@@ -81,4 +86,37 @@ extension Trip {
 extension Trip {
     static let endIcon = "airplane.arrival"
     static let startIcon = "airplane.departure"
+}
+
+/// Notification Code
+extension Trip {
+    func createDayOfPackingNotification() {
+        NotificationUtilities.getNotificationPermission()
+        
+        // Create the content
+        let content = UNMutableNotificationContent()
+        content.title = "Check your day-of packing list!"
+        content.body = "You have \(self.packingList?.dayOfItems.count ?? 0) items to pack before you head out."
+        
+        // Configure the date
+        var components = Calendar.current.dateComponents([.day, .month, .year], from: self.beginDate)
+        components.hour = 8
+        
+        // Create the trigger as a one-time event.
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        // Create the request
+        self.dayOfNotificationUUID = UUID().uuidString
+        let request = UNNotificationRequest(identifier: self.dayOfNotificationUUID!,
+                                            content: content, trigger: trigger)
+        
+        
+        // Schedule the request with the system.
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request) { (error) in
+            if error != nil {
+                // Handle any errors.
+            }
+        }
+    }
 }
