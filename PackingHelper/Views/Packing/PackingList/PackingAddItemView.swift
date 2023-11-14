@@ -9,12 +9,11 @@ import SwiftUI
 
 struct PackingAddItemView: View {
     let packingList: PackingList
-    let isDayOf: Bool
     
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
     
     @State private var newItemName = ""
-    @State private var newItemCount = 0
+    @State private var newItemCount = 1
     
     var body: some View {
         VStack {
@@ -25,7 +24,7 @@ struct PackingAddItemView: View {
                     }
                     .onTapGesture {
                         packingList.items.append(
-                            Item(name: packingRecommendation.item, count: packingRecommendation.count, isPacked: false, type: isDayOf ? .dayOf : .regular)
+                            Item(name: packingRecommendation.item, count: packingRecommendation.count, isPacked: false)
                         )
                         self.newItemName = ""
                         self.newItemCount = 1
@@ -39,16 +38,19 @@ struct PackingAddItemView: View {
                     .onChange(of: newItemName) {
                         packingRecommendation = PackingEngine.suggest()
                     }
-                Spacer()
-                Divider()
-                Picker("Count", selection: $newItemCount) {
-                    ForEach(1..<100) { val in
-                        Text("\(val)").tag(val)
+                
+                if packingList.type != .task {
+                    Spacer()
+                    Divider()
+                    Picker("Count", selection: $newItemCount) {
+                        ForEach(1..<100) { val in
+                            Text("\(val)").tag(val)
+                        }
                     }
+                    .pickerStyle(.wheel)
+                    .frame(maxWidth: 60, maxHeight: 60)
+                    .padding(.trailing, 10)
                 }
-                .pickerStyle(.wheel)
-                .frame(maxWidth: 60, maxHeight: 60)
-                .padding(.trailing, 10)
             }
             .frame(maxHeight: 60)
             .background(.thickMaterial)
@@ -56,7 +58,7 @@ struct PackingAddItemView: View {
             
             Button("Add Item") {
                 if newItemName != "" {
-                    let newItem = Item(name: newItemName, count: newItemCount, isPacked: false, type: isDayOf ? .dayOf : .regular)
+                    let newItem = Item(name: newItemName, count: newItemCount, isPacked: false)
                     packingList.items.append(newItem)
                     newItemName = ""
                     newItemCount = 1

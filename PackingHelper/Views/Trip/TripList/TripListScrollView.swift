@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TripListScrollView: View {
-    @Binding var path: [Trip]
+    @Binding var path: NavigationPath
     
     var trips: [Trip]
     

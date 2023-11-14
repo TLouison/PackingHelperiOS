@@ -13,6 +13,11 @@
 		5110C6382AE5E378002742D0 /* PackingListEditSectionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */; };
 		5110C63A2AE5E5A6002742D0 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6392AE5E5A6002742D0 /* Item.swift */; };
 		5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */; };
+		5110C63E2AF5B6FB002742D0 /* UncategorizedPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C63D2AF5B6FB002742D0 /* UncategorizedPackingView.swift */; };
+		5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C63F2AFD7F45002742D0 /* PackingListEditView.swift */; };
+		5110C6432AFD81C8002742D0 /* PackingListDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B592ADE3B45009E919B /* PackingListDetailView.swift */; };
+		5110C6462AFF4279002742D0 /* TaskPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6452AFF4279002742D0 /* TaskPackingView.swift */; };
+		5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6492B033734002742D0 /* PackingListApplyDefaultView.swift */; };
 		51289F1A2AD3B6CD00545115 /* PackingHelperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F192AD3B6CD00545115 /* PackingHelperApp.swift */; };
 		51289F1C2AD3B6CD00545115 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51289F1B2AD3B6CD00545115 /* ContentView.swift */; };
 		51289F1E2AD3B6CF00545115 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51289F1D2AD3B6CF00545115 /* Assets.xcassets */; };
@@ -24,19 +29,17 @@
 		5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E8492AE22837002575AC /* PackingAddItemView.swift */; };
 		5132E84C2AE22CA2002575AC /* TripDetailInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E84B2AE22CA2002575AC /* TripDetailInfoView.swift */; };
 		5132E84F2AE23AE7002575AC /* DefaultPackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */; };
-		5132E8512AE38575002575AC /* DefaultPackingListAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E8502AE38575002575AC /* DefaultPackingListAddSheet.swift */; };
 		5132E8532AE44BED002575AC /* CategorizedPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E8522AE44BED002575AC /* CategorizedPackingView.swift */; };
 		51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51466B332ADB3EA200258ABB /* TransitionUtilities.swift */; };
 		515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85992AD7693C002D614F /* PreviewContainer.swift */; };
 		515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */; };
-		515B859E2AD76F64002D614F /* TripPackingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859D2AD76F64002D614F /* TripPackingSheet.swift */; };
+		515B859E2AD76F64002D614F /* TripPackingBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859D2AD76F64002D614F /* TripPackingBoxView.swift */; };
 		515B85A22AD77273002D614F /* TripEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A12AD77273002D614F /* TripEditView.swift */; };
 		515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A82AD8D28E002D614F /* LocationSelectionView.swift */; };
 		515B85AB2AD8D395002D614F /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AA2AD8D395002D614F /* LocationService.swift */; };
 		515B85AD2AD8FF45002D614F /* TripDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AC2AD8FF45002D614F /* TripDestination.swift */; };
 		51748B532ADCF368009E919B /* PackingEngineCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B522ADCF368009E919B /* PackingEngineCore.swift */; };
 		51748B582ADCF46E009E919B /* PackingRecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B572ADCF46E009E919B /* PackingRecommendationView.swift */; };
-		51748B5A2ADE3B45009E919B /* PackingListEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B592ADE3B45009E919B /* PackingListEditView.swift */; };
 		51748B602ADF8367009E919B /* TripListScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B5F2ADF8367009E919B /* TripListScrollView.swift */; };
 		51748B652AE0D514009E919B /* TripDetailHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B642AE0D514009E919B /* TripDetailHeroView.swift */; };
 		51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */; };
@@ -52,6 +55,10 @@
 		5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditSectionRowView.swift; sourceTree = "<group>"; };
 		5110C6392AE5E5A6002742D0 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationUtilities.swift; sourceTree = "<group>"; };
+		5110C63D2AF5B6FB002742D0 /* UncategorizedPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncategorizedPackingView.swift; sourceTree = "<group>"; };
+		5110C63F2AFD7F45002742D0 /* PackingListEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditView.swift; sourceTree = "<group>"; };
+		5110C6452AFF4279002742D0 /* TaskPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskPackingView.swift; sourceTree = "<group>"; };
+		5110C6492B033734002742D0 /* PackingListApplyDefaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListApplyDefaultView.swift; sourceTree = "<group>"; };
 		51289F162AD3B6CD00545115 /* PackingHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PackingHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51289F192AD3B6CD00545115 /* PackingHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingHelperApp.swift; sourceTree = "<group>"; };
 		51289F1B2AD3B6CD00545115 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -64,19 +71,18 @@
 		5132E8492AE22837002575AC /* PackingAddItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingAddItemView.swift; sourceTree = "<group>"; };
 		5132E84B2AE22CA2002575AC /* TripDetailInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailInfoView.swift; sourceTree = "<group>"; };
 		5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPackingListView.swift; sourceTree = "<group>"; };
-		5132E8502AE38575002575AC /* DefaultPackingListAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPackingListAddSheet.swift; sourceTree = "<group>"; };
 		5132E8522AE44BED002575AC /* CategorizedPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorizedPackingView.swift; sourceTree = "<group>"; };
 		51466B332ADB3EA200258ABB /* TransitionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionUtilities.swift; sourceTree = "<group>"; };
 		515B85992AD7693C002D614F /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSettingsSheet.swift; sourceTree = "<group>"; };
-		515B859D2AD76F64002D614F /* TripPackingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPackingSheet.swift; sourceTree = "<group>"; };
+		515B859D2AD76F64002D614F /* TripPackingBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPackingBoxView.swift; sourceTree = "<group>"; };
 		515B85A12AD77273002D614F /* TripEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEditView.swift; sourceTree = "<group>"; };
 		515B85A82AD8D28E002D614F /* LocationSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionView.swift; sourceTree = "<group>"; };
 		515B85AA2AD8D395002D614F /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		515B85AC2AD8FF45002D614F /* TripDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestination.swift; sourceTree = "<group>"; };
 		51748B522ADCF368009E919B /* PackingEngineCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingEngineCore.swift; sourceTree = "<group>"; };
 		51748B572ADCF46E009E919B /* PackingRecommendationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingRecommendationView.swift; sourceTree = "<group>"; };
-		51748B592ADE3B45009E919B /* PackingListEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditView.swift; sourceTree = "<group>"; };
+		51748B592ADE3B45009E919B /* PackingListDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListDetailView.swift; sourceTree = "<group>"; };
 		51748B5F2ADF8367009E919B /* TripListScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListScrollView.swift; sourceTree = "<group>"; };
 		51748B642AE0D514009E919B /* TripDetailHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailHeroView.swift; sourceTree = "<group>"; };
 		51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierUtilities.swift; sourceTree = "<group>"; };
@@ -97,6 +103,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5110C6412AFD7F76002742D0 /* PackingList */ = {
+			isa = PBXGroup;
+			children = (
+				5110C6442AFF4260002742D0 /* PackingViews */,
+				5132E8492AE22837002575AC /* PackingAddItemView.swift */,
+				5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */,
+				51748B592ADE3B45009E919B /* PackingListDetailView.swift */,
+			);
+			path = PackingList;
+			sourceTree = "<group>";
+		};
+		5110C6422AFD7FA9002742D0 /* PackingListEdit */ = {
+			isa = PBXGroup;
+			children = (
+				5110C63F2AFD7F45002742D0 /* PackingListEditView.swift */,
+				5110C6492B033734002742D0 /* PackingListApplyDefaultView.swift */,
+			);
+			path = PackingListEdit;
+			sourceTree = "<group>";
+		};
+		5110C6442AFF4260002742D0 /* PackingViews */ = {
+			isa = PBXGroup;
+			children = (
+				5110C63D2AF5B6FB002742D0 /* UncategorizedPackingView.swift */,
+				5132E8522AE44BED002575AC /* CategorizedPackingView.swift */,
+				5110C6452AFF4279002742D0 /* TaskPackingView.swift */,
+			);
+			path = PackingViews;
+			sourceTree = "<group>";
+		};
 		51289F0D2AD3B6CD00545115 = {
 			isa = PBXGroup;
 			children = (
@@ -174,23 +210,12 @@
 		5132E8482AE22808002575AC /* Packing */ = {
 			isa = PBXGroup;
 			children = (
-				5132E84D2AE23AD9002575AC /* DefaultPackingList */,
+				5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */,
+				5110C6422AFD7FA9002742D0 /* PackingListEdit */,
+				5110C6412AFD7F76002742D0 /* PackingList */,
 				51748B572ADCF46E009E919B /* PackingRecommendationView.swift */,
-				51748B592ADE3B45009E919B /* PackingListEditView.swift */,
-				5132E8492AE22837002575AC /* PackingAddItemView.swift */,
-				5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */,
-				5132E8522AE44BED002575AC /* CategorizedPackingView.swift */,
 			);
 			path = Packing;
-			sourceTree = "<group>";
-		};
-		5132E84D2AE23AD9002575AC /* DefaultPackingList */ = {
-			isa = PBXGroup;
-			children = (
-				5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */,
-				5132E8502AE38575002575AC /* DefaultPackingListAddSheet.swift */,
-			);
-			path = DefaultPackingList;
 			sourceTree = "<group>";
 		};
 		515B85982AD76930002D614F /* Utilities */ = {
@@ -211,7 +236,7 @@
 			children = (
 				51289F2B2AD4E19B00545115 /* TripDetailSheet.swift */,
 				515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */,
-				515B859D2AD76F64002D614F /* TripPackingSheet.swift */,
+				515B859D2AD76F64002D614F /* TripPackingBoxView.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -334,6 +359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5110C6432AFD81C8002742D0 /* PackingListDetailView.swift in Sources */,
 				51289F312AD4EA5A00545115 /* Trip.swift in Sources */,
 				51748B582ADCF46E009E919B /* PackingRecommendationView.swift in Sources */,
 				5132E84F2AE23AE7002575AC /* DefaultPackingListView.swift in Sources */,
@@ -350,22 +376,24 @@
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
+				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
 				519B72572ADA06C3009401C0 /* TripListView.swift in Sources */,
 				515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */,
+				5110C6462AFF4279002742D0 /* TaskPackingView.swift in Sources */,
 				515B85A22AD77273002D614F /* TripEditView.swift in Sources */,
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
 				5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */,
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
-				51748B5A2ADE3B45009E919B /* PackingListEditView.swift in Sources */,
+				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
 				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
 				5132E84C2AE22CA2002575AC /* TripDetailInfoView.swift in Sources */,
-				5132E8512AE38575002575AC /* DefaultPackingListAddSheet.swift in Sources */,
 				5110C63A2AE5E5A6002742D0 /* Item.swift in Sources */,
+				5110C63E2AF5B6FB002742D0 /* UncategorizedPackingView.swift in Sources */,
 				51748B602ADF8367009E919B /* TripListScrollView.swift in Sources */,
-				515B859E2AD76F64002D614F /* TripPackingSheet.swift in Sources */,
+				515B859E2AD76F64002D614F /* TripPackingBoxView.swift in Sources */,
 				519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */,
 				51289F2C2AD4E19B00545115 /* TripDetailSheet.swift in Sources */,
 			);

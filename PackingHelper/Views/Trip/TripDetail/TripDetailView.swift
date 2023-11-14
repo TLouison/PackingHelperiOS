@@ -29,33 +29,18 @@ struct SheetModifier: ViewModifier {
 
 struct TripDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @Environment(TripsViewModel.self) private var path
     
     let trip: Trip
     
     @State private var isShowingTripDetailSheet: Bool = false
     @State private var isShowingTripSettingsSheet: Bool = false
     
+    @State private var isAddingNewPackingList: Bool = false
+    @State private var isApplyingDefaultPackingList: Bool = false
+    
     @GestureState private var isDetectingLongPress = false
     @State private var completedLongPress = false
     @State private var isShowingTapAnywherePrompt = false
-    
-    
-    var longPress: some Gesture {
-        LongPressGesture(maximumDistance: 100)
-            .updating($isDetectingLongPress) { currentState, gestureState,
-                transaction in
-                gestureState = currentState
-            }
-            .onEnded { finished in
-                self.completedLongPress = finished
-                if self.completedLongPress {
-                    withAnimation {
-                        isShowingTapAnywherePrompt = true
-                    }
-                }
-            }
-    }
     
     var body: some View {
         ScrollView {
@@ -66,7 +51,11 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: defaultShadowRadius)
                 
-                TripPackingSheet(packingList: trip.packingList ?? PackingList(template: false, name: "Placeholder"))
+                TripPackingBoxView(
+                    trip: trip,
+                    isAddingNewPackingList: $isAddingNewPackingList,
+                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                )
                     .shadow(radius: defaultShadowRadius)
                 
                 TripDetailInfoView(trip: trip)
@@ -75,17 +64,15 @@ struct TripDetailView: View {
             .padding()
             .sheet(isPresented: $isShowingTripDetailSheet) { TripDetailSheet(trip: trip) }
             .sheet(isPresented: $isShowingTripSettingsSheet) { TripEditView(trip: trip) }
+            .sheet(isPresented: $isAddingNewPackingList) {
+                PackingListEditView(trip: trip, isDeleted: .constant(false))
+                    .presentationDetents([.height(225)])
+            }
+            .sheet(isPresented: $isApplyingDefaultPackingList) {
+                PackingListApplyDefaultView(trip: trip)
+                    .presentationDetents([.height(175)])
+            }
             .toolbar(.hidden, for: .navigationBar)
-            .gesture(longPress)
         }
     }
 }
-
-//#Preview {
-//    MainActor.assumeIsolated {
-//        let container = previewContainer.container
-//
-//        TripDetailView(trip: Trip.sampleTrip)
-//            .modelContainer(container)
-//    }
-//}

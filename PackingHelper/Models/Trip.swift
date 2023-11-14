@@ -20,7 +20,7 @@ final class Trip {
     var name: String
     
     @Relationship(deleteRule: .cascade, inverse: \TripDestination.trip) var destination: TripDestination?
-    @Relationship(deleteRule: .cascade) var packingList: PackingList?
+    @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists = [PackingList]()
     
     var beginDate: Date
     var endDate: Date
@@ -72,10 +72,56 @@ extension Trip {
     }
 }
 
+// List-related Trip Code
+extension Trip {
+    // Gets amount of Items stored in related lists regardless of type
+    var totalListEntries: Int {
+        return self.lists.reduce(0, {x,y in
+            x + y.items.count
+        })
+    }
+    
+    var totalIncompletePackingItemsEntries: Int {
+        return self.lists.filter{$0.type != .task}.reduce(0, {x,y in
+            x + y.incompleteItems.count
+        })
+    }
+    
+    func getTotalItems(for listType: ListType) -> Int {
+        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
+            x + y.items.count
+        })
+    }
+    
+    func getIncompleteItems(for listType: ListType) -> Int {
+        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
+            x + y.incompleteItems.count
+        })
+    }
+    
+    func getCompleteItems(for listType: ListType) -> Int {
+        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
+            x + y.completeItems.count
+        })
+    }
+    
+    func allItemsComplete(for listType: ListType) -> Bool {
+        return self.getTotalItems(for: listType) == self.getCompleteItems(for: listType)
+    }
+}
+
 extension Trip {
     /// Duration of trip in number of days
     var duration: Int {
         return Calendar.current.numberOfDaysBetween(self.beginDate, and: self.endDate)
+    }
+    
+    var daysUntilDeparture: Int {
+        if self.status == .upcoming {
+            return Calendar.current.numberOfDaysBetween(.now, and: self.beginDate)
+        } else {
+            return 0
+        }
     }
 }
 
@@ -95,8 +141,8 @@ extension Trip {
         
         // Create the content
         let content = UNMutableNotificationContent()
-        content.title = "Check your day-of packing list!"
-        content.body = "You have \(self.packingList?.dayOfItems.count ?? 0) items to pack before you head out."
+        content.title = "Check your packing lists!"
+        content.body = "You have \(self.totalIncompletePackingItemsEntries) items to pack before you head out."
         
         // Configure the date
         var components = Calendar.current.dateComponents([.day, .month, .year], from: self.beginDate)

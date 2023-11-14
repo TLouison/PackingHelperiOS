@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct TripListRowView: View {
-    @Binding var path: [Trip]
+    @Binding var path: NavigationPath
     
     @State private var mapPosition: MapCameraPosition = .automatic
     
@@ -88,6 +88,7 @@ struct TripListRowView: View {
         .onAppear {
             mapPosition = trip.destination?.mapCameraPosition ?? TripDestination.sampleData.mapCameraPosition
         }
+        .padding(.vertical)
     }
 }
 

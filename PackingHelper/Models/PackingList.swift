@@ -8,37 +8,55 @@
 import Foundation
 import SwiftData
 
+enum ListType: String, Codable, CaseIterable, Comparable {
+    case packing="Packing", dayOf="Day-of", task="Task"
+    
+    private var sortOrder: Int {
+        switch self {
+            case .packing:
+                return 0
+            case .dayOf:
+                return 1
+            case .task:
+                return 2
+        }
+    }
+    
+    static func ==(lhs: ListType, rhs: ListType) -> Bool {
+            return lhs.sortOrder == rhs.sortOrder
+    }
+
+    static func <(lhs: ListType, rhs: ListType) -> Bool {
+       return lhs.sortOrder < rhs.sortOrder
+    }
+}
+
 @Model
 final class PackingList {
     var created: Date
     
+    var type: ListType
+    var template: Bool
+    var name: String
+    
+    var trip: Trip?
+    @Transient var tripID: PersistentIdentifier? = nil
+    
     var items: [Item]
     
-    var template: Bool
-    var name: String?
-    
-    init(template: Bool, name: String?) {
+    init(type: ListType, template: Bool, name: String) {
         self.created = Date.now
-        self.items = []
+        self.type = type
         self.template = template
-        
-        if template {
-            self.name = name
-        }
+        self.items = []
+        self.name = name
     }
     
-    var nameString: String {
-        return self.name ?? "Packing List"
+    var incompleteItems: [Item] {
+        self.items.filter{ $0.isPacked == false }
     }
-    
-    var unpackedItems: [Item] {
-        self.items.filter{ $0.isPacked == false && $0.type == .regular }
-    }
-    var packedItems: [Item] {
-        self.items.filter{ $0.isPacked == true && $0.type == .regular}
-    }
-    var dayOfItems: [Item] {
-        self.items.filter{ $0.type == .dayOf }
+    var completeItems: [Item] {
+        self.items.filter{ $0.isPacked == true }
     }
     
     func deleteItem(_ item: Item) {
@@ -46,23 +64,30 @@ final class PackingList {
             self.items.remove(at: self.items.firstIndex(of: item)!)
         }
     }
+    
+    var icon: String {
+        return PackingList.icon(listType: self.type)
+    }
+    
+    static func icon(listType: ListType) -> String {
+        return switch listType {
+            case .packing: "suitcase.rolling.fill"
+            case .dayOf: "sun.horizon"
+            case .task: "checklist"
+        }
+    }
 }
-
 
 extension PackingList {
     static func copy(_ packingList: PackingList) -> PackingList {
-        let newList = PackingList(template: packingList.template, name: packingList.name)
+        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name)
         newList.items = packingList.items
         return newList
     }
     
-    /// Special case copy function to create a version of the list without the template variables so
-    /// it can be used as the packing list for a trip.
-    static func copyForTrip(_ packingList: PackingList) -> PackingList {
-        let newList = PackingList.copy(packingList)
+    static func copyForTrip(_ list: PackingList) -> PackingList {
+        let newList = PackingList.copy(list)
         newList.template = false
-        newList.name = nil
         return newList
     }
 }
-

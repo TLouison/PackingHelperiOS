@@ -19,7 +19,6 @@ import MapKit
 struct TripEditView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(TripsViewModel.self) private var viewModel
     
     @State private var name = ""
     @State private var complete: Bool = false
@@ -31,10 +30,8 @@ struct TripEditView: View {
     @State private var mapCameraPosition: MapCameraPosition = TripDestination.sampleData.mapCameraPosition
     
     @Query(
-        FetchDescriptor(
-            predicate: #Predicate<PackingList>{ $0.template == true },
-            sortBy: [SortDescriptor(\.created, order: .reverse)]
-        ),
+        filter: #Predicate<PackingList>{ $0.template == true },
+        sort: \.created, order: .reverse,
         animation: .snappy
     ) private var defaultPackingListOptions: [PackingList]
     @State private var defaultPackingList: PackingList? = nil
@@ -111,7 +108,6 @@ struct TripEditView: View {
                                     .onChange(of: destination, initial: true) {
                                         mapCameraPosition = destination.mapCameraPosition
                                     }
-                                    .allowsHitTesting(false)
                             }
                         }
                     } header: {
@@ -123,7 +119,7 @@ struct TripEditView: View {
                             Picker("Default Packing List", selection: $defaultPackingList) {
                                 Text("No Default").tag(nil as PackingList?)
                                 ForEach(defaultPackingListOptions) { packingList in
-                                    Text(packingList.nameString)
+                                    Text(packingList.name)
                                         .tag(packingList as PackingList?)
                                 }
                             }
@@ -134,7 +130,7 @@ struct TripEditView: View {
                         }
                     }
                 }
-//                .background(.background)
+
                 if trip != nil {
                     Button(role: .destructive) {
                         deleteTrip()
@@ -193,9 +189,9 @@ struct TripEditView: View {
             let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, destination: destination)
             
             if let defaultPackingList {
-                newTrip.packingList = PackingList.copyForTrip(defaultPackingList)
-            } else {
-                newTrip.packingList = PackingList(template: false, name: nil)
+                let defaultList = PackingList.copyForTrip(defaultPackingList)
+                defaultList.tripID = newTrip.id
+                newTrip.lists.append(defaultList)
             }
             
             modelContext.insert(newTrip)
@@ -204,14 +200,6 @@ struct TripEditView: View {
     
     private func deleteTrip() {
         modelContext.delete(trip!)
-        if viewModel.path.count > 0 {
-            viewModel.path = []
-        } else {
-            dismiss()
-        }
+        dismiss()
     }
 }
-
-//#Preview {
-//    ItemEditView(item: Item(name: "Test Item", price: 19.99, list: ItemList(name: "Test List")), itemList: I)
-//}

@@ -62,7 +62,6 @@ struct TripDetailOverlay: View {
                             .frame(width: 20, height: 20)
                     }
                     .roundedBox()
-                    .shadow(radius: defaultShadowRadius)
                 }
                 .padding()
                 

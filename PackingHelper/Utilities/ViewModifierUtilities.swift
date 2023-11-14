@@ -16,6 +16,15 @@ struct RoundedBox: ViewModifier {
             .background(background)
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             .contentShape(.rect)
+            .shaded()
+    }
+}
+
+struct Shaded: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+            .shadow(color: .black.opacity(0.05), radius: 1, x: 0, y: 0.25)
     }
 }
 
@@ -24,4 +33,8 @@ extension View {
         -> some View {
             modifier(RoundedBox(background: background))
       }
+    
+    func shaded() -> some View {
+        modifier(Shaded())
+    }
 }

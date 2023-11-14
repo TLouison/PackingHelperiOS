@@ -21,9 +21,9 @@ struct CategorizedPackingView: View {
                     let realIndex: Int
                     switch isUnpackedSection {
                         case true:
-                            realIndex = packingList.items.firstIndex(of: packingList.unpackedItems[index])!
+                            realIndex = packingList.items.firstIndex(of: packingList.incompleteItems[index])!
                         case false:
-                            realIndex = packingList.items.firstIndex(of: packingList.packedItems[index])!
+                            realIndex = packingList.items.firstIndex(of: packingList.completeItems[index])!
                     }
                     packingList.items.remove(at: realIndex)
                 }
@@ -33,11 +33,11 @@ struct CategorizedPackingView: View {
     
     var body: some View {
         List {
-            if !packingList.unpackedItems.isEmpty {
-                packingListSection(items: packingList.unpackedItems, isUnpackedSection: true)
+            if !packingList.incompleteItems.isEmpty {
+                packingListSection(items: packingList.incompleteItems, isUnpackedSection: true)
             }
-            if !packingList.packedItems.isEmpty {
-                packingListSection(items: packingList.packedItems, isUnpackedSection: false)
+            if !packingList.completeItems.isEmpty {
+                packingListSection(items: packingList.completeItems, isUnpackedSection: false)
             }
         }
         .listStyle(.grouped)

@@ -10,15 +10,41 @@ import SwiftData
 
 struct DefaultPackingListView: View {
     @Environment(\.modelContext) private var modelContext
-    
-    @Query(FetchDescriptor(
-        predicate: #Predicate<PackingList>{ $0.template == true },
-        sortBy: [SortDescriptor(\.created, order: .reverse)]
-    ),
-           animation: .snappy
-    ) var defaultPackingLists: [PackingList]
+
+    @Query(
+        filter: #Predicate<PackingList> {$0.template == true},
+        sort: [SortDescriptor(\.name)],
+        animation: .snappy
+    )
+    var defaultPackingLists: [PackingList]
     
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
+    @State private var isShowingExplanationSheet: Bool = false
+    
+    @ViewBuilder func explanationSheet() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Default Packing Lists")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                Spacer()
+                Image(systemName: "suitcase.cart")
+                    .imageScale(.large)
+                    .foregroundStyle(.accent)
+                    .onTapGesture {
+                        isShowingExplanationSheet.toggle()
+                    }
+            }
+            .padding(.bottom, 10)
+                ScrollView {
+                    Text("Default packing lists are a convenient way to save lists of items or tasks that you can easily apply to trips. This means you can create a packing list once, and then add those items to any future trip you create.")
+                        .padding(.bottom, 10)
+                    
+                    Text("Create lists for vacations, business trips, weddings, or any other occasion you can think of to make sure you always bring what you need.")
+                }
+        }
+        .padding()
+    }
     
     var body: some View {
             VStack {
@@ -26,10 +52,10 @@ struct DefaultPackingListView: View {
                     List {
                         ForEach(defaultPackingLists) { packingList in
                             NavigationLink {
-                                PackingListEditView(packingList: packingList)
+                                PackingListDetailView(packingList: packingList)
                                     .padding(.vertical)
                             } label: {
-                                Text(packingList.nameString)
+                                Label(packingList.name, systemImage: packingList.icon)
                             }
                         }
                         .onDelete { indexSet in
@@ -54,7 +80,12 @@ struct DefaultPackingListView: View {
             .navigationTitle("Default Packing Lists")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        isShowingExplanationSheet.toggle()
+                    } label: {
+                        Image(systemName: "info.circle")
+                    }
                     Button {
                         isShowingDefaultPackingListAddSheet.toggle()
                     } label: {
@@ -63,8 +94,12 @@ struct DefaultPackingListView: View {
                 }
             }
             .sheet(isPresented: $isShowingDefaultPackingListAddSheet) {
-                DefaultPackingListAddSheet()
-                    .presentationDetents([.height(200)])
+                PackingListEditView(isTemplate: true, isDeleted: .constant(false))
+                    .presentationDetents([.height(225)])
+            }
+            .sheet(isPresented: $isShowingExplanationSheet) {
+                explanationSheet()
+                    .presentationDetents([.height(300)])
             }
     }
 }

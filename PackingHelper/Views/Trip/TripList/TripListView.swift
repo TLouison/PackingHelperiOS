@@ -10,16 +10,11 @@ import SwiftData
 import MapKit
 
 @Observable class TripsViewModel {
-    var path: [Trip] = []
-    
-    init() {
-        self.path = []
-    }
+    var path: NavigationPath = .init()
 }
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-    //    @Environment(TripsViewModel.self) private var viewModel = TripsViewModel()
     @State private var viewModel = TripsViewModel()
     
     @State private var isShowingAddTripSheet: Bool = false

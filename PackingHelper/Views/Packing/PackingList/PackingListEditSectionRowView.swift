@@ -20,6 +20,8 @@ fileprivate enum Symbol: Hashable, CaseIterable {
 
 struct PackingListEditSectionRowView: View {
     let item: Item
+    var showCount: Bool = true
+    var showButton: Bool = true
     
     @ViewBuilder
     func itemCheckbox(_ item: Item) -> some View {
@@ -28,20 +30,27 @@ struct PackingListEditSectionRowView: View {
             .imageScale(.large)
             .frame(width: 20, height: 20)
             .symbolRenderingMode(.multicolor)
-            .onTapGesture {
-                withAnimation {
-                    item.isPacked.toggle()
-                }
-            }
             .contentTransition(.symbolEffect(.replace))
     }
     
     var body: some View {
         HStack {
-            itemCheckbox(item)
+            if showButton {
+                itemCheckbox(item)
+            }
+            
             Text(item.name).font(.headline)
-            Spacer()
-            Text(String(item.count)).font(.subheadline).bold()
+            
+            if showCount {
+                Spacer()
+                Text(String(item.count)).font(.subheadline).bold()
+            }
+        }
+        .contentShape(.rect)
+        .onTapGesture {
+            withAnimation {
+                item.isPacked.toggle()
+            }
         }
     }
 }
