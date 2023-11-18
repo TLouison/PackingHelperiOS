@@ -123,6 +123,14 @@ extension Trip {
             return 0
         }
     }
+    
+    var daysUntilReturn: Int {
+        if self.status == .active {
+            return Calendar.current.numberOfDaysBetween(.now, and: self.endDate)
+        } else {
+            return 0
+        }
+    }
 }
 
 extension Trip {

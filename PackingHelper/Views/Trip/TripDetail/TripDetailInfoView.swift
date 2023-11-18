@@ -35,11 +35,20 @@ struct TripDetailInfoView: View {
                     Text("\(trip.duration) days")
                 }
                 
-                HStack {
-                    Text("Days to Departure")
-                        .font(.caption)
-                    Spacer()
-                    Text("\(trip.daysUntilDeparture) days")
+                if trip.daysUntilDeparture > 0 {
+                    HStack {
+                        Text("Days Until Departure")
+                            .font(.caption)
+                        Spacer()
+                        Text("\(trip.daysUntilDeparture) days")
+                    }
+                } else if trip.daysUntilReturn > 0 {
+                    HStack {
+                        Text("Days Until Return")
+                            .font(.caption)
+                        Spacer()
+                        Text("\(trip.daysUntilReturn) days")
+                    }
                 }
                 
                 HStack {

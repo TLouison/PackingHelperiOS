@@ -21,6 +21,10 @@ struct TripPackingBoxView: View {
         return packingLists.filter{ $0.trip == trip }.sorted(by: {$0.type < $1.type})
     }
     
+    var defaultListsExist: Bool {
+        return !packingLists.filter{ $0.template == true }.isEmpty
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -85,19 +89,29 @@ struct TripPackingBoxView: View {
     }
     
     @ViewBuilder func createListMenu() -> some View {
-        Menu {
-            Button("Create List") {
+        if defaultListsExist {
+            Menu {
+                Button("Create List") {
+                    withAnimation {
+                        isAddingNewPackingList.toggle()
+                    }
+                }
+                Button("Apply Default List") {
+                    withAnimation {
+                        isApplyingDefaultPackingList.toggle()
+                    }
+                }
+            } label: {
+                Label("Create List", systemImage: "plus.circle")
+            }
+        } else {
+            Button {
                 withAnimation {
                     isAddingNewPackingList.toggle()
                 }
+            } label: {
+                Label("Create List", systemImage: "plus.circle")
             }
-            Button("Apply Default List") {
-                withAnimation {
-                    isApplyingDefaultPackingList.toggle()
-                }
-            }
-        } label: {
-            Label("Create List", systemImage: "plus.circle")
         }
     }
 }
