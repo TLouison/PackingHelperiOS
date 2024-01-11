@@ -9,28 +9,32 @@ import SwiftUI
 
 
 struct PackingListDetailView: View {
+    @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
     var packingList: PackingList
 
     @State private var isShowingListSettings: Bool = false
+    @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
     
     var body: some View {
         VStack {
-            if packingList.items.isEmpty {
-                ContentUnavailableView {
-                    Label("No Items On List", systemImage: "bag")
-                } description: {
-                    Text("You haven't added any items to your list. Add one now to track your packing!")
-                }
-            } else {
-                if packingList.template == true || packingList.type == .dayOf {
-                    UncategorizedPackingView(packingList: packingList)
-                } else if packingList.type == .task {
-                    TaskPackingView(list: packingList)
+            ZStack {
+                if packingList.items.isEmpty {
+                    ContentUnavailableView {
+                        Label("No Items On List", systemImage: "bag")
+                    } description: {
+                        Text("You haven't added any items to your list. Add one now to track your packing!")
+                    }
                 } else {
-                    CategorizedPackingView(packingList: packingList)
+                    if packingList.template == true || packingList.type == .dayOf {
+                        UncategorizedPackingView(packingList: packingList)
+                    } else if packingList.type == .task {
+                        TaskPackingView(list: packingList)
+                    } else {
+                        CategorizedPackingView(packingList: packingList)
+                    }
                 }
             }
             
@@ -41,15 +45,26 @@ struct PackingListDetailView: View {
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup {
+                Menu {
+                    Button("Save As Default") {
+                        withAnimation {
+                            saveListAsDefault()
+                        }
+                    }
+                }  label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                
                 Button {
                     isShowingListSettings.toggle()
                 } label: {
-                    Label("List Settings", systemImage: "gear")
-                        .labelStyle(.iconOnly)
-                        .frame(width: 20, height: 20)
+                    Image(systemName: "gear")
                 }
             }
+        }
+        .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
+            Button("OK", role: .cancel) {}
         }
         .sheet(isPresented: $isShowingListSettings) {
             PackingListEditView(packingList: packingList, isTemplate: packingList.template, isDeleted: $isDeleted)
@@ -58,5 +73,13 @@ struct PackingListDetailView: View {
         .onChange(of: isDeleted) {
             dismiss()
         }
+    }
+    
+    func saveListAsDefault() {
+        let newDefaultList = PackingList.copy(self.packingList)
+        newDefaultList.template = true
+        modelContext.insert(newDefaultList)
+        
+        isShowingSaveSuccessful = true
     }
 }
