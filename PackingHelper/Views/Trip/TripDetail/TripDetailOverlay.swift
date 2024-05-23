@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+
+
 struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
     @Bindable var trip: Trip
@@ -24,15 +26,15 @@ struct TripDetailOverlay: View {
         
         HStack {
             if now < trip.beginDate {
-                Label("Departing on \(beginDateString)", systemImage: "airplane.departure")
+                trip.type.startLabel(text: "Departing on \(beginDateString)")
             } else if now == trip.beginDate {
-                Label("Departing today.", systemImage: "airplane.departure")
+                trip.type.startLabel(text: "Departing today!")
             } else if  trip.beginDate < now && now < trip.endDate {
-                Label("Returning on \(endDateString)", systemImage: "airplane")
+                trip.type.endLabel(text: "Returning on \(endDateString)")
             } else if now == trip.endDate {
-                Label("Trip ended today", systemImage: "airplane.arrival")
+                trip.type.endLabel(text: "Trip ended today")
             } else if now > trip.endDate{
-                Label("Returned on \(endDateString)", systemImage: "airplane.arrival")
+                trip.type.endLabel(text: "Returned on \(endDateString)")
             }
         }
     }

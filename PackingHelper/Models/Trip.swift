@@ -9,8 +9,71 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum TripType: Codable {
+enum TripType: Codable, CaseIterable {
     case plane, car, boat, train
+    
+    var name: String {
+        switch self {
+        case .plane: "Plane"
+        case .car: "Car"
+        case .boat: "Boat"
+        case .train: "Train"
+        }
+    }
+    
+    @ViewBuilder
+    func startLabel(text: String) -> some View {
+        // Car icon is wrong way around
+        if self == .car {
+            Label {
+                Text(text)
+            } icon: {
+                Image(systemName: self.startIcon).scaleEffect(CGSize(width: -1.0, height: 1.0))
+            }
+        } else {
+            Label(text, systemImage: self.startIcon)
+        }
+    }
+    
+    @ViewBuilder
+    func endLabel(text: String) -> some View {
+        // Car icon is wrong way around
+        if self == .train || self == .boat {
+            Label {
+                Text(text)
+            } icon: {
+                Image(systemName: self.startIcon).scaleEffect(CGSize(width: -1.0, height: 1.0))
+            }
+        } else {
+            Label(text, systemImage: self.startIcon)
+        }
+    }
+    
+    var startIcon: String {
+        switch self {
+            case .plane:
+                return "airplane.departure"
+            case .train:
+                return "train.side.front.car"
+            case .car:
+                return "car.side"
+            case .boat:
+                return "sailboat"
+        }
+    }
+    
+    var endIcon: String {
+        switch self {
+            case .plane:
+                return "airplane.arrival"
+            case .train:
+                return "train.side.front.car"
+            case .car:
+                return "car.side"
+            case .boat:
+                return "sailboat"
+        }
+    }
 }
 
 @Model
@@ -28,7 +91,7 @@ final class Trip {
     var endDate: Date
     var createdDate: Date
     
-    var type: TripType
+    var type: TripType = TripType.plane
     
     var dayOfNotificationUUID: String?
     
@@ -67,14 +130,15 @@ extension Trip {
         }
     }
     
+    @ViewBuilder
     func getStatusLabel() -> some View {
         switch self.status {
         case .upcoming, .departing:
-            return Label("Upcoming", systemImage: "airplane.departure")
+            self.type.startLabel(text: "Upcoming")
         case .returning, .complete:
-            return Label("Complete", systemImage: "airplane.arrival")
+            self.type.endLabel(text: "Complete")
         default:
-            return Label("In Progress", systemImage: "airplane")
+            self.type.startLabel(text: "In Progess")
         }
     }
 }
@@ -144,8 +208,10 @@ extension Trip {
     static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), type: .plane ,destination: TripLocation.sampleData)
 }
 
+
+// Trip display code
 extension Trip {
-    static let endIcon = "airplane.arrival"
+    
     static let startIcon = "airplane.departure"
 }
 

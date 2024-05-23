@@ -49,15 +49,23 @@ struct TripEditView: View {
             VStack {
                 Form {
                     Section {
-                        TextField("Name", text: $name)
+                        VStack {
+                            TextField("Name", text: $name)
+                            
+                            Picker("Type", selection: $tripType) {
+                                ForEach(TripType.allCases, id: \.name) { type in
+                                    Text(type.name).tag(type)
+                                }
+                            }
+                        }
                     } header: {
                         Text("Basic Details")
                     }
                     
                     Section {
-                        HStack {
+                        VStack {
                             HStack {
-                                Image(systemName: Trip.startIcon)
+                                tripType.startLabel(text: "")
                                 VStack {
                                     Text("Begins")
                                     DatePicker("Trip Begins", selection: $beginDate, displayedComponents: [.date])
@@ -70,7 +78,7 @@ struct TripEditView: View {
                             }
                             Spacer()
                             HStack {
-                                Image(systemName: Trip.endIcon)
+                                tripType.endLabel(text: "")
                                 VStack {
                                     Text("Ends")
                                     DatePicker(
@@ -168,6 +176,8 @@ struct TripEditView: View {
                     beginDate = trip.beginDate
                     endDate = trip.endDate
                     
+                    tripType = trip.type
+                    
                     destination = trip.destination!
                     mapCameraPosition = trip.destination!.mapCameraPosition
                 }
@@ -186,6 +196,7 @@ struct TripEditView: View {
             trip.beginDate = beginDate
             trip.endDate = endDate
             
+            trip.type = tripType
             trip.destination = destination
         } else {
             let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, type: tripType, destination: destination)

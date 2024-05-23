@@ -29,6 +29,13 @@ struct TripDetailInfoView: View {
                 }
                 
                 HStack {
+                    Text("Type")
+                        .font(.caption)
+                    Spacer()
+                    Text(trip.type.name)
+                }
+                
+                HStack {
                     Text("Duration")
                         .font(.caption)
                     Spacer()

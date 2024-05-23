@@ -33,8 +33,6 @@ struct TripPackingBoxView: View {
                 Spacer()
                 
                 createListMenu()
-                    .roundedBox(background: .ultraThickMaterial)
-                    .shaded()
             }
             
             if !trip.lists.isEmpty {
