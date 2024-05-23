@@ -208,13 +208,6 @@ extension Trip {
     static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), type: .plane ,destination: TripLocation.sampleData)
 }
 
-
-// Trip display code
-extension Trip {
-    
-    static let startIcon = "airplane.departure"
-}
-
 /// Notification Code
 extension Trip {
     func createDayOfPackingNotification() {

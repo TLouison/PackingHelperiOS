@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-
-
+import WeatherKit
 
 struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
@@ -17,6 +16,7 @@ struct TripDetailOverlay: View {
     
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
+    @State private var currentWeather: CurrentWeather?
     
     @ViewBuilder 
     func departureInfo() -> some View {
@@ -79,6 +79,10 @@ struct TripDetailOverlay: View {
                                 }
                             }
                         
+                        if (currentWeather != nil) {
+                            Label(currentWeather!.temperature.formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))), systemImage: currentWeather!.symbolName)
+                        }
+                        
                         if showSubtitle {
                             departureInfo()
                                 .frame(maxWidth: .infinity)
@@ -87,6 +91,9 @@ struct TripDetailOverlay: View {
                     }
                     .transition(.opacity)
                     .roundedBox()
+                    .task {
+                        currentWeather = await trip.destination?.getCurrentWeather()
+                    }
                 }
             }
         }

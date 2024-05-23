@@ -70,7 +70,7 @@ struct TripListView: View {
                         .transition(.pushAndPull(.trailing))
                 } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
                     ContentUnavailableView {
-                        Label("No Upcoming Trips", systemImage: Trip.startIcon)
+                        TripType.plane.startLabel(text: "No Upcoming Trips")
                     } description: {
                         Text("You've completed all of your trips! Add a new one to start packing.")
                     } actions: {

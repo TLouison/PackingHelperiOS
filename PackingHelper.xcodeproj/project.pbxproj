@@ -47,6 +47,7 @@
 		519B72572ADA06C3009401C0 /* TripListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72562ADA06C3009401C0 /* TripListView.swift */; };
 		519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72582ADA1BF7009401C0 /* PackingList.swift */; };
 		519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B725A2ADA3535009401C0 /* TripListRowView.swift */; };
+		519C8AB02BFEEFE10008B1B0 /* WeatherUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519C8AAF2BFEEFE10008B1B0 /* WeatherUtilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -92,6 +93,8 @@
 		519B72582ADA1BF7009401C0 /* PackingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList.swift; sourceTree = "<group>"; };
 		519B725A2ADA3535009401C0 /* TripListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListRowView.swift; sourceTree = "<group>"; };
 		519B725D2ADB2D94009401C0 /* Symbols.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Symbols.framework; path = System/Library/Frameworks/Symbols.framework; sourceTree = SDKROOT; };
+		519C8AAE2BFEEB4D0008B1B0 /* PackingHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PackingHelper.entitlements; sourceTree = "<group>"; };
+		519C8AAF2BFEEFE10008B1B0 /* WeatherUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherUtilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +161,7 @@
 		51289F182AD3B6CD00545115 /* PackingHelper */ = {
 			isa = PBXGroup;
 			children = (
+				519C8AAE2BFEEB4D0008B1B0 /* PackingHelper.entitlements */,
 				51289F1F2AD3B6CF00545115 /* Preview Content */,
 				515B85A42AD8D1AF002D614F /* PackingEngine */,
 				515B85982AD76930002D614F /* Utilities */,
@@ -230,6 +234,7 @@
 				51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */,
 				5110C6332AE5DA70002742D0 /* StyleUtilities.swift */,
 				5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */,
+				519C8AAF2BFEEFE10008B1B0 /* WeatherUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -400,6 +405,7 @@
 				515B859E2AD76F64002D614F /* TripPackingBoxView.swift in Sources */,
 				519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */,
 				51289F2C2AD4E19B00545115 /* TripDetailSheet.swift in Sources */,
+				519C8AB02BFEEFE10008B1B0 /* WeatherUtilities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,6 +536,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PackingHelper/PackingHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -563,6 +570,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PackingHelper/PackingHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

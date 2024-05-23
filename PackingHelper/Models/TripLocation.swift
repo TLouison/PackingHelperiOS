@@ -9,6 +9,7 @@ import Observation
 import SwiftData
 import SwiftUI
 import MapKit
+import WeatherKit
 
 @Model
 final class TripLocation {
@@ -39,6 +40,10 @@ final class TripLocation {
 }
 
 extension TripLocation {
+    var location: CLLocation {
+        CLLocation(latitude: self.latitude, longitude: self.longitude)
+    }
+    
     var coordinates: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
     }
@@ -53,6 +58,13 @@ extension TripLocation {
                 )
             )
         )
+    }
+}
+
+extension TripLocation {
+    func getCurrentWeather() async -> CurrentWeather {
+        let weatherService = WeatherService()
+        return try! await weatherService.weather(for: self.location).currentWeather
     }
 }
 
