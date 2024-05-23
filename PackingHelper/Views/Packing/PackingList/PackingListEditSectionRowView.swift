@@ -39,7 +39,13 @@ struct PackingListEditSectionRowView: View {
                 itemCheckbox(item)
             }
             
-            Text(item.name).font(.headline)
+            HStack(alignment: .bottom) {
+                Text(item.name).font(.headline)
+                
+                if item.isPacked {
+                    Text(item.category).font(.footnote).padding(.leading, 5)
+                }
+            }
             
             if showCount {
                 Spacer()

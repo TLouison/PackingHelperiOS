@@ -9,31 +9,38 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+enum TripType: Codable {
+    case plane, car, boat, train
+}
+
 @Model
 final class Trip {
     enum TripStatus {
         case upcoming, departing, active, returning, complete
     }
     
-    var createdDate: Date
-    
     var name: String
     
-    @Relationship(deleteRule: .cascade, inverse: \TripDestination.trip) var destination: TripDestination?
+    @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var destination: TripLocation?
     @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists = [PackingList]()
     
     var beginDate: Date
     var endDate: Date
+    var createdDate: Date
+    
+    var type: TripType
     
     var dayOfNotificationUUID: String?
     
-    init(name: String, beginDate: Date, endDate: Date, destination: TripDestination) {
+    init(name: String, beginDate: Date, endDate: Date, type: TripType, destination: TripLocation) {
         self.createdDate = Date.now
         
         self.name = name
         
         self.beginDate = beginDate
         self.endDate = endDate
+        
+        self.type = type
         
         self.destination = destination
         
@@ -134,7 +141,7 @@ extension Trip {
 }
 
 extension Trip {
-    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), destination: TripDestination.sampleData)
+    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), type: .plane ,destination: TripLocation.sampleData)
 }
 
 extension Trip {

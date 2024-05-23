@@ -14,7 +14,7 @@ struct LocationSelectionView: View {
     
     @ObservedObject var locationService: LocationService
     
-    @Binding var destination: TripDestination
+    @Binding var destination: TripLocation
     
     var body: some View {
         Form {

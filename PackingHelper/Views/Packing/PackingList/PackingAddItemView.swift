@@ -14,52 +14,87 @@ struct PackingAddItemView: View {
     
     @State private var newItemName = ""
     @State private var newItemCount = 1
+    @State private var newItemCategory: PackingRecommendationCategory?
     
     var body: some View {
         VStack {
-            if newItemName != "" && FeatureFlags.showingRecommendations {
-                PackingRecommendationView(recommendation: packingRecommendation)
-                    .onAppear {
-                        packingRecommendation = PackingEngine.suggest()
-                    }
-                    .onTapGesture {
-                        packingList.items.append(
-                            Item(name: packingRecommendation.item, count: packingRecommendation.count, isPacked: false)
-                        )
-                        self.newItemName = ""
-                        self.newItemCount = 1
-                    }
-                    .transition(.pushAndPull(.bottom))
-            }
+//            if newItemName != "" && FeatureFlags.showingRecommendations {
+//                PackingRecommendationView(recommendation: packingRecommendation)
+//                    .onAppear {
+//                        packingRecommendation = PackingEngine.suggest()
+//                    }
+//                    .onTapGesture {
+//                        packingList.items.append(
+//                            Item(name: packingRecommendation.item, count: packingRecommendation.count, isPacked: false)
+//                        )
+//                        self.newItemName = ""
+//                        self.newItemCount = 1
+//                    }
+//                    .transition(.pushAndPull(.bottom))
+//            }
             
-            HStack {
-                TextField("Item Name", text: $newItemName)
-                    .padding()
-                    .onChange(of: newItemName) {
-                        packingRecommendation = PackingEngine.suggest()
+            VStack {
+                HStack {
+                    TextField("Item Name", text: $newItemName)
+                        .padding()
+                        .onChange(of: newItemName) {
+                            if !newItemName.isEmpty {
+                                let categoryRecommendation = PackingEngine.interpretItem(itemName: newItemName)
+                                newItemCategory = categoryRecommendation
+                            } else {
+                                newItemCategory = nil
+                            }
+                        }
+                    
+                    if packingList.type != .task {
+                        Spacer()
+                        Divider()
+                        Picker("Count", selection: $newItemCount) {
+                            ForEach(1..<100) { val in
+                                Text("\(val)").tag(val)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .buttonStyle(.borderless)
+                        .frame(maxWidth: 60, maxHeight: 60)
+                        .padding(.trailing, 10)
                     }
+                }
+                .frame(maxHeight: 55)
+                .background(.thickMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
                 
-                if packingList.type != .task {
-                    Spacer()
-                    Divider()
-                    Picker("Count", selection: $newItemCount) {
-                        ForEach(1..<100) { val in
-                            Text("\(val)").tag(val)
+                Menu(newItemCategory?.rawValue ?? "Select Category") {
+                    ForEach(PackingRecommendationCategory.allCases, id: \.rawValue) { category in
+                        Button {
+                            newItemCategory = category
+                        } label: {
+                            Text(category.rawValue)
                         }
                     }
-                    .pickerStyle(.wheel)
-                    .frame(maxWidth: 60, maxHeight: 60)
-                    .padding(.trailing, 10)
                 }
+                .padding([.horizontal, .top], 5)
+                .frame(maxWidth: .infinity)
+                .background(.thickMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+                .padding([.horizontal, .bottom], 10)
             }
-            .frame(maxHeight: 60)
-            .background(.thickMaterial)
+            .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             
             Button("Add Item") {
                 if newItemName != "" {
-                    let newItem = Item(name: newItemName, count: newItemCount, isPacked: false)
+                    if packingList.type == .task {
+                        newItemCategory = .Task
+                    } else {
+                        if newItemCategory == nil {
+                            newItemCategory = PackingEngine.interpretItem(itemName: newItemName)
+                        }
+                    }
+                    
+                    let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
                     packingList.items.append(newItem)
+                    
                     newItemName = ""
                     newItemCount = 1
                 }

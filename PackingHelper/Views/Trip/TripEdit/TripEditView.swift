@@ -26,8 +26,10 @@ struct TripEditView: View {
     @State private var beginDate = Date.now
     @State private var endDate = Date.now
     
-    @State private var destination: TripDestination = TripDestination.sampleData
-    @State private var mapCameraPosition: MapCameraPosition = TripDestination.sampleData.mapCameraPosition
+    @State private var tripType: TripType = .plane
+    
+    @State private var destination: TripLocation = TripLocation.sampleData
+    @State private var mapCameraPosition: MapCameraPosition = TripLocation.sampleData.mapCameraPosition
     
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },
@@ -186,7 +188,7 @@ struct TripEditView: View {
             
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, destination: destination)
+            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, type: tripType, destination: destination)
             
             if let defaultPackingList {
                 let defaultList = PackingList.copyForTrip(defaultPackingList)

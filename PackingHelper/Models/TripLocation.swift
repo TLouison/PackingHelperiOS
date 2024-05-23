@@ -1,5 +1,5 @@
 //
-//  TripDestination.swift
+//  TripLocation.swift
 //  PackingHelper
 //
 //  Created by Todd Louison on 10/13/23.
@@ -11,7 +11,7 @@ import SwiftUI
 import MapKit
 
 @Model
-final class TripDestination {
+final class TripLocation {
     var trip: Trip?
     var name: String
     
@@ -31,14 +31,14 @@ final class TripDestination {
         self.longitude = longitude
     }
     
-    func update(_ destination: TripDestination) {
+    func update(_ destination: TripLocation) {
         self.name = destination.name
         self.latitude = destination.latitude
         self.longitude = destination.longitude
     }
 }
 
-extension TripDestination {
+extension TripLocation {
     var coordinates: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
     }
@@ -56,8 +56,8 @@ extension TripDestination {
     }
 }
 
-extension TripDestination {
-    static var sampleData: TripDestination {
-        TripDestination(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060)
+extension TripLocation {
+    static var sampleData: TripLocation {
+        TripLocation(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060)
     }
 }
