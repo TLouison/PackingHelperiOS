@@ -26,7 +26,7 @@ struct TripListRowView: View {
         
         
         if trip.status == .upcoming || trip.status == .departing {
-            Text(trip.beginDate.formatted(date: .abbreviated, time: .omitted))
+            Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
         }
         else if trip.status == .returning || trip.status == .complete {
             Text(trip.endDate.formatted(date: .abbreviated, time: .omitted))

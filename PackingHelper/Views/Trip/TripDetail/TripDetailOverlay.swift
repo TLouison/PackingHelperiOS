@@ -21,20 +21,20 @@ struct TripDetailOverlay: View {
     @ViewBuilder 
     func departureInfo() -> some View {
         let now = Date.now
-        let beginDateString = trip.beginDate.formatted(date: .abbreviated, time: .omitted)
+        let beginDateString = trip.startDate.formatted(date: .abbreviated, time: .omitted)
         let endDateString = trip.endDate.formatted(date: .abbreviated, time: .omitted)
         
         HStack {
-            if now < trip.beginDate {
-                trip.type.startLabel(text: "Departing on \(beginDateString)")
-            } else if now == trip.beginDate {
-                trip.type.startLabel(text: "Departing today!")
-            } else if  trip.beginDate < now && now < trip.endDate {
-                trip.type.endLabel(text: "Returning on \(endDateString)")
+            if now < trip.startDate {
+                Label { Text("Departing on \(beginDateString)") } icon: { trip.type.startIcon }
+            } else if now == trip.startDate {
+                Label { Text("Departing today!") } icon: { trip.type.startIcon }
+            } else if  trip.startDate < now && now < trip.endDate {
+                Label { Text("Returning on \(endDateString)") } icon: { trip.type.endIcon }
             } else if now == trip.endDate {
-                trip.type.endLabel(text: "Trip ended today")
+                Label { Text("Trip ended today") } icon: { trip.type.endIcon }
             } else if now > trip.endDate{
-                trip.type.endLabel(text: "Returned on \(endDateString)")
+                Label { Text("Returned on \(endDateString)") } icon: { trip.type.endIcon }
             }
         }
     }

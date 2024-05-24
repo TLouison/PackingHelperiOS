@@ -23,8 +23,9 @@ struct TripEditView: View {
     @State private var name = ""
     @State private var complete: Bool = false
     
-    @State private var beginDate = Date.now
-    @State private var endDate = Date.now
+    @State private var selectedDates: Set<DateComponents> = []
+    @State private var startDate = Date()
+    @State private var endDate = Date()
     
     @State private var tripType: TripType = .plane
     
@@ -52,45 +53,62 @@ struct TripEditView: View {
                         VStack {
                             TextField("Name", text: $name)
                             
-                            Picker("Type", selection: $tripType) {
-                                ForEach(TripType.allCases, id: \.name) { type in
-                                    Text(type.name).tag(type)
+                            VStack {
+                                Picker("Type", selection: $tripType) {
+                                    ForEach(TripType.allCases, id: \.name) { type in
+                                        type.startIcon
+                                            .renderingMode(.template)
+                                            .foregroundStyle(.accent)
+                                            .tag(type)
+                                    }
+                                }.pickerStyle(.palette)
+                                HStack {
+                                    Spacer()
+                                    Text("\(tripType.name) Trip").font(.caption)
+                                    Spacer()
                                 }
                             }
+                            
                         }
                     } header: {
                         Text("Basic Details")
                     }
                     
                     Section {
-                        VStack {
-                            HStack {
-                                tripType.startLabel(text: "")
-                                VStack {
-                                    Text("Begins")
-                                    DatePicker("Trip Begins", selection: $beginDate, displayedComponents: [.date])
-                                        .onChange(of: beginDate) {
-                                            if endDate < beginDate {
-                                                endDate = beginDate
-                                            }
-                                        }
-                                }
-                            }
+                        HStack {
                             Spacer()
+                            VStack {
+                                HStack {
+                                    tripType.startIcon
+                                        .frame(maxHeight: 16)
+                                        .foregroundStyle(.accent)
+                                    Text("Begins")
+                                }
+                                DatePicker("Trip Begins", selection: $startDate, displayedComponents: [.date])
+                                    .onChange(of: startDate) {
+                                        if endDate < startDate {
+                                            endDate = startDate
+                                        }
+                                    }
+                            }
                             HStack {
-                                tripType.endLabel(text: "")
                                 VStack {
-                                    Text("Ends")
+                                    HStack {
+                                        tripType.endIcon
+                                            .frame(maxHeight: 16)
+                                            .foregroundStyle(.accent)
+                                        Text("Ends")
+                                    }
                                     DatePicker(
                                         "Trip Ends",
                                         selection: $endDate,
-                                        in: beginDate...,
+                                        in: startDate...,
                                         displayedComponents: [.date]
                                     )
                                 }
                             }
+                            Spacer()
                         }
-                        .imageScale(.large)
                         .labelsHidden()
                     } header: {
                         Text("Trip Dates")
@@ -157,7 +175,7 @@ struct TripEditView: View {
                     name = trip.name
                     complete = trip.complete
                     
-                    beginDate = trip.beginDate
+                    startDate = trip.startDate
                     endDate = trip.endDate
                     
                     tripType = trip.type
@@ -170,14 +188,14 @@ struct TripEditView: View {
     }
     
     private var formIsValid: Bool {
-        return name != "" && beginDate <= endDate
+        return name != "" && startDate <= endDate
     }
     
     private func save() {
         if let trip {
             trip.name = name
             
-            trip.beginDate = beginDate
+            trip.startDate = startDate
             trip.endDate = endDate
             
             trip.type = tripType
@@ -185,7 +203,7 @@ struct TripEditView: View {
             trip.origin = origin
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, type: tripType, origin: origin, destination: destination)
+            let newTrip = Trip(name: name, startDate: startDate, endDate: endDate, type: tripType, origin: origin, destination: destination)
             
             if let defaultPackingList {
                 let defaultList = PackingList.copyForTrip(defaultPackingList)
