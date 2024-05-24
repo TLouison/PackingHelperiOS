@@ -84,6 +84,7 @@ final class Trip {
     
     var name: String
     
+    @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var origin: TripLocation?
     @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var destination: TripLocation?
     @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists = [PackingList]()
     
@@ -95,7 +96,7 @@ final class Trip {
     
     var dayOfNotificationUUID: String?
     
-    init(name: String, beginDate: Date, endDate: Date, type: TripType, destination: TripLocation) {
+    init(name: String, beginDate: Date, endDate: Date, type: TripType, origin: TripLocation, destination: TripLocation) {
         self.createdDate = Date.now
         
         self.name = name
@@ -105,6 +106,7 @@ final class Trip {
         
         self.type = type
         
+        self.origin = origin
         self.destination = destination
         
         self.createDayOfPackingNotification()
@@ -205,7 +207,7 @@ extension Trip {
 }
 
 extension Trip {
-    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), type: .plane ,destination: TripLocation.sampleData)
+    static var sampleTrip = Trip(name: "Paraguay", beginDate: Date.now, endDate: Date.now.addingTimeInterval(86400), type: .plane, origin: TripLocation.sampleOrigin, destination: TripLocation.sampleDestination)
 }
 
 /// Notification Code

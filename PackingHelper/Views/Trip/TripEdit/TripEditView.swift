@@ -28,8 +28,8 @@ struct TripEditView: View {
     
     @State private var tripType: TripType = .plane
     
-    @State private var destination: TripLocation = TripLocation.sampleData
-    @State private var mapCameraPosition: MapCameraPosition = TripLocation.sampleData.mapCameraPosition
+    @State private var origin: TripLocation = TripLocation.sampleOrigin
+    @State private var destination: TripLocation = TripLocation.sampleDestination
     
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },
@@ -97,29 +97,13 @@ struct TripEditView: View {
                     }
                     
                     Section {
-                        ZStack { // Hack to remove the > from the navigation link view
-                            NavigationLink {
-                                LocationSelectionView(locationService: LocationService(), destination: $destination)
-                            } label: {
-                                EmptyView()
-                            }
-                            
-                            VStack {
-                                HStack {
-                                    Text(destination.name).bold()
-                                    Spacer()
-                                    Image(systemName: "magnifyingglass.circle")
-                                        .foregroundStyle(.blue.gradient)
-                                }
-                                
-                                Map(position: $mapCameraPosition)
-                                    .frame(height: 80)
-                                    .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                                    .onChange(of: destination, initial: true) {
-                                        mapCameraPosition = destination.mapCameraPosition
-                                    }
-                            }
-                        }
+                        LocationSelectionBoxView(location: $origin, title: "Find Origin")
+                    } header: {
+                        Text("Trip Origin")
+                    }
+                    
+                    Section {
+                        LocationSelectionBoxView(location: $destination, title: "Find Destination")
                     } header: {
                         Text("Trip Destination")
                     }
@@ -178,8 +162,8 @@ struct TripEditView: View {
                     
                     tripType = trip.type
                     
+                    origin = trip.origin!
                     destination = trip.destination!
-                    mapCameraPosition = trip.destination!.mapCameraPosition
                 }
             }
         }
@@ -197,9 +181,11 @@ struct TripEditView: View {
             trip.endDate = endDate
             
             trip.type = tripType
+            
+            trip.origin = origin
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, type: tripType, destination: destination)
+            let newTrip = Trip(name: name, beginDate: beginDate, endDate: endDate, type: tripType, origin: origin, destination: destination)
             
             if let defaultPackingList {
                 let defaultList = PackingList.copyForTrip(defaultPackingList)

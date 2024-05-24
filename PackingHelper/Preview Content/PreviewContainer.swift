@@ -18,9 +18,11 @@ let previewContainer: ModelContainer = {
         Task { @MainActor in
             let context = container.mainContext
             
-            let destination = TripLocation.sampleData
+            let origin = TripLocation.sampleOrigin
+            let destination = TripLocation.sampleDestination
+            context.insert(origin)
             context.insert(destination)
-            context.insert(Trip(name: "NYC", beginDate: Date.now, endDate: Date.now, type: .plane, destination: destination))
+            context.insert(Trip(name: "NYC", beginDate: Date.now, endDate: Date.now, type: .plane, origin: origin, destination: destination))
         }
         return container
     } catch {

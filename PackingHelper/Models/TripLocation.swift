@@ -69,7 +69,11 @@ extension TripLocation {
 }
 
 extension TripLocation {
-    static var sampleData: TripLocation {
+    static var sampleOrigin: TripLocation {
         TripLocation(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060)
+    }
+    
+    static var sampleDestination: TripLocation {
+        TripLocation(trip: nil, name: "Amsterdam", latitude: 52.3676, longitude: 4.9041)
     }
 }

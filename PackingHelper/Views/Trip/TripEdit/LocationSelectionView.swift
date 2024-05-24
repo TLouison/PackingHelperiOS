@@ -14,7 +14,9 @@ struct LocationSelectionView: View {
     
     @ObservedObject var locationService: LocationService
     
-    @Binding var destination: TripLocation
+    @Binding var location: TripLocation
+    
+    var title: String
     
     var body: some View {
         Form {
@@ -53,7 +55,7 @@ struct LocationSelectionView: View {
                 Text("Results")
             }
         }
-        .navigationTitle("Find Destination")
+        .navigationTitle(title)
         .toolbarTitleDisplayMode(.inline)
         .presentationDetents([.large])
     }
@@ -61,9 +63,9 @@ struct LocationSelectionView: View {
     func getCoordsFromAddress(_ address: String) async {
         do {
             let result = try await CLGeocoder().geocodeAddressString(address)
-            destination.latitude = (result[0].location?.coordinate.latitude)!
-            destination.longitude = (result[0].location?.coordinate.longitude)!
-            destination.name = result[0].name ?? "Unknown"
+            location.latitude = (result[0].location?.coordinate.latitude)!
+            location.longitude = (result[0].location?.coordinate.longitude)!
+            location.name = result[0].name ?? "Unknown"
             
             dismiss()
         } catch {
