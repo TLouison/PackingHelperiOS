@@ -24,13 +24,17 @@ struct TripEditView: View {
     @State private var complete: Bool = false
     
     @State private var selectedDates: Set<DateComponents> = []
-    @State private var startDate = Date()
-    @State private var endDate = Date()
+    @State private var startDate = Date().advanced(by: SECONDS_IN_DAY)
+    @State private var endDate = Date().advanced(by: 2*SECONDS_IN_DAY)
     
     @State private var tripType: TripType = .plane
+    @State private var accomodation: TripAccomodation = .hotel
     
+    @State private var roundTrip: Bool = true
     @State private var origin: TripLocation = TripLocation.sampleOrigin
     @State private var destination: TripLocation = TripLocation.sampleDestination
+    
+    @State var navigationPath: [Int] = []
     
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },
@@ -45,31 +49,32 @@ struct TripEditView: View {
         trip == nil ? "Add Trip" : "Edit Trip"
     }
     
+    private var roundTripIcon: String {
+        roundTrip ? "arrow.up.arrow.down" : "arrow.down"
+    }
+    
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack {
                 Form {
                     Section {
-                        VStack {
                             TextField("Name", text: $name)
                             
                             VStack {
-                                Picker("Type", selection: $tripType) {
+                                Picker("Transportation Method", selection: $tripType) {
                                     ForEach(TripType.allCases, id: \.name) { type in
                                         type.startIcon
                                             .renderingMode(.template)
                                             .foregroundStyle(.accent)
                                             .tag(type)
                                     }
-                                }.pickerStyle(.palette)
+                                }.pickerStyle(.segmented)
                                 HStack {
                                     Spacer()
                                     Text("\(tripType.name) Trip").font(.caption)
                                     Spacer()
                                 }
-                            }
-                            
-                        }
+                                    }
                     } header: {
                         Text("Basic Details")
                     }
@@ -91,6 +96,7 @@ struct TripEditView: View {
                                         }
                                     }
                             }
+                            Spacer()
                             HStack {
                                 VStack {
                                     HStack {
@@ -111,20 +117,41 @@ struct TripEditView: View {
                         }
                         .labelsHidden()
                     } header: {
-                        Text("Trip Dates")
+                        Text("Dates")
                     }
                     
                     Section {
+                        Picker("Trip Type", selection: $roundTrip) {
+                            Label("One-Way", systemImage: "arrow.right")
+                                .tag(false)
+                            Label("Round Trip", systemImage: "arrow.right.arrow.left")
+                                .tag(true)
+                        }
+                        
                         LocationSelectionBoxView(location: $origin, title: "Find Origin")
-                    } header: {
-                        Text("Trip Origin")
-                    }
-                    
-                    Section {
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: roundTripIcon)
+                            Spacer()
+                        }
+                        
                         LocationSelectionBoxView(location: $destination, title: "Find Destination")
                     } header: {
-                        Text("Trip Destination")
+                        Text("Locations")
                     }
+                    .listRowSeparator(.hidden)
+                    
+                    Section {
+                        Picker("Accomodation Type", selection: $accomodation) {
+                            ForEach(TripAccomodation.allCases, id: \.name) { accomodationType in
+                                Text(accomodationType.name).tag(accomodationType)
+                            }
+                        }
+                    } header: {
+                        Text("Accomodations")
+                    }
+                    .listRowSeparator(.hidden)
                     
                     if trip == nil {
                         Section {
@@ -179,6 +206,7 @@ struct TripEditView: View {
                     endDate = trip.endDate
                     
                     tripType = trip.type
+                    accomodation = trip.accomodation
                     
                     origin = trip.origin!
                     destination = trip.destination!
@@ -199,11 +227,12 @@ struct TripEditView: View {
             trip.endDate = endDate
             
             trip.type = tripType
+            trip.accomodation = accomodation
             
             trip.origin = origin
             trip.destination = destination
         } else {
-            let newTrip = Trip(name: name, startDate: startDate, endDate: endDate, type: tripType, origin: origin, destination: destination)
+            let newTrip = Trip(name: name, startDate: startDate, endDate: endDate, type: tripType, origin: origin, destination: destination, accomodation: accomodation)
             
             if let defaultPackingList {
                 let defaultList = PackingList.copyForTrip(defaultPackingList)

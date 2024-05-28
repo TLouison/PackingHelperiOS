@@ -19,7 +19,9 @@ struct LocationSelectionBoxView: View {
         ZStack {
             Map(position: $mapCameraPosition)
                 .listRowInsets(EdgeInsets())
+                .frame(height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+                .allowsHitTesting(false)
                 
             HStack {
                 Text(location.name).bold().font(.headline)

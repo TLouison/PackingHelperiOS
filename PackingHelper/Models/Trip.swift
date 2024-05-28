@@ -69,6 +69,19 @@ enum TripType: Codable, CaseIterable {
     }
 }
 
+enum TripAccomodation: Codable, CaseIterable {
+    case hotel, rental, family, friend
+    
+    var name: String {
+        switch self {
+        case .family: "Family"
+        case .friend: "Friend"
+        case .hotel: "Hotel"
+        case .rental: "Rental"
+        }
+    }
+}
+
 @Model
 final class Trip {
     enum TripStatus {
@@ -86,10 +99,11 @@ final class Trip {
     var createdDate: Date
     
     var type: TripType = TripType.plane
+    var accomodation: TripAccomodation = TripAccomodation.hotel
     
     var dayOfNotificationUUID: String?
     
-    init(name: String, startDate: Date, endDate: Date, type: TripType, origin: TripLocation, destination: TripLocation) {
+    init(name: String, startDate: Date, endDate: Date, type: TripType, origin: TripLocation, destination: TripLocation, accomodation: TripAccomodation) {
         self.createdDate = Date.now
         
         self.name = name
@@ -98,6 +112,7 @@ final class Trip {
         self.endDate = endDate
         
         self.type = type
+        self.accomodation = accomodation
         
         self.origin = origin
         self.destination = destination
@@ -200,7 +215,7 @@ extension Trip {
 }
 
 extension Trip {
-    static var sampleTrip = Trip(name: "Paraguay", startDate: Date(), endDate: Date.now.addingTimeInterval(86400), type: .plane, origin: TripLocation.sampleOrigin, destination: TripLocation.sampleDestination)
+    static var sampleTrip = Trip(name: "Paraguay", startDate: Date(), endDate: Date.now.addingTimeInterval(86400), type: .plane, origin: TripLocation.sampleOrigin, destination: TripLocation.sampleDestination, accomodation: .hotel)
 }
 
 /// Notification Code
