@@ -31,6 +31,8 @@
 		5132E84F2AE23AE7002575AC /* DefaultPackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */; };
 		5132E8532AE44BED002575AC /* CategorizedPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5132E8522AE44BED002575AC /* CategorizedPackingView.swift */; };
 		5134EC672C05904100862E19 /* TripDetailForecastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC662C05904100862E19 /* TripDetailForecastView.swift */; };
+		5134EC6A2C06CD3300862E19 /* PackingListSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */; };
+		5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */; };
 		51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51466B332ADB3EA200258ABB /* TransitionUtilities.swift */; };
 		515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85992AD7693C002D614F /* PreviewContainer.swift */; };
 		515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */; };
@@ -77,6 +79,8 @@
 		5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPackingListView.swift; sourceTree = "<group>"; };
 		5132E8522AE44BED002575AC /* CategorizedPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorizedPackingView.swift; sourceTree = "<group>"; };
 		5134EC662C05904100862E19 /* TripDetailForecastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailForecastView.swift; sourceTree = "<group>"; };
+		5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListSelectionView.swift; sourceTree = "<group>"; };
+		5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListPillView.swift; sourceTree = "<group>"; };
 		51466B332ADB3EA200258ABB /* TransitionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionUtilities.swift; sourceTree = "<group>"; };
 		515B85992AD7693C002D614F /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSettingsSheet.swift; sourceTree = "<group>"; };
@@ -119,6 +123,8 @@
 				5132E8492AE22837002575AC /* PackingAddItemView.swift */,
 				5110C6372AE5E378002742D0 /* PackingListEditSectionRowView.swift */,
 				51748B592ADE3B45009E919B /* PackingListDetailView.swift */,
+				5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */,
+				5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */,
 			);
 			path = PackingList;
 			sourceTree = "<group>";
@@ -410,6 +416,7 @@
 				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
+				5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */,
 				519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */,
 				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
@@ -422,6 +429,7 @@
 				519B725B2ADA3535009401C0 /* TripListRowView.swift in Sources */,
 				51289F2C2AD4E19B00545115 /* TripDetailSheet.swift in Sources */,
 				519C8AB02BFEEFE10008B1B0 /* WeatherUtilities.swift in Sources */,
+				5134EC6A2C06CD3300862E19 /* PackingListSelectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

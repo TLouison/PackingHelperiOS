@@ -36,12 +36,7 @@ struct TripEditView: View {
     
     @State var navigationPath: [Int] = []
     
-    @Query(
-        filter: #Predicate<PackingList>{ $0.template == true },
-        sort: \.created, order: .reverse,
-        animation: .snappy
-    ) private var defaultPackingListOptions: [PackingList]
-    @State private var defaultPackingList: PackingList? = nil
+    @State private var defaultPackingLists: [PackingList] = []
     
     let trip: Trip?
     
@@ -157,13 +152,13 @@ struct TripEditView: View {
                     
                     if trip == nil {
                         Section {
-                            Picker("Default Packing List", selection: $defaultPackingList) {
-                                Text("No Default").tag(nil as PackingList?)
-                                ForEach(defaultPackingListOptions) { packingList in
-                                    Text(packingList.name)
-                                        .tag(packingList as PackingList?)
-                                }
+                            NavigationLink {
+                                PackingListSelectionView(packingLists: $defaultPackingLists)
+                            } label: {
+                                Label("Select Packing Lists", systemImage: "suitcase")
                             }
+                            
+                            PackingListPillView(packingLists: defaultPackingLists)
                         } header: {
                             Text("Default Packing List")
                         } footer: {
@@ -236,8 +231,8 @@ struct TripEditView: View {
         } else {
             let newTrip = Trip(name: name, startDate: startDate, endDate: endDate, type: tripType, origin: origin, destination: destination, accomodation: accomodation)
             
-            if let defaultPackingList {
-                let defaultList = PackingList.copyForTrip(defaultPackingList)
+            for pList in defaultPackingLists {
+                let defaultList = PackingList.copyForTrip(pList)
                 defaultList.tripID = newTrip.id
                 newTrip.lists.append(defaultList)
             }
