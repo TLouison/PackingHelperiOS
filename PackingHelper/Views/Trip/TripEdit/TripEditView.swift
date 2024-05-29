@@ -68,7 +68,9 @@ struct TripEditView: View {
                                             .foregroundStyle(.accent)
                                             .tag(type)
                                     }
-                                }.pickerStyle(.segmented)
+                                }
+                                .pickerStyle(.segmented)
+                                
                                 HStack {
                                     Spacer()
                                     Text("\(tripType.name) Trip").font(.caption)

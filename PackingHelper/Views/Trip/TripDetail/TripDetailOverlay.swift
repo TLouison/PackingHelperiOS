@@ -16,7 +16,8 @@ struct TripDetailOverlay: View {
     
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
-    @State private var currentWeather: CurrentWeather?
+    
+    @State private var currentWeather: CurrentWeather? = nil
     
     @ViewBuilder 
     func departureInfo() -> some View {

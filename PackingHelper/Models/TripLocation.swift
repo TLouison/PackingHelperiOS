@@ -62,9 +62,51 @@ extension TripLocation {
 }
 
 extension TripLocation {
-    func getCurrentWeather() async -> CurrentWeather {
-        let weatherService = WeatherService()
-        return try! await weatherService.weather(for: self.location).currentWeather
+    func canGetCurrentWeather() -> Bool {
+        if let trip = self.trip {
+            return !trip.complete
+        }
+        return false
+    }
+    
+    func canGetWeatherForecast() -> Bool {
+        if let trip = self.trip {
+            return !trip.complete && trip.startDate <= Date().advanced(by: 5 * SECONDS_IN_DAY)
+        }
+        return false
+    }
+    
+    func getCurrentWeather() async -> CurrentWeather? {
+        if self.canGetCurrentWeather() {
+            let weatherService = WeatherService()
+            
+            do {
+                return try await weatherService.weather(for: self.location).currentWeather
+            } catch {
+                return nil
+            }
+        }
+        return nil
+    }
+    
+    func getWeatherForcecast() async -> Forecast<DayWeather>? {
+        if canGetWeatherForecast() {
+            let weatherService = WeatherService()
+            
+            if let trip = self.trip {
+                let endDate = trip.startDate.advanced(by: 5 * SECONDS_IN_DAY)
+                
+                do {
+                    return try await weatherService.weather(
+                        for: self.location,
+                        including: .daily(startDate: trip.startDate, endDate: endDate)
+                    )
+                } catch {
+                    return nil
+                }
+            }
+        }
+        return nil
     }
 }
 

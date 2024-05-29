@@ -58,6 +58,9 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: defaultShadowRadius)
                 
+                TripDetailForecastView(trip: trip)
+                    .shadow(radius: defaultShadowRadius)
+                
                 TripDetailInfoView(trip: trip)
                     .shadow(radius: defaultShadowRadius)
             }
