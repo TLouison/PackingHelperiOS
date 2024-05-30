@@ -16,11 +16,7 @@ struct TripDetailForecastView: View {
     @State private var forecast: Forecast<DayWeather>?
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Forecast")
-                .font(.title)
-                .padding(.bottom, 10)
-            
+        TripDetailSectionView(title: "Forecast") {
             if let forecast {
                 Grid {
                     GridRow {
@@ -33,7 +29,7 @@ struct TripDetailForecastView: View {
                                 .padding(.bottom, 5)
                         }
                     }
-                     
+                    
                     GridRow {
                         Text("")
                         Text("")
@@ -61,13 +57,13 @@ struct TripDetailForecastView: View {
                             Divider().frame(maxWidth: 30)
                         }
                     }
-                     
+                    
                     GridRow {
                         Text("Low").font(.caption)
                         Text("")
                         ForEach(forecast, id: \.date) { weather in
                             Text("\(weather.lowTemperature.converted(to: .fahrenheit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))))")
-                                
+                            
                         }
                     }
                 }
@@ -76,7 +72,6 @@ struct TripDetailForecastView: View {
                 Text("Cannot fetch forecast for this trip.")
             }
         }
-        .roundedBox()
         .task {
             if ((trip.destination?.canGetWeatherForecast()) != nil) {
                 forecast = await trip.destination?.getWeatherForcecast()

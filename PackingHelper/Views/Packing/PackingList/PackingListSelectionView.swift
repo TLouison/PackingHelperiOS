@@ -10,7 +10,10 @@ import SwiftData
 
 struct PackingListSelectionView: View {
     @Binding var packingLists: [PackingList]
+    
     @State private var searchText = ""
+    
+    @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },
@@ -41,38 +44,46 @@ struct PackingListSelectionView: View {
         VStack {
             PackingListPillView(packingLists: packingLists)
             
-            List {
-                ForEach(searchResults, id: \.id) { packingList in
-                    HStack {
-                        Text(packingList.name)
-                        Spacer()
-                        
-                        if packingLists.contains(packingList) {
-                            Button {
-                                withAnimation {
-                                    removeFromSelected(packingList)
+            if defaultPackingListOptions.isEmpty {
+                ContentUnavailableView {
+                    Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
+                } description: {
+                    Text("You haven't created any default packing lists! Visit the home screen to create a new list.")
+                }
+            } else {
+                List {
+                    ForEach(searchResults, id: \.id) { packingList in
+                        HStack {
+                            Text(packingList.name)
+                            Spacer()
+                            
+                            if packingLists.contains(packingList) {
+                                Button {
+                                    withAnimation {
+                                        removeFromSelected(packingList)
+                                    }
+                                } label: {
+                                    Label("Remove \(packingList.name) from packing lists", systemImage: "minus.circle.fill")
+                                        .labelStyle(.iconOnly)
+                                        .foregroundStyle(.red)
                                 }
-                            } label: {
-                                Label("Remove \(packingList.name) from packing lists", systemImage: "minus.circle.fill")
-                                    .labelStyle(.iconOnly)
-                                    .foregroundStyle(.red)
-                            }
-                        } else {
-                            Button {
-                                withAnimation {
-                                    addToSelected(packingList)
+                            } else {
+                                Button {
+                                    withAnimation {
+                                        addToSelected(packingList)
+                                    }
+                                } label: {
+                                    Label("Add \(packingList.name) to packing lists", systemImage: "plus.circle.fill")
+                                        .labelStyle(.iconOnly)
                                 }
-                            } label: {
-                                Label("Add \(packingList.name) to packing lists", systemImage: "plus.circle.fill")
-                                    .labelStyle(.iconOnly)
                             }
                         }
                     }
+                    .listRowBackground(Color(.secondarySystemBackground))
                 }
-                .listRowBackground(Color(.secondarySystemBackground))
+                .navigationTitle("Default Packing Lists")
+                .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Default Packing Lists")
-            .scrollContentBackground(.hidden)
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search For Packing Lists")
     }

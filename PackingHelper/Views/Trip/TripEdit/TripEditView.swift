@@ -121,8 +121,10 @@ struct TripEditView: View {
                         Picker("Trip Type", selection: $roundTrip) {
                             Label("One-Way", systemImage: "arrow.right")
                                 .tag(false)
+                                .labelStyle(.iconOnly)
                             Label("Round Trip", systemImage: "arrow.right.arrow.left")
                                 .tag(true)
+                                .labelStyle(.iconOnly)
                         }
                         
                         LocationSelectionBoxView(location: $origin, title: "Find Origin")
@@ -175,6 +177,7 @@ struct TripEditView: View {
                     }
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text(editorTitle)

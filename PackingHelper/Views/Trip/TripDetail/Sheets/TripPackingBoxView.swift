@@ -26,7 +26,7 @@ struct TripPackingBoxView: View {
     }
     
     var body: some View {
-        VStack {
+        TripDetailCustomSectionView {
             HStack {
                 Text("Packing Lists")
                     .font(.title)
@@ -34,7 +34,7 @@ struct TripPackingBoxView: View {
                 
                 createListMenu()
             }
-            
+        } content: {
             if !trip.lists.isEmpty {
                 if trip.totalListEntries > 0 {
                     HStack {
@@ -52,8 +52,6 @@ struct TripPackingBoxView: View {
                             }
                         }
                     }
-                } else {
-                    Divider()
                 }
                 
                 VStack {
@@ -68,11 +66,8 @@ struct TripPackingBoxView: View {
                         
                     }
                 }
-                .padding(.vertical)
             }
-            
         }
-        .roundedBox()
     }
     
     @ViewBuilder func packingProgressView(val: Double, total: Double, image: String) -> some View {

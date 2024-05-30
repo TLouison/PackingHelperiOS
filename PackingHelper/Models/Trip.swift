@@ -144,11 +144,23 @@ extension Trip {
     func getStatusLabel() -> some View {
         switch self.status {
         case .upcoming, .departing:
-            self.type.startLabel(text: "Upcoming")
+            Text("Upcoming")
         case .returning, .complete:
-            self.type.endLabel(text: "Complete")
+            Text("Complete")
         default:
-            self.type.startLabel(text: "In Progess")
+            Text("In Progress")
+        }
+    }
+    
+    @ViewBuilder
+    func getTypeLabel() -> some View {
+        switch self.status {
+        case .upcoming, .departing:
+            self.type.startLabel(text: "\(self.type.name)")
+        case .returning, .complete:
+            self.type.endLabel(text: "\(self.type.name)")
+        default:
+            self.type.startLabel(text: "\(self.type.name)")
         }
     }
 }
