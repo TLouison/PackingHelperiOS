@@ -19,7 +19,7 @@ struct TripDetailSectionView<Content: View>: View {
                 Spacer()
             }
         } content: {
-            content.padding(.top)
+            content
         }
     }
 }

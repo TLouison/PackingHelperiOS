@@ -13,26 +13,30 @@ struct TripDetailForecastView: View {
     
     @Bindable var trip: Trip
     
+    private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
     @State private var forecast: Forecast<DayWeather>?
+    @State private var fetchingForecastMessage: String = "Getting weather data for your trip..."
     
     var body: some View {
         TripDetailSectionView(title: "Forecast") {
             if let forecast {
                 Grid {
                     GridRow {
+                        Text("\(trip.startDate.formatted(.dateTime.month()))")
                         Text("") // Hack because EmptyView does not work in cells
-                        Text("")
                         ForEach(forecast, id: \.date) { weather in
                             Text ("\(weather.date.formatted(.dateTime.day()))")
-                                .font(.headline)
-                                .fontWeight(.semibold)
                                 .padding(.bottom, 5)
                         }
                     }
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .gridCellAnchor(.top)
                     
                     GridRow {
                         Text("")
                         Text("")
+
                         ForEach(forecast, id: \.date) { weather in
                             Image(systemName: weather.symbolName)
                                 .font(.title)
@@ -43,10 +47,10 @@ struct TripDetailForecastView: View {
                     .padding(.bottom, 10)
                     
                     GridRow {
-                        Text("High").font(.caption)
+                        Text("High (\(temperatureUnit.symbol))").font(.caption)
                         Text("")
                         ForEach(forecast, id: \.date) { weather in
-                            Text("\(weather.highTemperature.converted(to: .fahrenheit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))))")
+                            Text("\(weather.highTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
                         }
                     }
                     
@@ -59,22 +63,24 @@ struct TripDetailForecastView: View {
                     }
                     
                     GridRow {
-                        Text("Low").font(.caption)
+                        Text("Low (\(temperatureUnit.symbol))").font(.caption)
                         Text("")
                         ForEach(forecast, id: \.date) { weather in
-                            Text("\(weather.lowTemperature.converted(to: .fahrenheit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))))")
+                            Text("\(weather.lowTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
                             
                         }
                     }
                 }
                 .frame(maxWidth: .infinity)
             } else {
-                Text("Cannot fetch forecast for this trip.")
+                Text(fetchingForecastMessage)
             }
         }
         .task {
             if ((trip.destination?.canGetWeatherForecast()) != nil) {
                 forecast = await trip.destination?.getWeatherForcecast()
+            } else {
+                fetchingForecastMessage = "Cannot fetch forecast for this trip."
             }
         }
     }

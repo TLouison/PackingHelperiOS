@@ -63,7 +63,6 @@ struct TripPackingBoxView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .roundedBox(background: .ultraThick)
-                        
                     }
                 }
             }

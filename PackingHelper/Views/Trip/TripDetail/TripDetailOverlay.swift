@@ -18,6 +18,7 @@ struct TripDetailOverlay: View {
     @State private var showSubtitle: Bool = false
     
     @State private var currentWeather: CurrentWeather? = nil
+    private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
     
     @ViewBuilder 
     func departureInfo() -> some View {
@@ -81,7 +82,7 @@ struct TripDetailOverlay: View {
                             }
                         
                         if (currentWeather != nil) {
-                            Label(currentWeather!.temperature.formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))), systemImage: currentWeather!.symbolName)
+                            Label(currentWeather!.temperature.converted(to: temperatureUnit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))), systemImage: currentWeather!.symbolName)
                         }
                         
                         if showSubtitle {
