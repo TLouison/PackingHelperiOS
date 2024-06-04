@@ -94,12 +94,15 @@ extension TripLocation {
             let weatherService = WeatherService()
             
             if let trip = self.trip {
-                let endDate = trip.startDate.advanced(by: 5 * SECONDS_IN_DAY)
+                // If the trip has begin (i.e. the start date is in the past) we want
+                // the start of the forecast to be the current date
+                let startDate = max(trip.startDate, Date.now)
+                let endDate = startDate.advanced(by: 5 * SECONDS_IN_DAY)
                 
                 do {
                     return try await weatherService.weather(
                         for: self.location,
-                        including: .daily(startDate: trip.startDate, endDate: endDate)
+                        including: .daily(startDate: startDate, endDate: endDate)
                     )
                 } catch {
                     return nil
