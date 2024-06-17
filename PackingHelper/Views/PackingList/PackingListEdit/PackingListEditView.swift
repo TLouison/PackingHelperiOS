@@ -17,7 +17,8 @@ struct PackingListEditView: View {
     
     var trip: Trip? = nil
     
-    @Query var users: [User]
+    @Query private var users: [User]
+    @State private var selectedUser: User?
     
     @State private var listName = ""
     @State private var listType: ListType = .packing
@@ -27,6 +28,10 @@ struct PackingListEditView: View {
     
     var formIsValid: Bool {
         return !listName.isEmpty
+    }
+    
+    var titleString: String {
+        packingList == nil ? "Add List" : "Edit List"
     }
     
     var body: some View {
@@ -39,11 +44,11 @@ struct PackingListEditView: View {
                             Text(type.rawValue).tag(type)
                         }
                     }
-//                    Picker("User", selection: $selectedUser) {
-//                        ForEach(users, id: \.id) { user in
-//                            Text(user.name).tag(user)
-//                        }
-//                    }
+                    Picker("Packer", selection: $selectedUser) {
+                        ForEach(users, id: \.id) { user in
+                            Text(user.name).tag(user as User?)
+                        }
+                    }
                 }
                 
                 Spacer()
@@ -78,8 +83,19 @@ struct PackingListEditView: View {
         .onAppear {
             if let packingList {
                 // Edit the incoming item.
+                selectedUser = packingList.user
                 listName = packingList.name
                 listType = packingList.type
+            } else {
+                // If there is no list, we should get a default user
+                if users.isEmpty {
+                    // This state shouldn't be possible, but create a fallback user if we get here
+                    let newUser = User(name: "Default Packer")
+                    modelContext.insert(newUser)
+                    selectedUser = newUser
+                } else {
+                    selectedUser = users.first!
+                }
             }
         }
         .alert("Delete \(packingList?.name ?? "list")?", isPresented: $isDeleting) {
@@ -93,8 +109,10 @@ struct PackingListEditView: View {
         if let packingList {
             packingList.name = listName
             packingList.type = listType
+            packingList.user = selectedUser!
         } else {
             let newPackingList = PackingList(type: listType, template: isTemplate, name: listName)
+            newPackingList.user = selectedUser!
             
             modelContext.insert(newPackingList)
             

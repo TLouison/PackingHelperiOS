@@ -6,12 +6,13 @@
 //
 
 import SwiftData
+import SwiftUI
 
 @Model
 final class User {
     var name: String
     
-    init(name: String, primary: Bool) {
+    init(name: String) {
         self.name = name
     }
 }

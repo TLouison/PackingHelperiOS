@@ -69,7 +69,7 @@ struct TripDetailView: View {
             .sheet(isPresented: $isShowingTripSettingsSheet) { TripEditView(trip: trip) }
             .sheet(isPresented: $isAddingNewPackingList) {
                 PackingListEditView(trip: trip, isDeleted: .constant(false))
-                    .presentationDetents([.height(225)])
+                    .presentationDetents([.height(250)])
             }
             .sheet(isPresented: $isApplyingDefaultPackingList) {
                 PackingListApplyDefaultView(trip: trip)

@@ -96,7 +96,7 @@ struct DefaultPackingListView: View {
             }
             .sheet(isPresented: $isShowingDefaultPackingListAddSheet) {
                 PackingListEditView(isTemplate: true, isDeleted: .constant(false))
-                    .presentationDetents([.height(225)])
+                    .presentationDetents([.height(250)])
             }
             .sheet(isPresented: $isShowingExplanationSheet) {
                 explanationSheet()

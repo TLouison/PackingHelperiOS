@@ -118,13 +118,6 @@ struct TripListView: View {
                                 .symbolEffect(.bounce, value: visibleTripsSymbol == .completed ? upcomingTrips.count : completedTrips.count)
                         }
                     }
-                    
-                    NavigationLink {
-                        DefaultPackingListView()
-                    } label: {
-                        Label("Default Packing Lists", systemImage: "suitcase.cart.fill")
-                    }
-                    .id(UUID())
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {

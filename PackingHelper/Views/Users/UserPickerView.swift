@@ -14,15 +14,12 @@ struct UserPickerView: View {
     
     var body: some View {
         HStack {
-            HStack {
-                Image(systemName: "person.circle")
-                Text("Showing Lists For:")
-            }
+            Label("Showing Lists For", systemImage: "person.circle")
             Spacer()
             Picker("User", selection: $selectedUser) {
                 Text("Show All").tag(nil as User?)
                 ForEach(users, id: \.id) { user in
-                    Text(user.name).tag(user)
+                    Text(user.name).tag(user as User?)
                 }
             }
             .background(.thickMaterial)
