@@ -41,6 +41,7 @@ struct TripListRowView: View {
                     Text(trip.name)
                         .font(.headline)
                         .roundedBox()
+                        .shaded()
                 }
                 Spacer()
                 HStack {
@@ -50,6 +51,7 @@ struct TripListRowView: View {
                     }
                     .font(.headline)
                     .roundedBox()
+                    .shaded()
                 }
             }
             
@@ -57,6 +59,7 @@ struct TripListRowView: View {
                 Text(trip.name)
                     .font(.headline)
                     .roundedBox()
+                    .shaded()
                 
                 Spacer()
             
@@ -65,6 +68,7 @@ struct TripListRowView: View {
                 }
                 .font(.headline)
                 .roundedBox()
+                .shaded()
             }
         }
     }

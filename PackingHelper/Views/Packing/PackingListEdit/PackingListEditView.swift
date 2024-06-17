@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PackingListEditView: View {
     @Environment(\.modelContext) var modelContext
@@ -15,6 +16,8 @@ struct PackingListEditView: View {
     var isTemplate: Bool = false
     
     var trip: Trip? = nil
+    
+    @Query var users: [User]
     
     @State private var listName = ""
     @State private var listType: ListType = .packing
@@ -36,6 +39,11 @@ struct PackingListEditView: View {
                             Text(type.rawValue).tag(type)
                         }
                     }
+//                    Picker("User", selection: $selectedUser) {
+//                        ForEach(users, id: \.id) { user in
+//                            Text(user.name).tag(user)
+//                        }
+//                    }
                 }
                 
                 Spacer()
@@ -45,6 +53,7 @@ struct PackingListEditView: View {
                         isDeleting.toggle()
                     }
                     .roundedBox()
+                    .shaded()
                 }
             }
             .toolbar {

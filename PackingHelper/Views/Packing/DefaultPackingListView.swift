@@ -37,16 +37,17 @@ struct DefaultPackingListView: View {
             }
             .padding(.bottom, 10)
                 ScrollView {
-                    Text("Default packing lists are a convenient way to save lists of items or tasks that you can easily apply to trips. This means you can create a packing list once, and then add those items to any future trip you create.")
+                    Text("Packing lists are a convenient way to save lists of items or tasks that you can easily apply to trips. This means you can create a packing list once, and then add those items to any future trip you create.")
                         .padding(.bottom, 10)
                     
-                    Text("Create lists for vacations, business trips, weddings, or any other occasion you can think of to make sure you always bring what you need.")
+                    Text("Create lists for categories such as electronics, toiletries, and clothing, or for travel occasions like vacations, business trips, weddings to make sure you always bring what you need.")
                 }
         }
         .padding()
     }
     
     var body: some View {
+        NavigationStack {
             VStack {
                 if !defaultPackingLists.isEmpty {
                     List {
@@ -64,20 +65,20 @@ struct DefaultPackingListView: View {
                             }
                         }
                     }
-                    .navigationTitle("Default Packing Lists")
+                    .navigationTitle("Packing Lists")
                 } else {
                     ContentUnavailableView {
-                        Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
+                        Label("No Packing Lists", systemImage: "suitcase.rolling.fill")
                     } description: {
-                        Text("You haven't created any default packing lists! Create one to simplify your trip creation.")
+                        Text("You haven't created any packing lists! Create one to simplify your trip creation.")
                     } actions: {
-                        Button("Create Default Packing List", systemImage: "folder.badge.plus") {
+                        Button("Create Packing List", systemImage: "folder.badge.plus") {
                             isShowingDefaultPackingListAddSheet.toggle()
                         }
                     }
                 }
             }
-            .navigationTitle("Default Packing Lists")
+            .navigationTitle("Packing Lists")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -101,6 +102,7 @@ struct DefaultPackingListView: View {
                 explanationSheet()
                     .presentationDetents([.height(300)])
             }
+        }
     }
 }
 //

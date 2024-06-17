@@ -7,16 +7,21 @@
 
 import SwiftUI
 
-struct RoundedBox: ViewModifier {
+struct Box: ViewModifier {
     let background: Material
     
     func body(content: Content) -> some View {
         content
             .padding()
             .background(background)
+    }
+}
+
+struct Rounded: ViewModifier {
+    func body(content: Content) -> some View {
+        content
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             .contentShape(.rect)
-            .shaded()
     }
 }
 
@@ -29,10 +34,18 @@ struct Shaded: ViewModifier {
 }
 
 extension View {
-    func roundedBox(background: Material = .thinMaterial)
+    func rounded()
         -> some View {
-            modifier(RoundedBox(background: background))
+            modifier(Rounded())
       }
+    
+    func box(background: Material = .thinMaterial) -> some View {
+        modifier(Box(background: background))
+    }
+    
+    func roundedBox(background: Material = .thinMaterial) -> some View {
+        modifier(Box(background: background)).modifier(Rounded())
+    }
     
     func shaded() -> some View {
         modifier(Shaded())

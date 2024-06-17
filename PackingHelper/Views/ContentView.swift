@@ -9,7 +9,27 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        TripListView()
+        TabView {
+            TripListView()
+                .tabItem {
+                    Label("Trips", systemImage: "airplane.departure")
+                }
+            
+            DefaultPackingListView()
+                .tabItem {
+                    Label("Lists", systemImage: "suitcase.rolling.fill")
+                }
+            
+            UserListView()
+                .tabItem {
+                    Label("Users", systemImage: "person.circle")
+                }
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+        }
     }
 }
 

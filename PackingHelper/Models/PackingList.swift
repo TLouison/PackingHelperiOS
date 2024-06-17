@@ -39,6 +39,7 @@ final class PackingList {
     var template: Bool
     var name: String
     
+    var user: User?
     var trip: Trip?
     @Transient var tripID: PersistentIdentifier? = nil
     
