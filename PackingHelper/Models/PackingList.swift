@@ -39,6 +39,7 @@ final class PackingList {
     var template: Bool
     var name: String
     
+    var user: User?
     var trip: Trip?
     @Transient var tripID: PersistentIdentifier? = nil
     
@@ -82,6 +83,7 @@ extension PackingList {
     static func copy(_ packingList: PackingList) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name)
         newList.items = packingList.items
+        newList.user = packingList.user
         return newList
     }
     

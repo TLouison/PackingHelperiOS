@@ -20,6 +20,8 @@ struct PackingListApplyDefaultView: View {
     ) private var defaultPackingListOptions: [PackingList]
     @State private var defaultPackingList: PackingList? = nil
     
+    @State private var selectedUser: User?
+    
     var formIsValid: Bool {
         return defaultPackingList != nil
     }
@@ -27,15 +29,19 @@ struct PackingListApplyDefaultView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Picker("Default Packing List", selection: $defaultPackingList) {
-                    Text("No Default").tag(nil as PackingList?)
-                    ForEach(defaultPackingListOptions) { packingList in
-                        Text(packingList.name)
-                            .tag(packingList as PackingList?)
+                HStack {
+                    Picker("Default Packing List", selection: $defaultPackingList) {
+                        Text("No Default").tag(nil as PackingList?)
+                        ForEach(defaultPackingListOptions) { packingList in
+                            Text(packingList.name)
+                                .tag(packingList as PackingList?)
+                        }
                     }
+                    Text("for packer")
+                    UserPickerView(selectedUser: $selectedUser, showLabel: false, allowAll: false)
                 }
                 .roundedBox()
-                Text("Apply default packing list to \(trip.name).")
+                Text("Apply default packing list to \(trip.name) .")
                     .font(.footnote)
             }
             .toolbar {

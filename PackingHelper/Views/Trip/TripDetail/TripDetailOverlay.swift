@@ -53,7 +53,7 @@ struct TripDetailOverlay: View {
                             .frame(width: 20, height: 20)
                     }
                     .roundedBox()
-                    .shadow(radius: defaultShadowRadius)
+                    .shaded()
                     
                     
                     Spacer()
@@ -66,6 +66,7 @@ struct TripDetailOverlay: View {
                             .frame(width: 20, height: 20)
                     }
                     .roundedBox()
+                    .shaded()
                 }
                 .padding()
                 
@@ -93,6 +94,7 @@ struct TripDetailOverlay: View {
                     }
                     .transition(.opacity)
                     .roundedBox()
+                    .shaded()
                     .task {
                         currentWeather = await trip.destination?.getCurrentWeather()
                     }

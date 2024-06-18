@@ -68,7 +68,7 @@ struct PackingListDetailView: View {
         }
         .sheet(isPresented: $isShowingListSettings) {
             PackingListEditView(packingList: packingList, isTemplate: packingList.template, isDeleted: $isDeleted)
-                .presentationDetents([.height(225)])
+                .presentationDetents([.height(250)])
         }
         .onChange(of: isDeleted) {
             dismiss()

@@ -38,5 +38,6 @@ struct TripDetailCustomSectionView<Header: View, Content: View>: View {
                 .padding(.top)
         }
         .roundedBox()
+        .shaded()
     }
 }

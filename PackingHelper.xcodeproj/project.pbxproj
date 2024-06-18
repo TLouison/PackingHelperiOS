@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728102C1FD47300EBF362 /* UserPickerView.swift */; };
+		510728132C1FD5D000EBF362 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728122C1FD5D000EBF362 /* UserListView.swift */; };
+		510728152C1FD5DB00EBF362 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728142C1FD5DB00EBF362 /* SettingsView.swift */; };
+		5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */; };
+		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
 		5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6312AE5B028002742D0 /* CalendarUtilities.swift */; };
 		5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6332AE5DA70002742D0 /* StyleUtilities.swift */; };
 		5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */; };
@@ -34,6 +39,8 @@
 		5134EC6A2C06CD3300862E19 /* PackingListSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */; };
 		5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */; };
 		5134EC6E2C08177D00862E19 /* TripDetailSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC6D2C08177D00862E19 /* TripDetailSectionView.swift */; };
+		5134EC752C0EAF8E00862E19 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC742C0EAF8E00862E19 /* User.swift */; };
+		5134EC792C0EB1A400862E19 /* TripUserPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5134EC782C0EB1A400862E19 /* TripUserPackingView.swift */; };
 		51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51466B332ADB3EA200258ABB /* TransitionUtilities.swift */; };
 		515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85992AD7693C002D614F /* PreviewContainer.swift */; };
 		515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */; };
@@ -56,6 +63,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		510728102C1FD47300EBF362 /* UserPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerView.swift; sourceTree = "<group>"; };
+		510728122C1FD5D000EBF362 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
+		510728142C1FD5DB00EBF362 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserOnboardingView.swift; sourceTree = "<group>"; };
+		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
 		5110C6312AE5B028002742D0 /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		5110C6332AE5DA70002742D0 /* StyleUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleUtilities.swift; sourceTree = "<group>"; };
 		5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -83,6 +95,8 @@
 		5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListSelectionView.swift; sourceTree = "<group>"; };
 		5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListPillView.swift; sourceTree = "<group>"; };
 		5134EC6D2C08177D00862E19 /* TripDetailSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailSectionView.swift; sourceTree = "<group>"; };
+		5134EC742C0EAF8E00862E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		5134EC782C0EB1A400862E19 /* TripUserPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripUserPackingView.swift; sourceTree = "<group>"; };
 		51466B332ADB3EA200258ABB /* TransitionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionUtilities.swift; sourceTree = "<group>"; };
 		515B85992AD7693C002D614F /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
 		515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSettingsSheet.swift; sourceTree = "<group>"; };
@@ -118,6 +132,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5107280F2C1FD46700EBF362 /* Users */ = {
+			isa = PBXGroup;
+			children = (
+				510728102C1FD47300EBF362 /* UserPickerView.swift */,
+				510728122C1FD5D000EBF362 /* UserListView.swift */,
+				5107281B2C1FDA1900EBF362 /* UserEditView.swift */,
+			);
+			path = Users;
+			sourceTree = "<group>";
+		};
+		510728162C1FD90900EBF362 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		5107281D2C1FDF3400EBF362 /* DefaultPackingList */ = {
+			isa = PBXGroup;
+			children = (
+				5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */,
+			);
+			path = DefaultPackingList;
+			sourceTree = "<group>";
+		};
 		5110C6412AFD7F76002742D0 /* PackingList */ = {
 			isa = PBXGroup;
 			children = (
@@ -196,10 +236,14 @@
 		51289F292AD4E16D00545115 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5134EC682C06C72E00862E19 /* Weather */,
 				51289F1B2AD3B6CD00545115 /* ContentView.swift */,
-				5132E8482AE22808002575AC /* Packing */,
+				5107281D2C1FDF3400EBF362 /* DefaultPackingList */,
+				510728162C1FD90900EBF362 /* Onboarding */,
+				5107280F2C1FD46700EBF362 /* Users */,
+				5134EC682C06C72E00862E19 /* Weather */,
+				5132E8482AE22808002575AC /* PackingList */,
 				51748B552ADCF410009E919B /* Trip */,
+				510728142C1FD5DB00EBF362 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -213,6 +257,8 @@
 				5132E84B2AE22CA2002575AC /* TripDetailInfoView.swift */,
 				5134EC662C05904100862E19 /* TripDetailForecastView.swift */,
 				51289F2D2AD4E65800545115 /* TripDetailOverlay.swift */,
+				515B859D2AD76F64002D614F /* TripPackingBoxView.swift */,
+				5134EC782C0EB1A400862E19 /* TripUserPackingView.swift */,
 				515B85A02AD76F97002D614F /* Sheets */,
 			);
 			path = TripDetail;
@@ -225,19 +271,19 @@
 				515B85AC2AD8FF45002D614F /* TripLocation.swift */,
 				519B72582ADA1BF7009401C0 /* PackingList.swift */,
 				5110C6392AE5E5A6002742D0 /* Item.swift */,
+				5134EC742C0EAF8E00862E19 /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		5132E8482AE22808002575AC /* Packing */ = {
+		5132E8482AE22808002575AC /* PackingList */ = {
 			isa = PBXGroup;
 			children = (
-				5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */,
 				5110C6422AFD7FA9002742D0 /* PackingListEdit */,
 				5110C6412AFD7F76002742D0 /* PackingList */,
 				51748B572ADCF46E009E919B /* PackingRecommendationView.swift */,
 			);
-			path = Packing;
+			path = PackingList;
 			sourceTree = "<group>";
 		};
 		5134EC682C06C72E00862E19 /* Weather */ = {
@@ -266,7 +312,6 @@
 			children = (
 				51289F2B2AD4E19B00545115 /* TripDetailSheet.swift */,
 				515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */,
-				515B859D2AD76F64002D614F /* TripPackingBoxView.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -404,22 +449,29 @@
 				515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */,
 				51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */,
 				5110C6382AE5E378002742D0 /* PackingListEditSectionRowView.swift in Sources */,
+				510728152C1FD5DB00EBF362 /* SettingsView.swift in Sources */,
+				5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */,
 				519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
+				510728132C1FD5D000EBF362 /* UserListView.swift in Sources */,
 				519B72572ADA06C3009401C0 /* TripListView.swift in Sources */,
 				515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */,
 				5110C6462AFF4279002742D0 /* TaskPackingView.swift in Sources */,
 				515B85A22AD77273002D614F /* TripEditView.swift in Sources */,
+				5134EC752C0EAF8E00862E19 /* User.swift in Sources */,
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
+				5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */,
 				5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */,
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
+				5134EC792C0EB1A400862E19 /* TripUserPackingView.swift in Sources */,
 				5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */,
+				510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */,
 				519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */,
 				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,
 				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
