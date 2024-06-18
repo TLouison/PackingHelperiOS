@@ -12,13 +12,15 @@ struct TaskPackingView: View {
     
     var body: some View {
         List {
-            ForEach(list.items) { item in
+            ForEach(list.items ?? []) { item in
                 PackingListEditSectionRowView(item: item, showCount: false)
                     .strikethrough(item.isPacked)
             }
             .onDelete { indexSet in
                 for index in indexSet {
-                    list.items.remove(at: index)
+                    if var items = list.items {
+                        items.remove(at: index)
+                    }
                 }
             }
             .listRowBackground(Color(.secondarySystemBackground))

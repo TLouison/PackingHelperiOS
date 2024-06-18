@@ -21,7 +21,7 @@ struct PackingListDetailView: View {
     var body: some View {
         VStack {
             ZStack {
-                if packingList.items.isEmpty {
+                if (packingList.items?.isEmpty ?? true) {
                     ContentUnavailableView {
                         Label("No Items On List", systemImage: "bag")
                     } description: {
@@ -41,6 +41,7 @@ struct PackingListDetailView: View {
             Spacer()
             
             PackingAddItemView(packingList: packingList)
+                .padding(.bottom)
         }
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)

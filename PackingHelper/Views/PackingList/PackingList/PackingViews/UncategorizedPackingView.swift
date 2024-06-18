@@ -12,7 +12,7 @@ struct UncategorizedPackingView: View {
     
     var body: some View {
         List {
-            ForEach(packingList.items) { item in
+            ForEach(packingList.items ?? []) { item in
                 if packingList.template {
                     if packingList.type == .task {
                         PackingListEditSectionRowView(item: item, showCount: false, showButton: false)
@@ -29,8 +29,10 @@ struct UncategorizedPackingView: View {
                 }
             }
             .onDelete { indexSet in
-                for index in indexSet {
-                    packingList.items.remove(at: index)
+                if var items = packingList.items {
+                    for index in indexSet {
+                        items.remove(at: index)
+                    }
                 }
             }
             .listRowBackground(Color(.secondarySystemBackground))

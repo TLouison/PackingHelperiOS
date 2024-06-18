@@ -33,17 +33,17 @@ enum ListType: String, Codable, CaseIterable, Comparable {
 
 @Model
 final class PackingList {
-    var created: Date
+    var created: Date = Date.now
     
-    var type: ListType
-    var template: Bool
-    var name: String
+    var type: ListType = ListType.packing
+    var template: Bool = false
+    var name: String = "List"
     
     var user: User?
     var trip: Trip?
     @Transient var tripID: PersistentIdentifier? = nil
     
-    var items: [Item]
+    @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
     
     init(type: ListType, template: Bool, name: String) {
         self.created = Date.now
@@ -54,15 +54,22 @@ final class PackingList {
     }
     
     var incompleteItems: [Item] {
-        self.items.filter{ $0.isPacked == false }
+        self.items?.filter{ $0.isPacked == false } ?? []
     }
     var completeItems: [Item] {
-        self.items.filter{ $0.isPacked == true }
+        self.items?.filter{ $0.isPacked == true } ?? []
     }
     
-    func deleteItem(_ item: Item) {
-        if self.items.contains(item) {
-            self.items.remove(at: self.items.firstIndex(of: item)!)
+    func addItem(_ item: Item) {
+        if self.items == nil {
+            self.items = []
+        }
+        self.items!.append(item)
+    }
+    
+    func removeItem(_ item: Item) {
+        if var items = self.items {
+            items.remove(at: items.firstIndex(of: item)!)
         }
     }
     

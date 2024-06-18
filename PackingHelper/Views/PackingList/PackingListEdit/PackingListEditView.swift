@@ -117,13 +117,13 @@ struct PackingListEditView: View {
             modelContext.insert(newPackingList)
             
             if let trip {
-                trip.lists.append(newPackingList)
+                trip.addList(newPackingList)
             }
         }
     }
     
     private func delete(_ packingList: PackingList) {
-        trip?.lists.remove(at: (trip?.lists.firstIndex(of: packingList))!)
+        trip?.removeList(packingList)
         modelContext.delete(packingList)
         try? modelContext.save()
         isDeleted = true

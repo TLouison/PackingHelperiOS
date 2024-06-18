@@ -237,7 +237,7 @@ struct TripEditView: View {
             for pList in defaultPackingLists {
                 let defaultList = PackingList.copyForTrip(pList)
                 defaultList.tripID = newTrip.id
-                newTrip.lists.append(defaultList)
+                newTrip.addList(defaultList)
             }
             
             modelContext.insert(newTrip)

@@ -9,10 +9,11 @@ import SwiftData
 
 @Model
 class Item {
-    var name: String
-    var count: Int
-    var category: String
-    var isPacked: Bool
+    var name: String = "Item"
+    var list: PackingList?
+    var count: Int = 1
+    var category: String = "Clothing"
+    var isPacked: Bool = false
     
     init(name: String, category: String, count: Int, isPacked: Bool) {
         self.name = name
@@ -22,6 +23,8 @@ class Item {
     }
     
     static func copy(_ item: Item) -> Item {
-        return Item(name: item.name, category: item.category, count: item.count, isPacked: item.isPacked)
+        let copyItem = Item(name: item.name, category: item.category, count: item.count, isPacked: item.isPacked)
+        copyItem.list = item.list
+        return copyItem
     }
 }

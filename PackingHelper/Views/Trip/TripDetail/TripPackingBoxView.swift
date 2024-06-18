@@ -22,9 +22,9 @@ struct TripPackingBoxView: View {
     // Get the packing lists for the provided user
     var packingLists: [PackingList] {
         if let selectedUser {
-            return trip.lists.filter( { $0.user == selectedUser } )
+            return trip.lists?.filter( { $0.user == selectedUser } ) ?? []
         } else {
-            return trip.lists
+            return trip.lists ?? []
         }
     }
     
@@ -46,7 +46,7 @@ struct TripPackingBoxView: View {
                     createListMenu()
                 }
             } content: {
-                if !trip.lists.isEmpty {
+                if !(trip.lists?.isEmpty ?? true) {
                     if trip.totalListEntries > 0 {
                         HStack {
                             ForEach(ListType.allCases, id: \.rawValue) { listType in

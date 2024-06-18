@@ -67,7 +67,7 @@ struct PackingListApplyDefaultView: View {
         if let defaultPackingList {
             let defaultList = PackingList.copyForTrip(defaultPackingList)
             defaultList.tripID = trip.id
-            trip.lists.append(defaultList)
+            trip.addList(defaultList)
         }
     }
 }

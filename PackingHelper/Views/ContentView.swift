@@ -11,6 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
+    @Query private var users: [User]
+    
     @State private var showOnboardingScreen = false
     @State private var name = ""
     
@@ -24,6 +26,10 @@ struct ContentView: View {
             UserDefaults.standard.set(true, forKey: "isFirstLaunch")
             return true
         }
+    }
+    
+    func doUsersExist() -> Bool {
+        return !users.isEmpty
     }
     
     var body: some View {
@@ -49,8 +55,7 @@ struct ContentView: View {
                 }
         }
         .task {
-            let firstLaunch = checkIfFirstLaunch()
-            if firstLaunch {
+            if checkIfFirstLaunch() && !doUsersExist() {
                 showOnboardingScreen.toggle()
             }
         }

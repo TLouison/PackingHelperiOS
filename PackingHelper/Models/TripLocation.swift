@@ -14,10 +14,10 @@ import WeatherKit
 @Model
 final class TripLocation {
     var trip: Trip?
-    var name: String
+    var name: String = "Location"
     
-    var latitude: Double
-    var longitude: Double
+    var latitude: Double = 40.7128
+    var longitude: Double = -74.0060
     
     init(trip: Trip?, name: String, latitude: Double, longitude: Double) {
         self.trip = trip

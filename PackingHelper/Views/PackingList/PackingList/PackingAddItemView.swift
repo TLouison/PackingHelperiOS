@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PackingAddItemView: View {
+    @Environment(\.modelContext) var modelContext
     let packingList: PackingList
     
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
@@ -93,7 +94,10 @@ struct PackingAddItemView: View {
                     }
                     
                     let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
-                    packingList.items.append(newItem)
+                    newItem.list = packingList
+                    
+                    packingList.addItem(newItem)
+                    modelContext.insert(newItem)
                     
                     newItemName = ""
                     newItemCount = 1
@@ -104,6 +108,7 @@ struct PackingAddItemView: View {
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         }
+        .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
     }
 }

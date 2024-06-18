@@ -88,15 +88,15 @@ final class Trip {
         case upcoming, departing, active, returning, complete
     }
     
-    var name: String
+    var name: String = "Trip"
     
     @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var origin: TripLocation?
     @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var destination: TripLocation?
-    @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists = [PackingList]()
+    @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists: [PackingList]? = []
     
-    var startDate: Date
-    var endDate: Date
-    var createdDate: Date
+    var startDate: Date = Date.now
+    var endDate: Date = Date.now.advanced(by: SECONDS_IN_DAY)
+    var createdDate: Date = Date()
     
     var type: TripType = TripType.plane
     var accomodation: TripAccomodation = TripAccomodation.hotel
@@ -118,6 +118,20 @@ final class Trip {
         self.destination = destination
         
         self.createDayOfPackingNotification()
+    }
+    
+    func addList(_ list: PackingList) {
+        if self.lists == nil {
+            self.lists = []
+        }
+        self.lists!.append(list)
+    }
+    
+    func removeList(_ listToRemove: PackingList) {
+        // Make sure to remove the list from the model context as well if fully deleting!
+        if var lists = self.lists {
+            lists.remove(at: (lists.firstIndex(of: listToRemove))!)
+        }
     }
 }
 
@@ -169,33 +183,33 @@ extension Trip {
 extension Trip {
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
-        return self.lists.reduce(0, {x,y in
-            x + y.items.count
-        })
+        return self.lists?.reduce(0, {x,y in
+            x + (y.items?.count ?? 0)
+        }) ?? 0
     }
     
     var totalIncompletePackingItemsEntries: Int {
-        return self.lists.filter{$0.type != .task}.reduce(0, {x,y in
+        return self.lists?.filter{$0.type != .task}.reduce(0, {x,y in
             x + y.incompleteItems.count
-        })
+        }) ?? 0
     }
     
     func getTotalItems(for listType: ListType) -> Int {
-        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
-            x + y.items.count
-        })
+        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
+            x + (y.items?.count ?? 0)
+        }) ?? 0
     }
     
     func getIncompleteItems(for listType: ListType) -> Int {
-        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
+        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
             x + y.incompleteItems.count
-        })
+        }) ?? 0
     }
     
     func getCompleteItems(for listType: ListType) -> Int {
-        return self.lists.filter {$0.type == listType}.reduce(0, {x, y in
+        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
             x + y.completeItems.count
-        })
+        }) ?? 0
     }
     
     func allItemsComplete(for listType: ListType) -> Bool {
