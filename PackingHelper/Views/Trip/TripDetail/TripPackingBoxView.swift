@@ -15,6 +15,7 @@ struct TripPackingBoxView: View {
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     
+    @Query private var lists: [PackingList]
     @Query private var users: [User]
     @State private var selectedUser: User?
 
@@ -32,7 +33,7 @@ struct TripPackingBoxView: View {
     }
     
     var defaultListsExist: Bool {
-        return !packingLists.filter{ $0.template == true }.isEmpty
+        return !lists.filter{ $0.template == true }.isEmpty
     }
     
     var body: some View {

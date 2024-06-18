@@ -12,14 +12,25 @@ struct UserPickerView: View {
     @Query private var users: [User]
     @Binding var selectedUser: User?
     
+    var showLabel: Bool = true
+    var allowAll: Bool = true
+    
     var body: some View {
         HStack {
-            Label("Showing Lists For", systemImage: "person.circle")
-            Spacer()
+            if showLabel {
+                Label("Showing Lists For", systemImage: "person.circle")
+                Spacer()
+            }
             Picker("User", selection: $selectedUser) {
-                Text("Show All").tag(nil as User?)
+                if allowAll {
+                    Text("Show All").tag(nil as User?)
+                }
                 ForEach(users, id: \.id) { user in
-                    Text(user.name).tag(user as User?)
+                    if showLabel {
+                        Text(user.name).tag(user as User?)
+                    } else {
+                        Label(user.name, systemImage: "person.circle").tag(user as User?)
+                    }
                 }
             }
             .background(.thickMaterial)
