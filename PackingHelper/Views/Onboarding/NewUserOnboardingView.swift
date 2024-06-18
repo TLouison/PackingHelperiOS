@@ -33,12 +33,8 @@ struct NewUserOnboardingView: View {
     }
     
     func saveNewUser() {
-        func saveNewUser() {
-            let newUser = User(name: name)
-            modelContext.insert(newUser)
-            
-            
-        }
+        let newUser = User(name: name)
+        modelContext.insert(newUser)
     }
 }
 
