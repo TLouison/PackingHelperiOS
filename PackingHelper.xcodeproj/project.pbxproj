@@ -12,6 +12,7 @@
 		510728152C1FD5DB00EBF362 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728142C1FD5DB00EBF362 /* SettingsView.swift */; };
 		5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */; };
 		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
+		510728202C21297C00EBF362 /* UserListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281F2C21297C00EBF362 /* UserListRowView.swift */; };
 		5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6312AE5B028002742D0 /* CalendarUtilities.swift */; };
 		5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6332AE5DA70002742D0 /* StyleUtilities.swift */; };
 		5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */; };
@@ -68,6 +69,7 @@
 		510728142C1FD5DB00EBF362 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserOnboardingView.swift; sourceTree = "<group>"; };
 		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
+		5107281F2C21297C00EBF362 /* UserListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListRowView.swift; sourceTree = "<group>"; };
 		5110C6312AE5B028002742D0 /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		5110C6332AE5DA70002742D0 /* StyleUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleUtilities.swift; sourceTree = "<group>"; };
 		5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 		5107280F2C1FD46700EBF362 /* Users */ = {
 			isa = PBXGroup;
 			children = (
+				5107281E2C21296700EBF362 /* UserListHelpers */,
 				510728102C1FD47300EBF362 /* UserPickerView.swift */,
 				510728122C1FD5D000EBF362 /* UserListView.swift */,
 				5107281B2C1FDA1900EBF362 /* UserEditView.swift */,
@@ -156,6 +159,14 @@
 				5132E84E2AE23AE7002575AC /* DefaultPackingListView.swift */,
 			);
 			path = DefaultPackingList;
+			sourceTree = "<group>";
+		};
+		5107281E2C21296700EBF362 /* UserListHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				5107281F2C21297C00EBF362 /* UserListRowView.swift */,
+			);
+			path = UserListHelpers;
 			sourceTree = "<group>";
 		};
 		5110C6412AFD7F76002742D0 /* PackingList */ = {
@@ -453,6 +464,7 @@
 				5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */,
 				519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
+				510728202C21297C00EBF362 /* UserListRowView.swift in Sources */,
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,

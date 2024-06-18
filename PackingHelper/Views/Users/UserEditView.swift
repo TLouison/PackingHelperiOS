@@ -31,21 +31,6 @@ struct UserEditView: View {
                 Form {
                     TextField("Name", text: $name)
                 }
-
-                if user != nil {
-                    VStack {
-                        Button(role: .destructive) {
-                            deleteUser()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        .disabled(!canDelete)
-                        
-                        if !canDelete {
-                            Text("You cannot delete this user because there must always be at least one user.").font(.caption)
-                        }
-                    }
-                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -86,14 +71,6 @@ struct UserEditView: View {
             let newUser = User(name: name)
             modelContext.insert(newUser)
         }
-    }
-    
-    //TODO: Build out deleting logic. Need to handle deleting all lists
-    //      associated with the user. Maybe we should offer to leave the
-    //      lists in place somehow? Probably not, just tell them and rip
-    //      the bandaid off.
-    private func deleteUser() {
-        print("Deleting!")
     }
 }
 
