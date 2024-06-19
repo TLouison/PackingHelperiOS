@@ -13,6 +13,8 @@
 		5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */; };
 		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
 		510728202C21297C00EBF362 /* UserListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281F2C21297C00EBF362 /* UserListRowView.swift */; };
+		510728232C228CDB00EBF362 /* FoundExistingDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728222C228CDB00EBF362 /* FoundExistingDataView.swift */; };
+		510728252C228EBA00EBF362 /* CreateNewUserOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728242C228EBA00EBF362 /* CreateNewUserOnboardingView.swift */; };
 		5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6312AE5B028002742D0 /* CalendarUtilities.swift */; };
 		5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6332AE5DA70002742D0 /* StyleUtilities.swift */; };
 		5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */; };
@@ -71,6 +73,8 @@
 		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
 		5107281F2C21297C00EBF362 /* UserListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListRowView.swift; sourceTree = "<group>"; };
 		510728212C212D5500EBF362 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		510728222C228CDB00EBF362 /* FoundExistingDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundExistingDataView.swift; sourceTree = "<group>"; };
+		510728242C228EBA00EBF362 /* CreateNewUserOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewUserOnboardingView.swift; sourceTree = "<group>"; };
 		5110C6312AE5B028002742D0 /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		5110C6332AE5DA70002742D0 /* StyleUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleUtilities.swift; sourceTree = "<group>"; };
 		5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -150,6 +154,8 @@
 			isa = PBXGroup;
 			children = (
 				510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */,
+				510728222C228CDB00EBF362 /* FoundExistingDataView.swift */,
+				510728242C228EBA00EBF362 /* CreateNewUserOnboardingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -459,6 +465,7 @@
 				51748B652AE0D514009E919B /* TripDetailHeroView.swift in Sources */,
 				5132E8532AE44BED002575AC /* CategorizedPackingView.swift in Sources */,
 				51289F2E2AD4E65800545115 /* TripDetailOverlay.swift in Sources */,
+				510728252C228EBA00EBF362 /* CreateNewUserOnboardingView.swift in Sources */,
 				515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */,
 				51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */,
 				5110C6382AE5E378002742D0 /* PackingListEditSectionRowView.swift in Sources */,
@@ -470,6 +477,7 @@
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
+				510728232C228CDB00EBF362 /* FoundExistingDataView.swift in Sources */,
 				510728132C1FD5D000EBF362 /* UserListView.swift in Sources */,
 				519B72572ADA06C3009401C0 /* TripListView.swift in Sources */,
 				515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */,

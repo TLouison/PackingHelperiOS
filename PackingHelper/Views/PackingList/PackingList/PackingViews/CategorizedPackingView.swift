@@ -17,17 +17,15 @@ struct CategorizedPackingView: View {
                 PackingListEditSectionRowView(item: item)
             }
             .onDelete(perform: { indexSet in
-                if var items = packingList.items {
-                    for index in indexSet {
-                        let realIndex: Int
-                        switch isUnpackedSection {
-                        case true:
-                            realIndex = items.firstIndex(of: items[index])!
-                        case false:
-                            realIndex = items.firstIndex(of: items[index])!
-                        }
-                        packingList.removeItem(at: realIndex)
+                for index in indexSet {
+                    let realIndex: Int
+                    switch isUnpackedSection {
+                    case true:
+                        realIndex = items.firstIndex(of: items[index])!
+                    case false:
+                        realIndex = items.firstIndex(of: items[index])!
                     }
+                    packingList.removeItem(at: realIndex)
                 }
             })
         }
