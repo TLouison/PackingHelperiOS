@@ -26,7 +26,7 @@ struct CategorizedPackingView: View {
                         case false:
                             realIndex = items.firstIndex(of: items[index])!
                         }
-                        items.remove(at: realIndex)
+                        packingList.removeItem(at: realIndex)
                     }
                 }
             })

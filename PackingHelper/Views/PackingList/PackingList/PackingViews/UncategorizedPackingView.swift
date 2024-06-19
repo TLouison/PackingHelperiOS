@@ -29,10 +29,8 @@ struct UncategorizedPackingView: View {
                 }
             }
             .onDelete { indexSet in
-                if var items = packingList.items {
-                    for index in indexSet {
-                        items.remove(at: index)
-                    }
+                for index in indexSet {
+                    packingList.removeItem(at: index)
                 }
             }
             .listRowBackground(Color(.secondarySystemBackground))

@@ -18,9 +18,7 @@ struct TaskPackingView: View {
             }
             .onDelete { indexSet in
                 for index in indexSet {
-                    if var items = list.items {
-                        items.remove(at: index)
-                    }
+                    list.removeItem(at: index)
                 }
             }
             .listRowBackground(Color(.secondarySystemBackground))

@@ -26,14 +26,14 @@ struct TripListView: View {
     private static var now: Date { Date.now }
     @Query(FetchDescriptor(
         predicate: #Predicate<Trip>{ $0.endDate > now },
-        sortBy: [SortDescriptor(\.name, order: .forward)]
+        sortBy: [SortDescriptor(\.startDate, order: .forward)]
     ),
            animation: .snappy
     ) var upcomingTrips: [Trip]
     
     @Query(FetchDescriptor(
         predicate: #Predicate<Trip>{ $0.endDate <= now },
-        sortBy: [SortDescriptor(\.name, order: .forward)]
+        sortBy: [SortDescriptor(\.startDate, order: .forward)]
     ),
            animation: .snappy
     ) var completedTrips: [Trip]

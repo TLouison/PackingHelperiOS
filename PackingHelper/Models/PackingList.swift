@@ -68,8 +68,16 @@ final class PackingList {
     }
     
     func removeItem(_ item: Item) {
-        if var items = self.items {
-            items.remove(at: items.firstIndex(of: item)!)
+        if self.items != nil {
+            print("Removing item \(item.name)")
+            self.items!.remove(at: self.items!.firstIndex(of: item)!)
+        }
+    }
+    
+    func removeItem(at index: Int) {
+        if self.items != nil {
+            print("Removing item at index \(index)")
+            self.items?.remove(at: index)
         }
     }
     
