@@ -15,7 +15,7 @@ struct TripPackingBoxView: View {
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     
-    @Query private var lists: [PackingList]
+    @Query(animation: .bouncy) private var lists: [PackingList]
     @Query private var users: [User]
     @State private var selectedUser: User?
 
@@ -66,7 +66,10 @@ struct TripPackingBoxView: View {
                     }
                     
                     VStack(alignment: .center) {
-                        UserPickerView(selectedUser: $selectedUser)
+                        if trip.hasMultiplePackers {
+                            UserPickerView(selectedUser: $selectedUser)
+                                .transition(.scale)
+                        }
                         
                         ForEach(visibleLists) { list in
                             NavigationLink {

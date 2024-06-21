@@ -181,6 +181,10 @@ extension Trip {
 
 // List-related Trip Code
 extension Trip {
+    var hasMultiplePackers: Bool {
+        return self.lists?.compactMap( { $0.user } ).count ?? 0 > 1
+    }
+    
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
         return self.lists?.reduce(0, {x,y in

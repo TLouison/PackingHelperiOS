@@ -12,8 +12,22 @@ struct UserPickerView: View {
     @Query(sort: \User.created, order: .forward) private var users: [User]
     @Binding var selectedUser: User?
     
+    var tripForFiltering: Trip? = nil
+    
     var showLabel: Bool = true
     var allowAll: Bool = true
+    
+    var filteredUsers: [User] {
+        if let tripForFiltering {
+            return users.filter({ user in
+                tripForFiltering.lists?.contains(where: { list in
+                    list.user == user
+                }) ?? false
+            })
+        } else {
+            return users
+        }
+    }
     
     var body: some View {
         HStack {
@@ -25,7 +39,7 @@ struct UserPickerView: View {
                 if allowAll {
                     Text("Show All").tag(nil as User?)
                 }
-                ForEach(users, id: \.id) { user in
+                ForEach(filteredUsers, id: \.id) { user in
                     if showLabel {
                         Text(user.name).tag(user as User?)
                     } else {
