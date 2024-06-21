@@ -19,9 +19,11 @@ fileprivate enum Symbol: Hashable, CaseIterable {
 }
 
 struct PackingListDetailEditRowView: View {
-    let item: Item
+    @Bindable var item: Item
     var showCount: Bool = true
     var showButton: Bool = true
+    
+    @State private var isShowingItemEditSheet = false
     
     @ViewBuilder
     func itemCheckbox(_ item: Item) -> some View {
@@ -54,6 +56,20 @@ struct PackingListDetailEditRowView: View {
                     item.isPacked.toggle()
                 }
             }
+        }
+        .swipeActions {
+            Button {
+                isShowingItemEditSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+                    .labelStyle(.iconOnly)
+                    .tint(.yellow)
+            }
+        }
+        .sheet(isPresented: $isShowingItemEditSheet) {
+            EditItemView(item: item)
+                .padding(.horizontal)
+                .presentationDetents([.height(200)])
         }
     }
 }
