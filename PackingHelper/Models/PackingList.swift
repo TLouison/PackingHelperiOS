@@ -97,7 +97,13 @@ final class PackingList {
 extension PackingList {
     static func copy(_ packingList: PackingList) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name)
-        newList.items = packingList.items
+
+        if let items = packingList.items {
+            for item in items {
+                newList.items?.append(Item.copy(item))
+            }
+        }
+        
         newList.user = packingList.user
         return newList
     }
