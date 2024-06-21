@@ -105,7 +105,8 @@ struct DefaultPackingListView: View {
         }
     }
 }
-//
-//#Preview {
-//    DefaultPackingListView()
-//}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    DefaultPackingListView()
+}

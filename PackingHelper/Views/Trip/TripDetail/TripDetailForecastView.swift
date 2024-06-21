@@ -18,62 +18,63 @@ struct TripDetailForecastView: View {
     @State private var fetchingForecastMessage: String = "Getting weather data for your trip..."
     
     var body: some View {
-        TripDetailSectionView(title: "Forecast") {
+        Group {
             if let forecast {
-                Grid {
-                    GridRow {
-                        Text("\(trip.startDate.formatted(.dateTime.month()))")
-                        Text("") // Hack because EmptyView does not work in cells
-                        ForEach(forecast, id: \.date) { weather in
-                            Text ("\(weather.date.formatted(.dateTime.day()))")
-                                .padding(.bottom, 5)
+                TripDetailSectionView(title: "Forecast") {
+                    Grid {
+                        GridRow {
+                            Text("\(trip.startDate.formatted(.dateTime.month()))")
+                            Text("") // Hack because EmptyView does not work in cells
+                            ForEach(forecast, id: \.date) { weather in
+                                Text ("\(weather.date.formatted(.dateTime.day()))")
+                                    .padding(.bottom, 5)
+                            }
                         }
-                    }
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .gridCellAnchor(.top)
-                    
-                    GridRow {
-                        Text("")
-                        Text("")
-
-                        ForEach(forecast, id: \.date) { weather in
-                            Image(systemName: weather.symbolName)
-                                .font(.title)
-                                .symbolVariant(.fill)
-                                .symbolRenderingMode(colorScheme == .dark ? .multicolor : .palette)
-                        }
-                    }
-                    .padding(.bottom, 10)
-                    
-                    GridRow {
-                        Text("High (\(temperatureUnit.symbol))").font(.caption)
-                        Text("")
-                        ForEach(forecast, id: \.date) { weather in
-                            Text("\(weather.highTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
-                        }
-                    }
-                    
-                    GridRow {
-                        Text("")
-                        Text("")
-                        ForEach(forecast, id: \.date) { weather in
-                            Divider().frame(maxWidth: 30)
-                        }
-                    }
-                    
-                    GridRow {
-                        Text("Low (\(temperatureUnit.symbol))").font(.caption)
-                        Text("")
-                        ForEach(forecast, id: \.date) { weather in
-                            Text("\(weather.lowTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .gridCellAnchor(.top)
+                        
+                        GridRow {
+                            Text("")
+                            Text("")
                             
+                            ForEach(forecast, id: \.date) { weather in
+                                Image(systemName: weather.symbolName)
+                                    .font(.title)
+                                    .symbolVariant(.fill)
+                                    .symbolRenderingMode(colorScheme == .dark ? .multicolor : .palette)
+                            }
+                        }
+                        .padding(.bottom, 10)
+                        
+                        GridRow {
+                            Text("High (\(temperatureUnit.symbol))").font(.caption)
+                            Text("")
+                            ForEach(forecast, id: \.date) { weather in
+                                Text("\(weather.highTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
+                            }
+                        }
+                        
+                        GridRow {
+                            Text("")
+                            Text("")
+                            ForEach(forecast, id: \.date) { weather in
+                                Divider().frame(maxWidth: 30)
+                            }
+                        }
+                        
+                        GridRow {
+                            Text("Low (\(temperatureUnit.symbol))").font(.caption)
+                            Text("")
+                            ForEach(forecast, id: \.date) { weather in
+                                Text("\(weather.lowTemperature.converted(to: temperatureUnit).value.formatted(.number.precision(.fractionLength(.zero))))")
+                                
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            } else {
-                Text(fetchingForecastMessage)
+                .transition(.move(edge: .bottom))
             }
         }
         .task {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CategorizedPackingView: View {
     let packingList: PackingList
@@ -14,7 +15,7 @@ struct CategorizedPackingView: View {
     func packingListSection(items: [Item], title: String, isUnpackedSection: Bool) -> some View {
         Section(title) {
             ForEach(items) { item in
-                PackingListEditSectionRowView(item: item)
+                PackingListDetailEditRowView(item: item)
             }
             .onDelete(perform: { indexSet in
                 for index in indexSet {
@@ -52,4 +53,10 @@ struct CategorizedPackingView: View {
         .listStyle(.grouped)
         .scrollContentBackground(.hidden)
     }
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var lists: [PackingList]
+    CategorizedPackingView(packingList: lists.first!)
 }

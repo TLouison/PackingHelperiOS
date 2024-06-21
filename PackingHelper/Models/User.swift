@@ -11,6 +11,7 @@ import SwiftData
 @Model
 final class User {
     var name: String = "Packer"
+    var created: Date = Date()
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
     

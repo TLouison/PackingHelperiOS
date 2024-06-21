@@ -65,6 +65,7 @@ struct ContentView: View {
     }
 }
 
-#Preview {
+@available(iOS 18.0, *)
+#Preview(traits: .sampleData) {
     ContentView()
 }

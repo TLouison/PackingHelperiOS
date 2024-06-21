@@ -15,15 +15,15 @@ struct UncategorizedPackingView: View {
             ForEach(packingList.items ?? []) { item in
                 if packingList.template {
                     if packingList.type == .task {
-                        PackingListEditSectionRowView(item: item, showCount: false, showButton: false)
+                        PackingListDetailEditRowView(item: item, showCount: false, showButton: false)
                     } else {
-                        PackingListEditSectionRowView(item: item, showButton: false)
+                        PackingListDetailEditRowView(item: item, showButton: false)
                     }
                 } else {
                     if packingList.type == .task {
-                        PackingListEditSectionRowView(item: item, showCount: false).strikethrough(item.isPacked)
+                        PackingListDetailEditRowView(item: item, showCount: false).strikethrough(item.isPacked)
                     } else {
-                        PackingListEditSectionRowView(item: item)
+                        PackingListDetailEditRowView(item: item)
                                 .strikethrough(item.isPacked)
                     }
                 }

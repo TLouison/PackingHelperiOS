@@ -13,7 +13,7 @@ struct TaskPackingView: View {
     var body: some View {
         List {
             ForEach(list.items ?? []) { item in
-                PackingListEditSectionRowView(item: item, showCount: false)
+                PackingListDetailEditRowView(item: item, showCount: false)
                     .strikethrough(item.isPacked)
             }
             .onDelete { indexSet in

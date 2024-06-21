@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct UserPickerView: View {
-    @Query private var users: [User]
+    @Query(sort: \User.created, order: .forward) private var users: [User]
     @Binding var selectedUser: User?
     
     var showLabel: Bool = true

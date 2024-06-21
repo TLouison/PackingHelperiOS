@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct UserListView: View {
-    @Query(animation: .smooth) private var users: [User]
+    @Query(sort: \User.created, order: .forward, animation: .smooth) private var users: [User]
     
     @State private var isShowingAddUserSheet = false
 

@@ -63,7 +63,7 @@ struct PackingListEditView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("New List")
+                    Text(titleString)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -129,4 +129,19 @@ struct PackingListEditView: View {
         isDeleted = true
         dismiss()
     }
+}
+
+@available(iOS 18.0, *)
+#Preview(traits: .sampleData) {
+    PackingListEditView(isDeleted: .constant(false))
+        .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+        .previewDisplayName("New PackingList")
+}
+
+@available(iOS 18.0, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var lists: [PackingList]
+    PackingListEditView(packingList: lists.first, isDeleted: .constant(false))
+        .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro Max"))
+        .previewDisplayName("Edit PackingList")
 }

@@ -6,7 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
+enum PackingListDetailViewCurrentSelection {
+    case unpacked, packed
+}
 
 struct PackingListDetailView: View {
     @Environment(\.modelContext) var modelContext
@@ -14,34 +18,35 @@ struct PackingListDetailView: View {
     
     var packingList: PackingList
 
+    @State private var currentView: PackingListDetailViewCurrentSelection = .unpacked
     @State private var isShowingListSettings: Bool = false
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
     
     var body: some View {
         VStack {
-            ZStack {
-                if (packingList.items?.isEmpty ?? true) {
-                    ContentUnavailableView {
-                        Label("No Items On List", systemImage: "bag")
-                    } description: {
-                        Text("You haven't added any items to your list. Add one now to track your packing!")
-                    }
-                } else {
-                    if packingList.template == true || packingList.type == .dayOf {
-                        UncategorizedPackingView(packingList: packingList)
-                    } else if packingList.type == .task {
-                        TaskPackingView(list: packingList)
-                    } else {
-                        CategorizedPackingView(packingList: packingList)
-                    }
-                }
+            if packingList.template == false {
+                PackingListDetailEditTabBarView(packingList: packingList, currentView: $currentView)
+                    .padding(.top)
             }
             
-            Spacer()
+            if (packingList.items?.isEmpty ?? true) {
+                ContentUnavailableView {
+                    Label("No Items On List", systemImage: "bag")
+                } description: {
+                    Text("You haven't added any items to your list. Add one now to start your packing!")
+                }
+            } else {
+                PackingListDetailEditView(packingList: packingList, currentView: $currentView)
+            }
             
-            PackingAddItemView(packingList: packingList)
-                .padding(.bottom)
+            if currentView == .unpacked {
+                Spacer()
+                
+                PackingAddItemView(packingList: packingList)
+                    .padding(.bottom)
+                    .transition(.pushAndPull(.bottom))
+            }
         }
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -83,4 +88,18 @@ struct PackingListDetailView: View {
         
         isShowingSaveSuccessful = true
     }
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var lists: [PackingList]
+    PackingListDetailView(packingList: lists.first!)
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query(filter: #Predicate<PackingList> { list in
+        list.template == true
+    }) var lists: [PackingList]
+    PackingListDetailView(packingList: lists.first!)
 }

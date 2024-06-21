@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TripDetailInfoView: View {
     let trip: Trip
@@ -38,6 +39,8 @@ struct TripDetailInfoView: View {
     }
 }
 
+//@available(iOS 18, *)
 //#Preview {
-//    TripDetailInfoView()
+//    @Previewable @Query var trips: [Trip]
+//    TripDetailInfoView(trip: trips.first!)
 //}

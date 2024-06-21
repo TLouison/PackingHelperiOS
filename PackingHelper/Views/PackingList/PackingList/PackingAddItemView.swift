@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PackingAddItemView: View {
     @Environment(\.modelContext) var modelContext
@@ -65,20 +66,20 @@ struct PackingAddItemView: View {
                 .background(.thickMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
                 
-                Menu(newItemCategory?.rawValue ?? "Select Category") {
-                    ForEach(PackingRecommendationCategory.allCases, id: \.rawValue) { category in
-                        Button {
-                            newItemCategory = category
-                        } label: {
-                            Text(category.rawValue)
-                        }
-                    }
-                }
-                .padding([.horizontal, .top], 5)
-                .frame(maxWidth: .infinity)
-                .background(.thickMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                .padding([.horizontal, .bottom], 10)
+//                Menu(newItemCategory?.rawValue ?? "Select Category") {
+//                    ForEach(PackingRecommendationCategory.allCases, id: \.rawValue) { category in
+//                        Button {
+//                            newItemCategory = category
+//                        } label: {
+//                            Text(category.rawValue)
+//                        }
+//                    }
+//                }
+//                .padding([.horizontal, .top], 5)
+//                .frame(maxWidth: .infinity)
+//                .background(.thickMaterial)
+//                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+//                .padding([.horizontal, .bottom], 10)
             }
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
@@ -111,4 +112,10 @@ struct PackingAddItemView: View {
         .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
     }
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var lists: [PackingList]
+    PackingAddItemView(packingList: lists.first!)
 }

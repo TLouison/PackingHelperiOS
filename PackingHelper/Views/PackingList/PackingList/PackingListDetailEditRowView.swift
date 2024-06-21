@@ -18,7 +18,7 @@ fileprivate enum Symbol: Hashable, CaseIterable {
     }
 }
 
-struct PackingListEditSectionRowView: View {
+struct PackingListDetailEditRowView: View {
     let item: Item
     var showCount: Bool = true
     var showButton: Bool = true
@@ -39,13 +39,7 @@ struct PackingListEditSectionRowView: View {
                 itemCheckbox(item)
             }
             
-            HStack(alignment: .bottom) {
-                Text(item.name).font(.headline)
-                
-                if item.isPacked {
-                    Text(item.category).font(.footnote).padding(.leading, 5)
-                }
-            }
+            Text(item.name).font(.headline)
             
             if showCount {
                 Spacer()
@@ -54,8 +48,11 @@ struct PackingListEditSectionRowView: View {
         }
         .contentShape(.rect)
         .onTapGesture {
-            withAnimation {
-                item.isPacked.toggle()
+            // Only allow toggle if the list is actually being used for packing
+            if showButton {
+                withAnimation {
+                    item.isPacked.toggle()
+                }
             }
         }
     }

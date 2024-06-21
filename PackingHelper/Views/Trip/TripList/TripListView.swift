@@ -146,3 +146,8 @@ struct TripListView: View {
         }
     }
 }
+
+@available(iOS 18.0, *)
+#Preview(traits: .sampleData) {
+    TripListView()
+}
