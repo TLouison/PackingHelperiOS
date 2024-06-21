@@ -11,11 +11,18 @@ import WeatherKit
 struct TripDetailForecastView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    @Bindable var trip: Trip
+    let trip: Trip
+    @Binding var tripWeather: TripWeather?
     
     private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
-    @State private var forecast: Forecast<DayWeather>?
     @State private var fetchingForecastMessage: String = "Getting weather data for your trip..."
+    
+    var forecast: Forecast<DayWeather>? {
+        if let tripWeather = tripWeather {
+            return tripWeather.dailyForecast
+        }
+        return nil
+    }
     
     var body: some View {
         Group {
@@ -75,13 +82,6 @@ struct TripDetailForecastView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .transition(.move(edge: .bottom))
-            }
-        }
-        .task {
-            if ((trip.destination?.canGetWeatherForecast()) != nil) {
-                forecast = await trip.destination?.getWeatherForcecast()
-            } else {
-                fetchingForecastMessage = "Cannot fetch forecast for this trip."
             }
         }
     }

@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import WeatherKit
 
-//let defaultWeatherFormat: MeasurementFormatter =  .measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))
-func convertCtoF(temperature: Double) -> Double {
-    return temperature * (9/5) + 32
+struct TripWeather {
+    let currentWeather: CurrentWeather?
+    let dailyForecast: Forecast<DayWeather>?
 }

@@ -7,9 +7,11 @@
 
 import SwiftUI
 import MapKit
+import WeatherKit
 
 struct TripDetailHeroView: View {
     @Bindable var trip: Trip
+    @Binding var tripWeather: TripWeather?
     
     @Binding var isShowingTripSettingsSheet: Bool
     
@@ -21,7 +23,7 @@ struct TripDetailHeroView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipShape(.rect(cornerRadius: defaultCornerRadius))
             
-            TripDetailOverlay(trip: trip, isShowingTripSettingsSheet: $isShowingTripSettingsSheet)
+            TripDetailOverlay(trip: trip, tripWeather: $tripWeather, isShowingTripSettingsSheet: $isShowingTripSettingsSheet)
                 .transition(
                     .asymmetric(
                         insertion: .opacity.animation(.bouncy),

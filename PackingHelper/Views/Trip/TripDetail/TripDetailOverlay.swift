@@ -11,14 +11,20 @@ import WeatherKit
 struct TripDetailOverlay: View {
     @Environment(\.dismiss) var dismiss
     @Bindable var trip: Trip
+    @Binding var tripWeather: TripWeather?
     
     @Binding var isShowingTripSettingsSheet: Bool
     
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
-    
-    @State private var currentWeather: CurrentWeather? = nil
     private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
+    
+    var currentTemperature: String {
+        if let currentWeather = tripWeather?.currentWeather {
+            return currentWeather.temperature.converted(to: temperatureUnit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero))))
+        }
+        return ""
+    }
     
     @ViewBuilder 
     func departureInfo() -> some View {
@@ -82,8 +88,8 @@ struct TripDetailOverlay: View {
                                 }
                             }
                         
-                        if (currentWeather != nil) {
-                            Label(currentWeather!.temperature.converted(to: temperatureUnit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero)))), systemImage: currentWeather!.symbolName)
+                        if let currentWeather = tripWeather?.currentWeather {
+                            Label(currentTemperature, systemImage: currentWeather.symbolName)
                         }
                         
                         if showSubtitle {
@@ -95,9 +101,6 @@ struct TripDetailOverlay: View {
                     .transition(.opacity)
                     .roundedBox()
                     .shaded()
-                    .task {
-                        currentWeather = await trip.destination?.getCurrentWeather()
-                    }
                 }
             }
         }

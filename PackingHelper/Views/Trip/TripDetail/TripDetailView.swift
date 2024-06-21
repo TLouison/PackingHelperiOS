@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import WeatherKit
 
 struct RoundedModifier: ViewModifier {
     let corner: CGFloat
@@ -42,11 +43,14 @@ struct TripDetailView: View {
     @State private var completedLongPress = false
     @State private var isShowingTapAnywherePrompt = false
     
+    @State private var tripWeather: TripWeather?
+    
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 20) {
                 TripDetailHeroView(
                     trip: trip,
+                    tripWeather: $tripWeather,
                     isShowingTripSettingsSheet: $isShowingTripSettingsSheet
                 )
                     .shadow(radius: defaultShadowRadius)
@@ -58,7 +62,7 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: defaultShadowRadius)
                 
-                TripDetailForecastView(trip: trip)
+                TripDetailForecastView(trip: trip, tripWeather: $tripWeather)
                     .shadow(radius: defaultShadowRadius)
                 
                 TripDetailInfoView(trip: trip)
@@ -76,6 +80,12 @@ struct TripDetailView: View {
                     .presentationDetents([.height(175)])
             }
             .toolbar(.hidden, for: .navigationBar)
+            .onAppear {
+                Task {
+                    print("Getting weather")
+                    tripWeather = await trip.destination?.getTripWeather()
+                }
+            }
         }
     }
 }

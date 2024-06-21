@@ -89,15 +89,20 @@ extension TripLocation {
         return nil
     }
     
-    func getWeatherForcecast() async -> Forecast<DayWeather>? {
+    private func getForecastStartAndEnd(trip: Trip) -> (start: Date, end: Date) {
+        // If the trip has begin (i.e. the start date is in the past) we want
+        // the start of the forecast to be the current date
+        let startDate = max(trip.startDate, Date.now)
+        let endDate = startDate.advanced(by: 5 * SECONDS_IN_DAY)
+        return (startDate, endDate)
+    }
+    
+    func getWeatherForecast() async -> Forecast<DayWeather>? {
         if canGetWeatherForecast() {
             let weatherService = WeatherService()
             
             if let trip = self.trip {
-                // If the trip has begin (i.e. the start date is in the past) we want
-                // the start of the forecast to be the current date
-                let startDate = max(trip.startDate, Date.now)
-                let endDate = startDate.advanced(by: 5 * SECONDS_IN_DAY)
+                let (startDate, endDate) = self.getForecastStartAndEnd(trip: trip)
                 
                 do {
                     return try await weatherService.weather(
@@ -109,6 +114,35 @@ extension TripLocation {
                 }
             }
         }
+        return nil
+    }
+    
+    func getTripWeather() async -> TripWeather? {
+        let weatherService = WeatherService()
+        
+        if canGetCurrentWeather() && canGetWeatherForecast() {
+            print("Trying to get both weathers")
+            if let trip = self.trip {
+                let (startDate, endDate) = self.getForecastStartAndEnd(trip: trip)
+                let weatherData = try! await weatherService.weather(
+                    for: self.location,
+                    including: .daily(startDate: startDate, endDate: endDate),
+                    .current
+                )
+                
+                return TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
+            }
+        } else if canGetCurrentWeather() {
+            print("Getting only current weather")
+            return await TripWeather(currentWeather: self.getCurrentWeather(), dailyForecast: nil)
+        } else if canGetWeatherForecast() {
+            print("Getting only forecast weather")
+            return await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast())
+        } else {
+            print("Getting no weather")
+            return TripWeather(currentWeather: nil, dailyForecast: nil)
+        }
+        print("Ended up nil")
         return nil
     }
 }
