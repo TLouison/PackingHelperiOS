@@ -83,8 +83,5 @@ struct TripDetailForecastView: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .onAppear {
-            temperatureUnit = Preferences.getTemperatureUnit(modelContext: modelContext)
-        }
     }
 }

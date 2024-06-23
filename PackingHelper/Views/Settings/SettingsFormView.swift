@@ -12,15 +12,7 @@ struct SettingsFormView: View {
     
     var body: some View {
         Form {
-            Picker(
-                "Temperature Unit",
-                systemImage: "thermometer.sun",
-                selection: $preferences.temperatureUnit
-            ) {
-                ForEach(TemperaturePreference.allCases, id: \.rawValue) { unit in
-                    Text("\(unit.rawValue)").tag(unit)
-                }
-            }
+            Text("Settings TBA")
         }
     }
 }

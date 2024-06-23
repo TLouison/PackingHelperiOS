@@ -5,41 +5,16 @@
 //  Created by Todd Louison on 6/23/24.
 //
 
-import Foundation
 import SwiftData
-
-enum TemperaturePreference: String, Codable, CaseIterable  {
-    case auto="Auto", celsius="Celsius", fahrenheit="Fahrenheit"
-}
 
 @Model
 final class Preferences {
-    var temperatureUnit: TemperaturePreference = TemperaturePreference.auto
-    
-    init () {
-        temperatureUnit = .auto
-    }
-    
-    var currentTemperaturePreference: UnitTemperature {
-        switch self.temperatureUnit {
-        case .celsius:
-            UnitTemperature.celsius
-        case .fahrenheit:
-            UnitTemperature.fahrenheit
-        case .auto:
-            UnitTemperature.init(forLocale: .autoupdatingCurrent)
-        }
+    init() {
+        
     }
 }
 
-extension Preferences {
-    public static func getTemperatureUnit(modelContext: ModelContext) -> UnitTemperature {
-        let instance = instance(with: modelContext)
-        print("Current temperature pref: \(instance.currentTemperaturePreference)")
-        return instance.currentTemperaturePreference
-   }
-}
-
+// Extension to handle getting the singleton preference model instance
 extension Preferences {
     static func instance(with modelContext: ModelContext) -> Preferences {
         if let result = try! modelContext.fetch(FetchDescriptor<Preferences>()).first {
