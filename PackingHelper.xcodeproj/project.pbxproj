@@ -3,13 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728102C1FD47300EBF362 /* UserPickerView.swift */; };
 		510728132C1FD5D000EBF362 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728122C1FD5D000EBF362 /* UserListView.swift */; };
-		510728152C1FD5DB00EBF362 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728142C1FD5DB00EBF362 /* SettingsView.swift */; };
 		5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */; };
 		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
 		510728202C21297C00EBF362 /* UserListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281F2C21297C00EBF362 /* UserListRowView.swift */; };
@@ -65,13 +64,13 @@
 		51C8BB6C2C251EDB005D2B71 /* PackingAddItemCountPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB6B2C251EDB005D2B71 /* PackingAddItemCountPickerView.swift */; };
 		51C8BB6F2C251F4E005D2B71 /* EditItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB6E2C251F4E005D2B71 /* EditItemView.swift */; };
 		51C8BB732C25234F005D2B71 /* PackingListDetailItemListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB722C25234F005D2B71 /* PackingListDetailItemListView.swift */; };
+		51C8BB762C287A60005D2B71 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB752C287A60005D2B71 /* Preferences.swift */; };
 		51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		510728102C1FD47300EBF362 /* UserPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerView.swift; sourceTree = "<group>"; };
 		510728122C1FD5D000EBF362 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
-		510728142C1FD5DB00EBF362 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		510728192C1FD91E00EBF362 /* NewUserOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserOnboardingView.swift; sourceTree = "<group>"; };
 		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
 		5107281F2C21297C00EBF362 /* UserListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListRowView.swift; sourceTree = "<group>"; };
@@ -131,8 +130,24 @@
 		51C8BB6B2C251EDB005D2B71 /* PackingAddItemCountPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingAddItemCountPickerView.swift; sourceTree = "<group>"; };
 		51C8BB6E2C251F4E005D2B71 /* EditItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemView.swift; sourceTree = "<group>"; };
 		51C8BB722C25234F005D2B71 /* PackingListDetailItemListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListDetailItemListView.swift; sourceTree = "<group>"; };
+		51C8BB752C287A60005D2B71 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionBoxView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		51C8BB792C287F68005D2B71 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SettingsFormView.swift,
+				SettingsView.swift,
+			);
+			target = 51289F152AD3B6CD00545115 /* PackingHelper */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		51C8BB782C287F68005D2B71 /* Settings */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51C8BB792C287F68005D2B71 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Settings; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		51289F132AD3B6CD00545115 /* Frameworks */ = {
@@ -238,8 +253,8 @@
 				515B85A42AD8D1AF002D614F /* PackingEngine */,
 				515B85982AD76930002D614F /* Utilities */,
 				51289F2F2AD4EA5200545115 /* Models */,
-				51289F292AD4E16D00545115 /* Views */,
 				5110C6352AE5DE7D002742D0 /* FeatureFlags.swift */,
+				51289F292AD4E16D00545115 /* Views */,
 			);
 			path = PackingHelper;
 			sourceTree = "<group>";
@@ -264,7 +279,7 @@
 				5134EC682C06C72E00862E19 /* Weather */,
 				5132E8482AE22808002575AC /* PackingList */,
 				51748B552ADCF410009E919B /* Trip */,
-				510728142C1FD5DB00EBF362 /* SettingsView.swift */,
+				51C8BB782C287F68005D2B71 /* Settings */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -294,6 +309,7 @@
 				519B72582ADA1BF7009401C0 /* PackingList.swift */,
 				5110C6392AE5E5A6002742D0 /* Item.swift */,
 				5134EC742C0EAF8E00862E19 /* User.swift */,
+				51C8BB752C287A60005D2B71 /* Preferences.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -512,11 +528,11 @@
 				51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */,
 				51C8BB682C250304005D2B71 /* PackingListDetailEditView.swift in Sources */,
 				5110C6382AE5E378002742D0 /* PackingListDetailEditRowView.swift in Sources */,
-				510728152C1FD5DB00EBF362 /* SettingsView.swift in Sources */,
 				5107281A2C1FD91E00EBF362 /* NewUserOnboardingView.swift in Sources */,
 				51C8BB732C25234F005D2B71 /* PackingListDetailItemListView.swift in Sources */,
 				519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
+				51C8BB762C287A60005D2B71 /* Preferences.swift in Sources */,
 				510728202C21297C00EBF362 /* UserListRowView.swift in Sources */,
 				51C8BB6C2C251EDB005D2B71 /* PackingAddItemCountPickerView.swift in Sources */,
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,

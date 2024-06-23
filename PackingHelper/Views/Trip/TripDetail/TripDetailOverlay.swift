@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 import WeatherKit
 
 struct TripDetailOverlay: View {
+    @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+    
     @Bindable var trip: Trip
     @Binding var tripWeather: TripWeather?
     
@@ -17,13 +20,13 @@ struct TripDetailOverlay: View {
     
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
-    private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
+    @State private var temperatureUnit: UnitTemperature = .fahrenheit
     
-    var currentTemperature: String {
-        if let currentWeather = tripWeather?.currentWeather {
-            return currentWeather.temperature.converted(to: temperatureUnit).formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero))))
+    var temperature: String {
+        if let tripWeather {
+            return tripWeather.getCurrentTemperatureString()!
         }
-        return ""
+        return "Unknown"
     }
     
     @ViewBuilder 
@@ -89,7 +92,7 @@ struct TripDetailOverlay: View {
                             }
                         
                         if let currentWeather = tripWeather?.currentWeather {
-                            Label(currentTemperature, systemImage: currentWeather.symbolName)
+                            Label(temperature, systemImage: currentWeather.symbolName)
                         }
                         
                         if showSubtitle {
@@ -110,4 +113,10 @@ struct TripDetailOverlay: View {
             }
         }
     }
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var trips: [Trip]
+    TripDetailOverlay(trip: trips.first!, tripWeather: .constant(nil), isShowingTripSettingsSheet: .constant(false))
 }

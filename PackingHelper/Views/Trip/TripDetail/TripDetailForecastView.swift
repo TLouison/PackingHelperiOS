@@ -9,13 +9,12 @@ import SwiftUI
 import WeatherKit
 
 struct TripDetailForecastView: View {
+    @Environment(\.modelContext) var modelContext
     @Environment(\.colorScheme) var colorScheme
     
     let trip: Trip
     @Binding var tripWeather: TripWeather?
-    
-    private let temperatureUnit: UnitTemperature = .init(forLocale: .autoupdatingCurrent)
-    @State private var fetchingForecastMessage: String = "Getting weather data for your trip..."
+    @State private var temperatureUnit: UnitTemperature = .fahrenheit
     
     var forecast: Forecast<DayWeather>? {
         if let tripWeather = tripWeather {
@@ -83,6 +82,9 @@ struct TripDetailForecastView: View {
                 }
                 .transition(.move(edge: .bottom))
             }
+        }
+        .onAppear {
+            temperatureUnit = Preferences.getTemperatureUnit(modelContext: modelContext)
         }
     }
 }

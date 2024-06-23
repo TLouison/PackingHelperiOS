@@ -117,4 +117,6 @@ extension PreviewTrait where T == Preview.ViewTraits {
     container.mainContext.insert(springBreakTrip)
     container.mainContext.insert(familyVisitTrip)
     container.mainContext.insert(workTripPackingList)
+    
+    container.mainContext.insert(Preferences())
 }

@@ -12,7 +12,6 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Query private var users: [User]
-    
     @State private var showOnboardingScreen = false
     @State private var name = ""
     
@@ -61,6 +60,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showOnboardingScreen) {
             NewUserOnboardingView()
+        }
+        .onAppear {
+            Preferences.ensureExists(with: modelContext)
         }
     }
 }

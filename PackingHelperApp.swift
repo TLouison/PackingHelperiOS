@@ -14,6 +14,6 @@ struct PackingHelperApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [Trip.self, TripLocation.self, PackingList.self, Item.self])
+        .modelContainer(for: [Trip.self, TripLocation.self, PackingList.self, Item.self, Preferences.self])
     }
 }
