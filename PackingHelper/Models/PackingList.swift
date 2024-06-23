@@ -95,12 +95,16 @@ final class PackingList {
 }
 
 extension PackingList {
-    static func copy(_ packingList: PackingList) -> PackingList {
+    private static func copy(_ packingList: PackingList, template: Bool = false) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name)
 
         if let items = packingList.items {
             for item in items {
-                newList.items?.append(Item.copy(item))
+                if template {
+                    newList.items?.append(Item.copyForTemplate(item))
+                } else {
+                    newList.items?.append(Item.copy(item))
+                }
             }
         }
         
@@ -111,6 +115,12 @@ extension PackingList {
     static func copyForTrip(_ list: PackingList) -> PackingList {
         let newList = PackingList.copy(list)
         newList.template = false
+        return newList
+    }
+    
+    static func copyAsTemplate(_ list: PackingList) -> PackingList {
+        let newList = PackingList.copy(list, template: true)
+        newList.template = true
         return newList
     }
 }

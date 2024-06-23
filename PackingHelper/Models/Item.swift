@@ -27,4 +27,10 @@ class Item {
         copyItem.list = item.list
         return copyItem
     }
+    
+    static func copyForTemplate(_ item: Item) -> Item {
+        let copyItem = Item(name: item.name, category: item.category, count: item.count, isPacked: false)
+        copyItem.list = item.list
+        return copyItem
+    }
 }

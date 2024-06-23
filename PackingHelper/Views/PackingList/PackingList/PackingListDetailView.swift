@@ -52,14 +52,16 @@ struct PackingListDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup {
-                Menu {
-                    Button("Save As Default") {
-                        withAnimation {
-                            saveListAsDefault()
+                if !self.packingList.template {
+                    Menu {
+                        Button("Save As Default") {
+                            withAnimation {
+                                saveListAsDefault()
+                            }
                         }
+                    }  label: {
+                        Image(systemName: "square.and.arrow.up")
                     }
-                }  label: {
-                    Image(systemName: "square.and.arrow.up")
                 }
                 
                 Button {
@@ -82,8 +84,7 @@ struct PackingListDetailView: View {
     }
     
     func saveListAsDefault() {
-        let newDefaultList = PackingList.copy(self.packingList)
-        newDefaultList.template = true
+        let newDefaultList = PackingList.copyAsTemplate(self.packingList)
         modelContext.insert(newDefaultList)
         
         isShowingSaveSuccessful = true
@@ -93,7 +94,9 @@ struct PackingListDetailView: View {
 @available(iOS 18, *)
 #Preview(traits: .sampleData) {
     @Previewable @Query var lists: [PackingList]
-    PackingListDetailView(packingList: lists.first!)
+    NavigationStack {
+        PackingListDetailView(packingList: lists.first!)
+    }
 }
 
 @available(iOS 18, *)
@@ -101,5 +104,7 @@ struct PackingListDetailView: View {
     @Previewable @Query(filter: #Predicate<PackingList> { list in
         list.template == true
     }) var lists: [PackingList]
-    PackingListDetailView(packingList: lists.first!)
+    NavigationStack {
+        PackingListDetailView(packingList: lists.first!)
+    }
 }
