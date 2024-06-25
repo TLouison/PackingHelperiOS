@@ -13,8 +13,20 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            SettingsFormView(preferences: Preferences.instance(with: modelContext))
-                .navigationTitle("Settings")
+                VStack {
+                    PackingHelperPlusPurchaseView()
+                        .roundedBox()
+                        .shaded()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: defaultCornerRadius)
+                                .strokeBorder(defaultLinearGradient)
+                        )
+                        .padding()
+                    
+                    SettingsFormView(preferences: Preferences.instance(with: modelContext))
+                }
+                .background(Color(.systemGroupedBackground))
+            .navigationTitle("Settings")
         }
     }
 }
