@@ -8,11 +8,23 @@
 import SwiftUI
 
 struct SettingsFormView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    @AppStorage("isDarkMode") private var isDarkMode = false
+    
     @Bindable var preferences: Preferences
+    
+    func setDarkMode() {
+        isDarkMode = colorScheme == .dark
+    }
     
     var body: some View {
         Form {
-            Text("Settings TBA")
+            Section("Appearance") {
+                Toggle(isOn: $isDarkMode) {
+                    Label("Dark Mode", systemImage: "moon.fill")
+                }
+            }
         }
     }
 }
