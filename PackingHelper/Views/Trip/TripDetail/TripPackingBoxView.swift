@@ -47,25 +47,11 @@ struct TripPackingBoxView: View {
                 }
             } content: {
                 if !(trip.lists?.isEmpty ?? true) {
-                    if trip.totalListEntries > 0 {
-                        HStack {
-                            ForEach(ListType.allCases, id: \.rawValue) { listType in
-                                if trip.getTotalItems(for: listType) > 0 {
-                                    packingProgressView(
-                                        val: Double(trip.getCompleteItems(for: listType)),
-                                        total: Double(trip.getTotalItems(for: listType)),
-                                        image: PackingList.icon(listType: listType)
-                                    )
-                                    .onChange(of: trip.getTotalItems(for: listType)) {
-                                        print(trip.getCompleteItems(for: listType), trip.getTotalItems(for: listType))
-                                    }
-                                    .padding(.horizontal)
-                                }
-                            }
-                        }
-                    }
-                    
                     VStack(alignment: .center) {
+                        if trip.totalListEntries > 0 {
+                            TripDetailPackingGaugeRowView(trip: trip)
+                        }
+                        
                         if trip.hasMultiplePackers {
                             UserPickerView(selectedUser: $selectedUser)
                                 .transition(.scale)
@@ -82,17 +68,6 @@ struct TripPackingBoxView: View {
                         }
                     }
                 }
-        }
-    }
-    
-    @ViewBuilder func packingProgressView(val: Double, total: Double, image: String) -> some View {
-        HStack {
-            Gauge(value: val, in: 0...total) {
-                Image(systemName: image)
-                    .imageScale(.small)
-            }
-            .gaugeStyle(.accessoryCircularCapacity)
-            .tint(val == total ? .green : .accent)
         }
     }
     

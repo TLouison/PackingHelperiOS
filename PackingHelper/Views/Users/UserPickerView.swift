@@ -19,11 +19,13 @@ struct UserPickerView: View {
     
     var filteredUsers: [User] {
         if let tripForFiltering {
+            // Filter out users that are not part of this trip. We also
+            // need to resort because the filter doesn't guarantee order
             return users.filter({ user in
                 tripForFiltering.lists?.contains(where: { list in
                     list.user == user
                 }) ?? false
-            })
+            }).sorted(by: { $0.created < $1.created })
         } else {
             return users
         }
@@ -35,7 +37,7 @@ struct UserPickerView: View {
                 Label("Showing Lists For", systemImage: "person.circle")
                 Spacer()
             }
-            Picker("User", selection: $selectedUser) {
+            Picker("Packer", selection: $selectedUser) {
                 if allowAll {
                     Text("Show All").tag(nil as User?)
                 }

@@ -44,11 +44,7 @@ struct PackingListEditView: View {
                             Text(type.rawValue).tag(type)
                         }
                     }
-                    Picker("Packer", selection: $selectedUser) {
-                        ForEach(users, id: \.id) { user in
-                            Text(user.name).tag(user as User?)
-                        }
-                    }
+                    UserPickerView(selectedUser: $selectedUser, showLabel: false, allowAll: false)
                 }
                 
                 Spacer()
