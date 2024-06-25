@@ -28,6 +28,11 @@ struct TripPackingBoxView: View {
         }
     }
     
+    var visibleListTypes: [ListType] {
+        let listTypes = Set(packingLists.map{ $0.type })
+        return listTypes.sorted()
+    }
+    
     var visibleLists: [PackingList] {
         return packingLists.filter{ $0.trip == trip }.sorted(by: {$0.type < $1.type})
     }
@@ -57,11 +62,11 @@ struct TripPackingBoxView: View {
                                 .transition(.scale)
                         }
                         
-                        ForEach(visibleLists) { list in
+                        ForEach(visibleListTypes, id: \.rawValue) { listType in
                             NavigationLink {
-                                PackingListDetailView(packingList: list)
+                                PackingListMultiListView(listType: listType, trip: trip, user: selectedUser)
                             } label: {
-                                Label(list.name, systemImage: list.icon)
+                                Label(listType.rawValue, systemImage: listType.icon)
                             }
                             .frame(maxWidth: .infinity)
                             .roundedBox(background: .ultraThick)

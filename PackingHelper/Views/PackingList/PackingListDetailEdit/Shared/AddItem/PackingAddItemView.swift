@@ -114,14 +114,16 @@ struct PackingAddItemView: View {
                 }
             }
             
-            let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
-            newItem.list = packingList
-            
-            packingList.addItem(newItem)
-            modelContext.insert(newItem)
-            
-            newItemName = ""
-            newItemCount = 1
+            withAnimation {
+                let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
+                newItem.list = packingList
+                
+                packingList.addItem(newItem)
+                modelContext.insert(newItem)
+                
+                newItemName = ""
+                newItemCount = 1
+            }
         }
     }
 }

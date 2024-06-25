@@ -27,7 +27,7 @@ struct CreateNewUserOnboardingView: View {
                 .shaded()
                 .overlay(
                     RoundedRectangle(cornerRadius: defaultCornerRadius)
-                        .strokeBorder(LinearGradient(colors: [.accentColor, .purple], startPoint: .leading, endPoint: .trailing))
+                        .strokeBorder(defaultLinearGradient)
                 )
                 .padding()
             

@@ -26,7 +26,7 @@ struct PackingListDetailView: View {
     var body: some View {
         VStack {
             if packingList.template == false {
-                PackingListDetailEditTabBarView(packingList: packingList, currentView: $currentView)
+                PackingListDetailEditTabBarView(listType: packingList.type, currentView: $currentView)
                     .padding(.top)
             }
             

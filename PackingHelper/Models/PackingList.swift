@@ -22,6 +22,14 @@ enum ListType: String, Codable, CaseIterable, Comparable {
         }
     }
     
+    var icon: String {
+        switch self {
+            case .packing: "suitcase.rolling.fill"
+            case .dayOf: "sun.horizon"
+            case .task: "checklist"
+        }
+    }
+    
     static func ==(lhs: ListType, rhs: ListType) -> Bool {
             return lhs.sortOrder == rhs.sortOrder
     }

@@ -91,9 +91,19 @@ struct TripDetailOverlay: View {
                                 }
                             }
                         
-                        if let currentWeather = tripWeather?.currentWeather {
-                            Label(temperature, systemImage: currentWeather.symbolName)
+                        HStack {
+                            if let destination = trip.destination {
+                                Text(destination.name)
+                            }
+                            
+                            if let currentWeather = tripWeather?.currentWeather {
+                                Divider()
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Label(temperature, systemImage: currentWeather.symbolName)
+                            }
                         }
+                        .font(.subheadline)
+                        .padding(.top, -15)
                         
                         if showSubtitle {
                             departureInfo()

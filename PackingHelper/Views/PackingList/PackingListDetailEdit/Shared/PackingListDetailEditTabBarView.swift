@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftData
 
 struct PackingListDetailEditTabBarView: View {
-    let packingList: PackingList
+    let listType: ListType
     
     @Binding var currentView: PackingListDetailViewCurrentSelection
     
     var buttonLeftTitle: String {
-        if packingList.type == .task {
+        if listType == .task {
             "Tasks"
         } else {
             "Unpacked"
@@ -22,7 +22,7 @@ struct PackingListDetailEditTabBarView: View {
     }
     
     var buttonRightTitle: String {
-        if packingList.type == .task {
+        if listType == .task {
             "Completed"
         } else {
             "Packed"
@@ -58,6 +58,6 @@ struct PackingListDetailEditTabBarView: View {
 #Preview(traits: .sampleData) {
     @Previewable @Query var lists: [PackingList]
     @Previewable @State var packingView: PackingListDetailViewCurrentSelection = .unpacked
-    PackingListDetailEditTabBarView(packingList: lists[lists.firstIndex {$0.type == .packing}!], currentView: $packingView)
-    PackingListDetailEditTabBarView(packingList: lists[lists.firstIndex {$0.type == .task}!], currentView: $packingView)
+    PackingListDetailEditTabBarView(listType: .packing, currentView: $packingView)
+    PackingListDetailEditTabBarView(listType: .task, currentView: $packingView)
 }

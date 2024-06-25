@@ -219,6 +219,10 @@ extension Trip {
     func allItemsComplete(for listType: ListType) -> Bool {
         return self.getTotalItems(for: listType) == self.getCompleteItems(for: listType)
     }
+    
+    func getLists(for listType: ListType) -> [PackingList] {
+        return self.lists?.filter {$0.type == listType} ?? []
+    }
 }
 
 extension Trip {
