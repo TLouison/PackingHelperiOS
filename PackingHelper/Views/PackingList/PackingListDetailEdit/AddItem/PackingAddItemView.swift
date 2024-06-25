@@ -18,6 +18,10 @@ struct PackingAddItemView: View {
     @State private var newItemCount = 1
     @State private var newItemCategory: PackingRecommendationCategory?
     
+    var formIsValid: Bool {
+        return newItemName != "" && newItemCount > 0 && newItemCategory != nil
+    }
+    
     var body: some View {
         VStack {
 //            if newItemName != "" && FeatureFlags.showingRecommendations {
@@ -46,6 +50,10 @@ struct PackingAddItemView: View {
                             } else {
                                 newItemCategory = nil
                             }
+                        }
+                        .submitLabel(.done)
+                        .onSubmit {
+                            addItem()
                         }
                     
                     if packingList.type != .task {
@@ -85,24 +93,7 @@ struct PackingAddItemView: View {
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             
             Button("Add Item") {
-                if newItemName != "" {
-                    if packingList.type == .task {
-                        newItemCategory = .Task
-                    } else {
-                        if newItemCategory == nil {
-                            newItemCategory = PackingEngine.interpretItem(itemName: newItemName)
-                        }
-                    }
-                    
-                    let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
-                    newItem.list = packingList
-                    
-                    packingList.addItem(newItem)
-                    modelContext.insert(newItem)
-                    
-                    newItemName = ""
-                    newItemCount = 1
-                }
+                addItem()
             }
             .padding()
             .frame(maxWidth: .infinity)
@@ -111,6 +102,27 @@ struct PackingAddItemView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
+    }
+    
+    func addItem() {
+        if newItemName != "" {
+            if packingList.type == .task {
+                newItemCategory = .Task
+            } else {
+                if newItemCategory == nil {
+                    newItemCategory = PackingEngine.interpretItem(itemName: newItemName)
+                }
+            }
+            
+            let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
+            newItem.list = packingList
+            
+            packingList.addItem(newItem)
+            modelContext.insert(newItem)
+            
+            newItemName = ""
+            newItemCount = 1
+        }
     }
 }
 

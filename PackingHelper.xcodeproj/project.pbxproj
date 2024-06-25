@@ -66,6 +66,7 @@
 		51C8BB762C287A60005D2B71 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB752C287A60005D2B71 /* Preferences.swift */; };
 		51C8BB832C2A5860005D2B71 /* TripDetailPackingProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB822C2A5860005D2B71 /* TripDetailPackingProgressView.swift */; };
 		51C8BB872C2A58B1005D2B71 /* TripDetailPackingGaugeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB862C2A58B1005D2B71 /* TripDetailPackingGaugeRowView.swift */; };
+		51C8BB892C2A5C2B005D2B71 /* UserPickerBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB882C2A5C2B005D2B71 /* UserPickerBaseView.swift */; };
 		51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */; };
 /* End PBXBuildFile section */
 
@@ -133,6 +134,7 @@
 		51C8BB752C287A60005D2B71 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		51C8BB822C2A5860005D2B71 /* TripDetailPackingProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailPackingProgressView.swift; sourceTree = "<group>"; };
 		51C8BB862C2A58B1005D2B71 /* TripDetailPackingGaugeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailPackingGaugeRowView.swift; sourceTree = "<group>"; };
+		51C8BB882C2A5C2B005D2B71 /* UserPickerBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerBaseView.swift; sourceTree = "<group>"; };
 		51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionBoxView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -166,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				5107281E2C21296700EBF362 /* UserListHelpers */,
+				51C8BB882C2A5C2B005D2B71 /* UserPickerBaseView.swift */,
 				510728102C1FD47300EBF362 /* UserPickerView.swift */,
 				510728122C1FD5D000EBF362 /* UserListView.swift */,
 				5107281B2C1FDA1900EBF362 /* UserEditView.swift */,
@@ -562,6 +565,7 @@
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,
+				51C8BB892C2A5C2B005D2B71 /* UserPickerBaseView.swift in Sources */,
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
 				5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */,
 				510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */,

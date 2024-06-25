@@ -44,7 +44,7 @@ struct PackingListEditView: View {
                             Text(type.rawValue).tag(type)
                         }
                     }
-                    UserPickerView(selectedUser: $selectedUser, showLabel: false, allowAll: false)
+                    UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
                 }
                 
                 Spacer()
@@ -90,7 +90,7 @@ struct PackingListEditView: View {
                     modelContext.insert(newUser)
                     selectedUser = newUser
                 } else {
-                    selectedUser = users.first!
+                    selectedUser = users.sorted(by: { $0.created < $1.created }).first!
                 }
             }
         }
