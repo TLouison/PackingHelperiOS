@@ -15,13 +15,6 @@ struct SettingsView: View {
         NavigationStack {
                 VStack {
                     PackingHelperPlusPurchaseView()
-                        .roundedBox()
-                        .shaded()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: defaultCornerRadius)
-                                .strokeBorder(defaultLinearGradient)
-                        )
-                        .padding()
                     
                     SettingsFormView(preferences: Preferences.instance(with: modelContext))
                 }
