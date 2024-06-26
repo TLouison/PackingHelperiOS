@@ -25,8 +25,6 @@ import StoreKit
 }
 
 struct PackingHelperPlusPurchaseView: View {
-    @State private var isShowingMoreInfo: Bool = false
-    
     @StateObject private var store = Store()
     
     var body: some View {
@@ -40,17 +38,7 @@ struct PackingHelperPlusPurchaseView: View {
                 }
                 .productViewStyle(.compact)
                 
-                Button("Learn More") {
-                    withAnimation {
-                        isShowingMoreInfo.toggle()
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 5)
-                .background(.thickMaterial)
-                .clipShape(.capsule)
-                
-                if isShowingMoreInfo {
+                DisclosureGroup("Learn More") {
                     VStack(alignment: .leading) {
                         Text("• Add unlimited users")
                         Text("• Intelligent Categorization")
@@ -58,6 +46,7 @@ struct PackingHelperPlusPurchaseView: View {
                     }
                     .roundedBox(background: .thickMaterial)
                 }
+                .padding(.horizontal)
             }
         }
         .roundedBox()
@@ -66,6 +55,7 @@ struct PackingHelperPlusPurchaseView: View {
             RoundedRectangle(cornerRadius: defaultCornerRadius)
                 .strokeBorder(defaultLinearGradient)
         )
+        .transition(.move(edge: .top))
         .padding()
         .task {
             await store.fetchProducts()

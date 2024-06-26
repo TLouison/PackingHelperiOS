@@ -51,15 +51,14 @@ struct DefaultPackingListView: View {
             VStack {
                 if !defaultPackingLists.isEmpty {
                     List {
-                        ForEach(defaultPackingLists) { packingList in
-                            NavigationLink {
-                                PackingListDetailView(packingList: packingList)
-                                    .padding(.vertical)
-                            } label: {
-                                Label(packingList.name, systemImage: packingList.icon)
+                        ForEach(ListType.allCases, id: \.rawValue) { listType in
+                            let listsOfType = defaultPackingLists.filter{ $0.type == listType }
+                            if !listsOfType.isEmpty {
+                                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType)
                             }
                         }
                     }
+                    .listStyle(InsetGroupedListStyle())
                     .navigationTitle("Packing Lists")
                 } else {
                     ContentUnavailableView {

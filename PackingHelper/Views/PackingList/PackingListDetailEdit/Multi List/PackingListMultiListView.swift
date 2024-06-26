@@ -49,7 +49,7 @@ struct PackingListMultiListView: View {
             
             List {
                 ForEach(listsForUser, id: \.id) { packingList in
-                    Section(packingList.name) {
+                    CollapsibleSection(title: packingList.name) {
                         PackingListMultiListEditView(packingList: packingList, currentView: $currentView, isAddingNewItem: $isShowingAddItem, listToAddTo: $listToAddItemTo)
                     }
                 }

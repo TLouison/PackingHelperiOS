@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 enum ListType: String, Codable, CaseIterable, Comparable {
-    case packing="Packing", dayOf="Day-of", task="Task"
+    case packing="Packing", task="Task", dayOf="Day-of"
     
     private var sortOrder: Int {
         switch self {

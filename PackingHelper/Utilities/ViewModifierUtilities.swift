@@ -33,6 +33,16 @@ struct Shaded: ViewModifier {
     }
 }
 
+struct BorderGradient: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: defaultCornerRadius)
+                    .strokeBorder(defaultLinearGradient)
+            )
+    }
+}
+
 extension View {
     func rounded()
         -> some View {
@@ -49,5 +59,9 @@ extension View {
     
     func shaded() -> some View {
         modifier(Shaded())
+    }
+    
+    func borderGradient() -> some View {
+        modifier(BorderGradient())
     }
 }
