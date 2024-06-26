@@ -49,7 +49,17 @@ struct PackingListMultiListView: View {
             
             List {
                 ForEach(listsForUser, id: \.id) { packingList in
-                    CollapsibleSection(title: packingList.name) {
+                    CollapsibleSection {
+                        HStack {
+                            Text(packingList.name)
+                            
+                            if user == nil {
+                                if let pUser = packingList.user {
+                                    pUser.pillIcon
+                                }
+                            }
+                        }
+                    } content: {
                         PackingListMultiListEditView(packingList: packingList, currentView: $currentView, isAddingNewItem: $isShowingAddItem, listToAddTo: $listToAddItemTo)
                     }
                 }

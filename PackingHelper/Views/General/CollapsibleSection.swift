@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct CollapsibleSection<Content: View>: View {
-    let title: String
+struct CollapsibleSection<Header: View, Content: View>: View {
     @State private var isExpanded: Bool = true
     
+    @ViewBuilder var title: () -> Header
     @ViewBuilder var content: () -> Content
     
     var body: some View {
@@ -18,7 +18,7 @@ struct CollapsibleSection<Content: View>: View {
             content()
         } header: {
             HStack {
-                Text(title)
+                title()
                 
                 Spacer()
                 

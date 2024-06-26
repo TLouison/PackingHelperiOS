@@ -19,3 +19,14 @@ final class User {
         self.name = name
     }
 }
+
+extension User {
+    var pillIcon: some View {
+        return Text(self.name)
+            .font(.caption)
+            .padding(.horizontal)
+            .padding(.vertical, 5)
+            .background(.ultraThickMaterial)
+            .clipShape(.capsule)
+    }
+}

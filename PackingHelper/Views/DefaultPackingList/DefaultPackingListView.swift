@@ -18,6 +18,9 @@ struct DefaultPackingListView: View {
     )
     var defaultPackingLists: [PackingList]
     
+    @State private var selectedUser: User?
+    @Query private var users: [User]
+    
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     @State private var isShowingExplanationSheet: Bool = false
     
@@ -46,15 +49,32 @@ struct DefaultPackingListView: View {
         .padding()
     }
     
+    var visiblePackingLists: [PackingList] {
+        if let selectedUser {
+            return defaultPackingLists.filter{ $0.user == selectedUser }
+        } else {
+            return defaultPackingLists
+        }
+    }
+    
+    var showUserBadges: Bool {
+        return selectedUser == nil
+    }
+    
     var body: some View {
         NavigationStack {
             VStack {
-                if !defaultPackingLists.isEmpty {
+                if users.count > 1 {
+                    UserPickerView(selectedUser: $selectedUser)
+                        .padding(.horizontal)
+                }
+                
+                if !visiblePackingLists.isEmpty {
                     List {
                         ForEach(ListType.allCases, id: \.rawValue) { listType in
-                            let listsOfType = defaultPackingLists.filter{ $0.type == listType }
+                            let listsOfType = visiblePackingLists.filter{ $0.type == listType }
                             if !listsOfType.isEmpty {
-                                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType)
+                                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType, showUserBadge: showUserBadges)
                             }
                         }
                     }

@@ -11,6 +11,8 @@ struct DefaultPackingViewListTypeSectionView: View {
     let listType: ListType
     let packingLists: [PackingList]
     
+    var showUserBadge: Bool = false
+    
     @State private var isExpanded: Bool = true
     
     var listsOfType: [PackingList] {
@@ -18,13 +20,23 @@ struct DefaultPackingViewListTypeSectionView: View {
     }
     
     var body: some View {
-        CollapsibleSection(title: "\(listType.rawValue) | \(listsOfType.count)") {
+        CollapsibleSection {
+            Text("\(listType.rawValue) | \(listsOfType.count)")
+        } content: {
             ForEach(listsOfType, id: \.id) { packingList in
                 NavigationLink {
                     PackingListDetailView(packingList: packingList)
                         .padding(.vertical)
                 } label: {
-                    Label(packingList.name, systemImage: packingList.icon)
+                    HStack {
+                        Label(packingList.name, systemImage: packingList.icon)
+                        
+                        if showUserBadge {
+                            if let user = packingList.user {
+                                user.pillIcon
+                            }
+                        }
+                    }
                 }
             }
         }
