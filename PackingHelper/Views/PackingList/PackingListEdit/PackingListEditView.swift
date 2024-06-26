@@ -22,6 +22,7 @@ struct PackingListEditView: View {
     
     @State private var listName = ""
     @State private var listType: ListType = .packing
+    @State private var countAsDays: Bool = false
     
     @State private var isDeleting: Bool = false
     @Binding var isDeleted: Bool
@@ -38,13 +39,28 @@ struct PackingListEditView: View {
         NavigationStack {
             VStack {
                 Form {
-                    TextField("List Name", text: $listName)
-                    Picker("List Type", selection: $listType) {
-                        ForEach(ListType.allCases, id: \.rawValue) { type in
-                            Text(type.rawValue).tag(type)
+                    Section("List Details") {
+                        TextField("List Name", text: $listName)
+                        Picker("List Type", selection: $listType) {
+                            ForEach(ListType.allCases, id: \.rawValue) { type in
+                                Text(type.rawValue).tag(type)
+                            }
                         }
                     }
-                    UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+                    
+                    Section("Packer") {
+                        UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+                    }
+                    
+                    if isTemplate {
+                        Section {
+                            Toggle("Trip Duration as Item Count", isOn: $countAsDays)
+                        } header: {
+                            Text("Default List Options")
+                        } footer: {
+                            Text("If enabled, applying this list to a trip will set the amount of each item in this list to the number of days the trip will last. If disabled, 1 will be used for all items.")
+                        }
+                    }
                 }
                 
                 Spacer()
@@ -82,6 +98,7 @@ struct PackingListEditView: View {
                 selectedUser = packingList.user
                 listName = packingList.name
                 listType = packingList.type
+                countAsDays = packingList.countAsDays
             } else {
                 // If there is no list, we should get a default user
                 if users.isEmpty {
@@ -106,8 +123,9 @@ struct PackingListEditView: View {
             packingList.name = listName
             packingList.type = listType
             packingList.user = selectedUser!
+            packingList.countAsDays = countAsDays
         } else {
-            let newPackingList = PackingList(type: listType, template: isTemplate, name: listName)
+            let newPackingList = PackingList(type: listType, template: isTemplate, name: listName, countAsDays: countAsDays)
             newPackingList.user = selectedUser!
             
             modelContext.insert(newPackingList)
@@ -137,7 +155,7 @@ struct PackingListEditView: View {
 @available(iOS 18.0, *)
 #Preview(traits: .sampleData) {
     @Previewable @Query var lists: [PackingList]
-    PackingListEditView(packingList: lists.first, isDeleted: .constant(false))
+    PackingListEditView(packingList: lists.first, isTemplate: true, isDeleted: .constant(false))
         .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro Max"))
         .previewDisplayName("Edit PackingList")
 }

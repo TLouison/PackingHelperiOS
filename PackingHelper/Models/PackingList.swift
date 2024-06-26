@@ -44,8 +44,11 @@ final class PackingList {
     var created: Date = Date.now
     
     var type: ListType = ListType.packing
-    var template: Bool = false
     var name: String = "List"
+    
+    // Default Packing List Variables
+    var template: Bool = false
+    var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
     
     var user: User?
     var trip: Trip?
@@ -53,12 +56,13 @@ final class PackingList {
     
     @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
     
-    init(type: ListType, template: Bool, name: String) {
+    init(type: ListType, template: Bool, name: String, countAsDays: Bool) {
         self.created = Date.now
         self.type = type
         self.template = template
         self.items = []
         self.name = name
+        self.countAsDays = countAsDays
     }
     
     var incompleteItems: [Item] {
@@ -104,15 +108,22 @@ final class PackingList {
 
 extension PackingList {
     private static func copy(_ packingList: PackingList, template: Bool = false) -> PackingList {
-        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name)
+        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays)
 
         if let items = packingList.items {
             for item in items {
+                let newItem: Item
                 if template {
-                    newList.items?.append(Item.copyForTemplate(item))
+                    newItem = Item.copyForTemplate(item)
                 } else {
-                    newList.items?.append(Item.copy(item))
+                    newItem = Item.copy(item)
                 }
+                // Modify the numbers on the list based on number of days if desired
+                if !template && packingList.countAsDays {
+                    newItem.count = packingList.trip?.duration ?? newItem.count
+                }
+                
+                newList.items?.append(newItem)
             }
         }
         

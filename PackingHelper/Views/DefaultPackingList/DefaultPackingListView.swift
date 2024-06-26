@@ -58,7 +58,7 @@ struct DefaultPackingListView: View {
                             }
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
+                    .listStyle(.grouped)
                     .navigationTitle("Packing Lists")
                 } else {
                     ContentUnavailableView {
@@ -90,7 +90,6 @@ struct DefaultPackingListView: View {
             }
             .sheet(isPresented: $isShowingDefaultPackingListAddSheet) {
                 PackingListEditView(isTemplate: true, isDeleted: .constant(false))
-                    .presentationDetents([.height(250)])
             }
             .sheet(isPresented: $isShowingExplanationSheet) {
                 explanationSheet()

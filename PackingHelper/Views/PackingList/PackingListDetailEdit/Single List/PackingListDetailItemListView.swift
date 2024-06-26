@@ -11,13 +11,17 @@ struct PackingListDetailItemListView: View {
     let packingList: PackingList
     var items: [Item]
     
+    var shouldShowCount: Bool {
+        return packingList.type != .task && packingList.template == false
+    }
+    
     var body: some View {
         List {
             ForEach(items, id: \.id) { item in
                 PackingListDetailEditRowView(
                     packingList: packingList,
                     item: item,
-                    showCount: packingList.type != .task,
+                    showCount: shouldShowCount,
                     showButton: packingList.template == false
                 )
             }
