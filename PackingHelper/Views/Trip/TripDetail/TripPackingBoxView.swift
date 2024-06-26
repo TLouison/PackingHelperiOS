@@ -53,9 +53,9 @@ struct TripPackingBoxView: View {
             } content: {
                 if !(trip.lists?.isEmpty ?? true) {
                     VStack(alignment: .center) {
-                        if trip.totalListEntries > 0 {
-                            TripDetailPackingGaugeRowView(trip: trip)
-                        }
+//                        if trip.totalListEntries > 0 {
+//                            TripDetailPackingGaugeRowView(trip: trip)
+//                        }
                         
                         if trip.hasMultiplePackers {
                             UserPickerView(selectedUser: $selectedUser)
@@ -66,7 +66,19 @@ struct TripPackingBoxView: View {
                             NavigationLink {
                                 PackingListMultiListView(listType: listType, trip: trip, user: selectedUser)
                             } label: {
-                                Label(listType.rawValue, systemImage: listType.icon)
+                                HStack {
+                                    TripDetailPackingProgressView(
+                                        val: Double(trip.getCompleteItems(for: listType)),
+                                        total: Double(trip.getTotalItems(for: listType)),
+                                        image: PackingList.icon(listType: listType)
+                                    )
+                                    .scaleEffect(x: 0.75, y: 0.75)
+                                    
+                                    Spacer()
+                                    
+                                    Text(listType.rawValue).font(.headline)
+                                }
+                                .padding(.horizontal)
                             }
                             .frame(maxWidth: .infinity)
                             .roundedBox(background: .ultraThick)

@@ -24,7 +24,7 @@ struct UserPickerView: View {
                 Label("Showing Lists For", systemImage: "person.circle")
                 Spacer()
             }
-            UserPickerBaseView(selectedUser: $selectedUser, showIcon: showIcon, allowAll: allowAll)
+            UserPickerBaseView(selectedUser: $selectedUser.animation(), showIcon: showIcon, allowAll: allowAll)
             .background(.thickMaterial)
             .rounded()
         }

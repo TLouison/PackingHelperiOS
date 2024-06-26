@@ -59,11 +59,6 @@ struct DefaultPackingListView: View {
                                 Label(packingList.name, systemImage: packingList.icon)
                             }
                         }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                modelContext.delete(defaultPackingLists[index])
-                            }
-                        }
                     }
                     .navigationTitle("Packing Lists")
                 } else {

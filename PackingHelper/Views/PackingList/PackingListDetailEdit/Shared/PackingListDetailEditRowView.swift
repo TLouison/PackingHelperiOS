@@ -19,6 +19,7 @@ fileprivate enum Symbol: Hashable, CaseIterable {
 }
 
 struct PackingListDetailEditRowView: View {
+    let packingList: PackingList
     @Bindable var item: Item
     var showCount: Bool = true
     var showButton: Bool = true
@@ -58,6 +59,14 @@ struct PackingListDetailEditRowView: View {
             }
         }
         .swipeActions {
+            Button(role: .destructive) {
+                packingList.removeItem(item)
+            } label: {
+                Label("Remove", systemImage: "trash")
+                    .labelStyle(.iconOnly)
+                    .tint(.red)
+            }
+            
             Button {
                 isShowingItemEditSheet = true
             } label: {

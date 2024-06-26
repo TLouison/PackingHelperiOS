@@ -15,16 +15,12 @@ struct PackingListDetailItemListView: View {
         List {
             ForEach(items, id: \.id) { item in
                 PackingListDetailEditRowView(
+                    packingList: packingList,
                     item: item,
                     showCount: packingList.type != .task,
                     showButton: packingList.template == false
                 )
             }
-            .onDelete(perform: { indexSet in
-                for index in indexSet {
-                    packingList.removeItem(at: index)
-                }
-            })
         }
         .listStyle(.grouped)
         .scrollContentBackground(.hidden)

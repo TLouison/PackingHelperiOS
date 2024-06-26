@@ -27,6 +27,7 @@ struct PackingListMultiListEditView: View {
     var body: some View {
         ForEach(currentItems, id: \.id) { item in
             PackingListDetailEditRowView(
+                packingList: packingList,
                 item: item,
                 showCount: packingList.type != .task,
                 showButton: packingList.template == false
@@ -34,13 +35,15 @@ struct PackingListMultiListEditView: View {
         }
         
         if currentView == .unpacked {
-            Button {
-                withAnimation {
-                    listToAddTo = packingList
-                    isAddingNewItem.toggle()
+            VStack(alignment: .center) {
+                Button {
+                    withAnimation {
+                        listToAddTo = packingList
+                        isAddingNewItem.toggle()
+                    }
+                } label: {
+                    Label("Add Item", systemImage: "plus.circle.fill")
                 }
-            } label: {
-                Label("Add Item", systemImage: "plus.circle.fill").padding(.leading, 50)
             }
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PackingListMultiListView: View {
     @Environment(\.modelContext) var modelContext
@@ -48,10 +49,8 @@ struct PackingListMultiListView: View {
             
             List {
                 ForEach(listsForUser, id: \.id) { packingList in
-//                        if shouldShowSection(list: packingList) {
-                        Section(packingList.name) {
-                            PackingListMultiListEditView(packingList: packingList, currentView: $currentView, isAddingNewItem: $isShowingAddItem, listToAddTo: $listToAddItemTo)
-//                            }
+                    Section(packingList.name) {
+                        PackingListMultiListEditView(packingList: packingList, currentView: $currentView, isAddingNewItem: $isShowingAddItem, listToAddTo: $listToAddItemTo)
                     }
                 }
             }
@@ -81,27 +80,16 @@ struct PackingListMultiListView: View {
         }
         .navigationTitle(listType.rawValue)
         .navigationBarTitleDisplayMode(.inline)
-//        .toolbar {
-//            ToolbarItemGroup {
-//                if !self.packingList.template {
-//                    Menu {
-//                        Button("Save As Default") {
-//                            withAnimation {
-////                                saveListAsDefault()
-//                            }
-//                        }
-//                    }  label: {
-//                        Image(systemName: "square.and.arrow.up")
-//                    }
-//                }
-//                
-//                Button {
-//                    isShowingListSettings.toggle()
-//                } label: {
-//                    Image(systemName: "gear")
-//                }
-//            }
-//        }
+        .toolbar {
+            ToolbarItemGroup {
+                TripDetailPackingProgressView(
+                    val: Double(trip.getCompleteItems(for: listType)),
+                    total: Double(trip.getTotalItems(for: listType)),
+                    image: PackingList.icon(listType: listType)
+                )
+                .scaleEffect(x: 0.5, y: 0.5)
+            }
+        }
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
             Button("OK", role: .cancel) {}
         }
@@ -122,6 +110,8 @@ struct PackingListMultiListView: View {
 //    }
 }
 
-//#Preview {
-//    PackingListMultiListView()
-//}
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var trips: [Trip]
+    PackingListMultiListView(listType: .packing, trip: trips.first!, user: nil)
+}
