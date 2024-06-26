@@ -53,10 +53,6 @@ struct TripPackingBoxView: View {
             } content: {
                 if !(trip.lists?.isEmpty ?? true) {
                     VStack(alignment: .center) {
-//                        if trip.totalListEntries > 0 {
-//                            TripDetailPackingGaugeRowView(trip: trip)
-//                        }
-                        
                         if trip.hasMultiplePackers {
                             UserPickerView(selectedUser: $selectedUser)
                                 .transition(.scale)
@@ -67,20 +63,17 @@ struct TripPackingBoxView: View {
                                 PackingListMultiListView(listType: listType, trip: trip, user: selectedUser)
                             } label: {
                                 HStack {
+                                    Text(listType.rawValue).font(.headline)
+                                    Spacer()
                                     TripDetailPackingProgressView(
                                         val: Double(trip.getCompleteItems(for: listType)),
                                         total: Double(trip.getTotalItems(for: listType)),
                                         image: PackingList.icon(listType: listType)
                                     )
                                     .scaleEffect(x: 0.75, y: 0.75)
-                                    
-                                    Spacer()
-                                    
-                                    Text(listType.rawValue).font(.headline)
                                 }
-                                .padding(.horizontal)
                             }
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity, maxHeight: 30)
                             .roundedBox(background: .ultraThick)
                         }
                     }
@@ -114,4 +107,12 @@ struct TripPackingBoxView: View {
             }
         }
     }
+}
+
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var trips: [Trip]
+    @Previewable @State var addingList = false
+    @Previewable @State var applyingDefault = false
+    TripPackingBoxView(trip: trips.first!, isAddingNewPackingList: $addingList, isApplyingDefaultPackingList: $applyingDefault)
 }
