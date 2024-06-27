@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-enum PackingListDetailViewCurrentSelection {
+enum PackingListDetailViewCurrentSelection: CaseIterable, Codable, Hashable, Sendable {
     case unpacked, packed
 }
 

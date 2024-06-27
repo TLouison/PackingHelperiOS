@@ -19,6 +19,9 @@ final class TripLocation {
     var latitude: Double = 40.7128
     var longitude: Double = -74.0060
     
+    @Transient var weather: TripWeather = TripWeather(currentWeather: nil, dailyForecast: nil)
+    var weatherFetched: Date = Date.distantPast
+    
     init(trip: Trip?, name: String, latitude: Double, longitude: Double) {
         self.trip = trip
         self.name = name
@@ -118,32 +121,47 @@ extension TripLocation {
     }
     
     func getTripWeather() async -> TripWeather? {
+        // Try to get cached weather first. We refetch every hour, or if the app has been fully closed.
+        print("Trying to return cached weather. Last fetched: \(self.weatherFetched), \(self.weatherFetched.distance(to: .now))")
+        if weatherFetched.distance(to: .now) < SECONDS_IN_MINUTE * MINUTES_IN_HOUR {
+//            print("Returning cached weather")
+//            return self.weather
+        }
+        
+        print("Fetching weather")
+        print("Before: \(self.weatherFetched)")
+        self.weatherFetched = Date()
+        print("After: \(self.weatherFetched)")
         let weatherService = WeatherService()
         
         if canGetCurrentWeather() && canGetWeatherForecast() {
             print("Trying to get both weathers")
             if let trip = self.trip {
                 let (startDate, endDate) = self.getForecastStartAndEnd(trip: trip)
-                let weatherData = try! await weatherService.weather(
-                    for: self.location,
-                    including: .daily(startDate: startDate, endDate: endDate),
-                    .current
-                )
                 
-                return TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
+                do {
+                    let weatherData = try await weatherService.weather(
+                        for: self.location,
+                        including: .daily(startDate: startDate, endDate: endDate),
+                        .current
+                    )
+                    self.weather = TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
+                } catch {
+                    print("Failed to fetch weather")
+                    return nil
+                }
             }
         } else if canGetCurrentWeather() {
             print("Getting only current weather")
-            return await TripWeather(currentWeather: self.getCurrentWeather(), dailyForecast: nil)
+            self.weather = await TripWeather(currentWeather: self.getCurrentWeather(), dailyForecast: nil)
         } else if canGetWeatherForecast() {
             print("Getting only forecast weather")
-            return await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast())
+            self.weather = await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast())
         } else {
             print("Getting no weather")
-            return TripWeather(currentWeather: nil, dailyForecast: nil)
+            self.weather = TripWeather(currentWeather: nil, dailyForecast: nil)
         }
-        print("Ended up nil")
-        return nil
+        return self.weather
     }
 }
 

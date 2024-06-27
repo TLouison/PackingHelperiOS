@@ -23,17 +23,14 @@ struct CollapsibleSection<Header: View, Content: View>: View {
                 Spacer()
                 
                 Button {
-                    withAnimation(.smooth) {
+                    withAnimation(.snappy) {
                         isExpanded.toggle()
                     }
                 } label: {
-                    if isExpanded {
-                        Image(systemName: "chevron.down")
-                    } else {
-                        Image(systemName: "chevron.right")
-                    }
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(isExpanded ? .degrees(0): .degrees(-90))
+                        .contentTransition(.interpolate)
                 }
-                .contentTransition(.interpolate)
             }
         }
     }

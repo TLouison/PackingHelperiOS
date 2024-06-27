@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct PackingListDetailEditTabBarView: View {
+    @Namespace private var animation
+    
     let listType: ListType
     
     @Binding var currentView: PackingListDetailViewCurrentSelection
@@ -31,22 +33,31 @@ struct PackingListDetailEditTabBarView: View {
     
     @ViewBuilder func tabButton(title: String, resultView: PackingListDetailViewCurrentSelection) -> some View {
         Button(title) {
-            withAnimation(.snappy) {
+            withAnimation(.bouncy) {
                 currentView = resultView
             }
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 5)
         .frame(maxWidth: .infinity)
-        .background(currentView == resultView ? Color.accentColor : Color.clear)
         .foregroundStyle(currentView == resultView ? Color.black : Color.accentColor)
     }
     
     var body: some View {
         HStack {
-            tabButton(title: buttonLeftTitle, resultView: .unpacked)
-            tabButton(title: buttonRightTitle, resultView: .packed)
+            ZStack {
+                if currentView == .unpacked {
+                    Color.accentColor.matchedGeometryEffect(id: "background", in: animation)
+                }
+                tabButton(title: buttonLeftTitle, resultView: .unpacked)
+            }
+            
+            ZStack {
+                if currentView == .packed {
+                    Color.accentColor.matchedGeometryEffect(id: "background", in: animation)
+                }
+                tabButton(title: buttonRightTitle, resultView: .packed)
+            }
         }
+        .frame(height: 40)
         .background(.thinMaterial)
         .clipShape(Capsule())
         .fixedSize(horizontal: false, vertical: true)

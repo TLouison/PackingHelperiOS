@@ -82,7 +82,6 @@ struct TripDetailView: View {
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 Task {
-                    print("Getting weather")
                     tripWeather = await trip.destination?.getTripWeather()
                 }
             }
