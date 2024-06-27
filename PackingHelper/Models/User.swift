@@ -15,8 +15,20 @@ final class User {
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
     
+    var colorHex: String = Color.teal.toHex()!
+    
     init(name: String) {
         self.name = name
+    }
+}
+
+extension User {
+    func setUserColor(_ color: Color) {
+        self.colorHex = color.toHex() ?? Color.accentColor.toHex()!
+    }
+    
+    var userColor: Color {
+        return Color(hex: self.colorHex) ?? Color.accentColor
     }
 }
 
@@ -24,9 +36,16 @@ extension User {
     var pillIcon: some View {
         return Text(self.name)
             .font(.caption)
+            .fontWeight(.semibold)
+            .shadow(
+                color: Color.gray.opacity(0.3), /// shadow color
+                radius: 3, /// shadow radius
+                x: 0, /// x offset
+                y: 2 /// y offset
+            )
             .padding(.horizontal)
             .padding(.vertical, 5)
-            .background(.ultraThickMaterial)
+            .background(self.userColor)
             .clipShape(.capsule)
     }
 }

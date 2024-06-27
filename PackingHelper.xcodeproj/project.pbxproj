@@ -73,6 +73,8 @@
 		51C8BB9B2C2A7B4C005D2B71 /* PackingListMultiListEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB9A2C2A7B43005D2B71 /* PackingListMultiListEditView.swift */; };
 		51C8BBA32C2BA1DB005D2B71 /* DefaultPackingViewListTypeSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA22C2BA1DB005D2B71 /* DefaultPackingViewListTypeSectionView.swift */; };
 		51C8BBA62C2BA372005D2B71 /* CollapsibleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA52C2BA372005D2B71 /* CollapsibleSection.swift */; };
+		51C8BBA82C2CE73B005D2B71 /* ColorUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */; };
+		51C8BBAA2C2D08B7005D2B71 /* UserColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */; };
 		51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */; };
 /* End PBXBuildFile section */
 
@@ -147,6 +149,8 @@
 		51C8BB9A2C2A7B43005D2B71 /* PackingListMultiListEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListMultiListEditView.swift; sourceTree = "<group>"; };
 		51C8BBA22C2BA1DB005D2B71 /* DefaultPackingViewListTypeSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPackingViewListTypeSectionView.swift; sourceTree = "<group>"; };
 		51C8BBA52C2BA372005D2B71 /* CollapsibleSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsibleSection.swift; sourceTree = "<group>"; };
+		51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtilities.swift; sourceTree = "<group>"; };
+		51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserColorPicker.swift; sourceTree = "<group>"; };
 		51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionBoxView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -355,6 +359,7 @@
 		515B85982AD76930002D614F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */,
 				515B85AA2AD8D395002D614F /* LocationService.swift */,
 				5110C6312AE5B028002742D0 /* CalendarUtilities.swift */,
 				51466B332ADB3EA200258ABB /* TransitionUtilities.swift */,
@@ -508,6 +513,7 @@
 			isa = PBXGroup;
 			children = (
 				51C8BBA52C2BA372005D2B71 /* CollapsibleSection.swift */,
+				51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -616,6 +622,7 @@
 				5132E84A2AE22837002575AC /* PackingAddItemView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
+				51C8BBA82C2CE73B005D2B71 /* ColorUtilities.swift in Sources */,
 				51C8BB832C2A5860005D2B71 /* TripDetailPackingProgressView.swift in Sources */,
 				510728232C228CDB00EBF362 /* FoundExistingDataView.swift in Sources */,
 				510728132C1FD5D000EBF362 /* UserListView.swift in Sources */,
@@ -649,6 +656,7 @@
 				51C8BB872C2A58B1005D2B71 /* TripDetailPackingGaugeRowView.swift in Sources */,
 				519C8AB02BFEEFE10008B1B0 /* WeatherUtilities.swift in Sources */,
 				5134EC6A2C06CD3300862E19 /* PackingListSelectionView.swift in Sources */,
+				51C8BBAA2C2D08B7005D2B71 /* UserColorPicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

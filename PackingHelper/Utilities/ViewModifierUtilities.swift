@@ -34,11 +34,13 @@ struct Shaded: ViewModifier {
 }
 
 struct BorderGradient: ViewModifier {
+    let width: CGFloat
+    
     func body(content: Content) -> some View {
         content
             .overlay(
                 RoundedRectangle(cornerRadius: defaultCornerRadius)
-                    .strokeBorder(defaultLinearGradient)
+                    .strokeBorder(defaultLinearGradient, lineWidth: width)
             )
     }
 }
@@ -61,7 +63,7 @@ extension View {
         modifier(Shaded())
     }
     
-    func borderGradient() -> some View {
-        modifier(BorderGradient())
+    func borderGradient(width: CGFloat = 1) -> some View {
+        modifier(BorderGradient(width: width))
     }
 }

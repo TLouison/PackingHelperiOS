@@ -37,12 +37,13 @@ struct UserListView: View {
             }
             .sheet(isPresented: $isShowingAddUserSheet) {
                 UserEditView(user: nil)
-                    .presentationDetents([.height(200)])
+                    .presentationDetents([.height(400)])
             }
         }
     }
 }
 
-#Preview {
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
     UserListView()
 }

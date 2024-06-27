@@ -13,6 +13,7 @@ struct UserEditView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var name = ""
+    @State private var userColor = Color.accentColor
     
     @Query private var users: [User]
     let user: User?
@@ -29,7 +30,12 @@ struct UserEditView: View {
         NavigationStack {
             VStack {
                 Form {
-                    TextField("Name", text: $name)
+                    Section {
+                        TextField("Name", text: $name)
+                    }
+                    Section {
+                        UserColorPicker(selectedColor: $userColor)
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -55,6 +61,7 @@ struct UserEditView: View {
                 if let user {
                     // Edit the incoming item.
                     name = user.name
+                    userColor = user.userColor
                 }
             }
         }
@@ -67,8 +74,10 @@ struct UserEditView: View {
     private func save() {
         if let user {
             user.name = name
+            user.setUserColor(userColor)
         } else {
             let newUser = User(name: name)
+            newUser.setUserColor(userColor)
             modelContext.insert(newUser)
         }
     }

@@ -19,7 +19,13 @@ struct UserListRowView: View {
     let user: User
     
     var body: some View {
-        Text(user.name)
+        HStack {
+            Color(user.userColor)
+                .clipShape(.circle)
+                .frame(width: 24, height: 24)
+                .shaded()
+            Text(user.name)
+        }
             .swipeActions {
                 Button {
                     isShowingDeleteConfirmation.toggle()
@@ -49,7 +55,7 @@ struct UserListRowView: View {
             }
             .sheet(isPresented: $isShowingEditUserSheet) {
                 UserEditView(user: user)
-                    .presentationDetents([.height(200)])
+                    .presentationDetents([.height(400)])
             }
     }
     
@@ -64,6 +70,8 @@ struct UserListRowView: View {
     }
 }
 
-//#Preview {
-//    UserListRowView()
-//}
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var users: [User]
+    UserListRowView(user: users.first!)
+}
