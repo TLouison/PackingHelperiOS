@@ -14,7 +14,6 @@ struct TripWeather {
     
     func getCurrentTemperature(in unit: UnitTemperature = .celsius) -> Measurement<UnitTemperature>? {
         if let currentWeather {
-            print("\(currentWeather.temperature.converted(to: unit))")
             return currentWeather.temperature
                 .converted(to: unit)
         }

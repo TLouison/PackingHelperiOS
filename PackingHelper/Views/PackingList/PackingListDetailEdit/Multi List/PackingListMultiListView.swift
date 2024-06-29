@@ -8,6 +8,13 @@
 import SwiftUI
 import SwiftData
 
+// TODO: Figure out how to get this to work
+//enum MultiPackCurrentView {
+//    case base
+//    case addItem(PackingList)
+//    case editList(PackingList)
+//}
+
 struct PackingListMultiListView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
@@ -21,8 +28,17 @@ struct PackingListMultiListView: View {
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
     
+    @State private var selectedList: PackingList?
     @State private var isShowingAddItem: Bool = false
-    @State private var listToAddItemTo: PackingList?
+    @State private var isShowingEditList: Bool = false
+
+    var shouldShowAddItemSheet: Bool {
+        return currentView == .unpacked && isShowingAddItem && selectedList != nil
+    }
+    
+    var shouldShowEditListSheet: Bool {
+        return isShowingEditList && selectedList != nil
+    }
     
     func shouldShowSection(list: PackingList) -> Bool {
         if currentView == .packed && !list.completeItems.isEmpty {
@@ -45,61 +61,35 @@ struct PackingListMultiListView: View {
     @ViewBuilder func listView(currentView: PackingListDetailViewCurrentSelection) -> some View {
         List {
             ForEach(listsForUser, id: \.id) { packingList in
-                CollapsibleSection {
-                    HStack {
-                        Text(packingList.name)
-                        
-                        if user == nil {
-                            if let pUser = packingList.user {
-                                pUser.pillIcon
-                            }
-                        }
-                    }
-                } content: {
-                    PackingListMultiListEditView(packingList: packingList, currentView: .constant(currentView), isAddingNewItem: $isShowingAddItem, listToAddTo: $listToAddItemTo)
-                }
+                PackingListMultiListEditView(packingList: packingList, user: user, currentView: .constant(currentView), selectedList: $selectedList, isAddingNewItem: $isShowingAddItem, isShowingEditList: $isShowingEditList)
             }
         }
+        .listStyle(.inset)
+        .listRowSeparator(.hidden)
+        .listSectionSeparator(.hidden)
     }
     
     var body: some View {
         VStack {
             PackingListDetailEditTabBarView(listType: listType, currentView: $currentView)
                 .padding(.top)
-                
+            
             // Having two instances of the same view so that we can nicely transition
             // between states.
             if currentView == .unpacked {
                 listView(currentView: .unpacked)
                     .transition(.pushAndPull(.leading))
+                    .listRowSeparator(.hidden)
             } else {
                 listView(currentView: .packed)
                     .transition(.pushAndPull(.trailing))
             }
-//                ForEach(PackingListDetailViewCurrentSelection.allCases, id: \.hashValue) { currentView in
-//                    listView(currentView: currentView)
-//                }
             
             if (trip.getTotalItems(for: listType) == 0) {
                 ContentUnavailableView {
                     Label("No Items On List", systemImage: "bag")
                 } description: {
                     Text("You haven't added any items to your list. Add one now to start your packing!")
-                }
-            }
-            
-            if currentView == .unpacked && isShowingAddItem {
-                if let listToAddItemTo {
-                    Spacer()
-                    
-                    PackingAddItemView(packingList: listToAddItemTo)
-                        .padding(.bottom)
-                        .transition(.pushAndPull(.bottom))
-//                        .onChange(of: listToAddItemTo.items) {
-//                            withAnimation {
-//                                isShowingAddItem = false
-//                            }
-//                        }
                 }
             }
         }
@@ -115,24 +105,22 @@ struct PackingListMultiListView: View {
                 .scaleEffect(x: 0.5, y: 0.5)
             }
         }
-        .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
-            Button("OK", role: .cancel) {}
+        .sheet(isPresented: $isShowingAddItem) {
+            PackingAddItemForGroupView(selectedPackingList: $selectedList, availableLists: listsForUser)
+                .presentationDetents([.height(200)])
         }
-//        .sheet(isPresented: $isShowingListSettings) {
-//            PackingListEditView(packingList: packingList, isTemplate: packingList.template, isDeleted: $isDeleted)
-//                .presentationDetents([.height(250)])
-//        }
-        .onChange(of: isDeleted) {
-            dismiss()
+        .sheet(isPresented: $isShowingEditList) {
+            PackingListEditView(packingList: selectedList, isTemplate: false, isDeleted: $isDeleted)
+        }
+        .onChange(of: shouldShowAddItemSheet) {
+            // If the value of shouldShowAddItemSheet changed, one of the conditions
+            // updated so we should change the binding too
+            isShowingAddItem = shouldShowAddItemSheet
+        }
+        .onChange(of: shouldShowEditListSheet) {
+            isShowingEditList = shouldShowEditListSheet
         }
     }
-    
-//    func saveListAsDefault() {
-//        let newDefaultList = PackingList.copyAsTemplate(self.packingList)
-//        modelContext.insert(newDefaultList)
-//        
-//        isShowingSaveSuccessful = true
-//    }
 }
 
 @available(iOS 18, *)

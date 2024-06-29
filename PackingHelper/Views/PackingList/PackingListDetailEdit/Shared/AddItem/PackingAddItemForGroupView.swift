@@ -6,13 +6,33 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PackingAddItemForGroupView: View {
+    @Binding var selectedPackingList: PackingList?
+    let availableLists: [PackingList]
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            HStack {
+                Text("Adding new item to").font(.headline)
+                Picker("Packing List", selection: $selectedPackingList) {
+                    ForEach(availableLists, id: \.id) { list in
+                        Text(list.name).tag(list)
+                    }
+                }
+            }
+            .font(.title)
+            .padding(.horizontal)
+            
+            PackingAddItemView(packingList: selectedPackingList!)
+        }
+        .padding(.bottom)
     }
 }
 
-#Preview {
-    PackingAddItemForGroupView()
+@available(iOS 18, *)
+#Preview(traits: .sampleData) {
+    @Previewable @Query var packingLists: [PackingList]
+    PackingAddItemForGroupView(selectedPackingList: .constant(packingLists.first!), availableLists: packingLists)
 }

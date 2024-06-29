@@ -10,6 +10,9 @@ import SwiftData
 
 struct PackingAddItemView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
+    @FocusState private var nameIsFocused: Bool
+    
     let packingList: PackingList
     
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
@@ -23,7 +26,7 @@ struct PackingAddItemView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
 //            if newItemName != "" && FeatureFlags.showingRecommendations {
 //                PackingRecommendationView(recommendation: packingRecommendation)
 //                    .onAppear {
@@ -52,8 +55,15 @@ struct PackingAddItemView: View {
                             }
                         }
                         .submitLabel(.done)
+                        .keyboardType(.default)
+                        .focused($nameIsFocused)
                         .onSubmit {
+                            // If the done button is pressed, close out everything
                             addItem()
+                            dismiss()
+                        }
+                        .onAppear {
+                            self.nameIsFocused = true
                         }
                     
                     if packingList.type != .task {
@@ -72,7 +82,7 @@ struct PackingAddItemView: View {
                 }
                 .frame(maxHeight: 55)
                 .background(.thickMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+                .rounded()
                 
 //                Menu(newItemCategory?.rawValue ?? "Select Category") {
 //                    ForEach(PackingRecommendationCategory.allCases, id: \.rawValue) { category in
@@ -89,16 +99,19 @@ struct PackingAddItemView: View {
 //                .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
 //                .padding([.horizontal, .bottom], 10)
             }
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+            .rounded()
+//            .shaded()
             
-            Button("Add Item") {
-                addItem()
+            HStack {
+                Button("Add Item") {
+                    addItem()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(.thinMaterial)
+                .rounded()
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+//            .shaded()
         }
         .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)

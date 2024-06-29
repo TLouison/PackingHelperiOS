@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct PackingListMultiAddItemSheet: View {
+    @Binding var listToAddItemTo: PackingList?
+    var availableLists: [PackingList]
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        PackingAddItemForGroupView(selectedPackingList: $listToAddItemTo, availableLists: availableLists)
     }
 }
-
-#Preview {
-    PackingListMultiAddItemSheet()
-}
+//
+//#Preview {
+//    PackingListMultiAddItemSheet()
+//}
