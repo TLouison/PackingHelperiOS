@@ -60,7 +60,7 @@ struct TripPackingBoxView: View {
                         
                         ForEach(visibleListTypes, id: \.rawValue) { listType in
                             NavigationLink {
-                                PackingListMultiListView(listType: listType, trip: trip, user: selectedUser)
+                                PackingListMultiListView(listType: listType, trip: trip, user: $selectedUser)
                             } label: {
                                 HStack {
                                     Text(listType.rawValue).font(.headline)

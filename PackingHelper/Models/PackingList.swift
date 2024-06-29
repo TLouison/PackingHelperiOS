@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftData
+import OSLog
+
+private let logger = Logger(subsystem: "PackingHelper Models", category: "PackingList")
 
 enum ListType: String, Codable, CaseIterable, Comparable {
     case packing="Packing", task="Task", dayOf="Day-of"
@@ -103,6 +106,54 @@ final class PackingList {
             case .dayOf: "sun.horizon"
             case .task: "checklist"
         }
+    }
+}
+
+extension PackingList {
+    static func save(
+        _ packingList: PackingList?,
+        name: String,
+        type: ListType,
+        template: Bool,
+        countAsDays: Bool,
+        user: User,
+        in context: ModelContext,
+        for trip: Trip?
+    ) {
+        logger.info("Saving packing list...")
+        if let packingList {
+            logger.debug("Packing list already exists. Updating with new info.")
+            packingList.name = name
+            packingList.type = type
+            packingList.user = user
+            packingList.countAsDays = countAsDays
+        } else {
+            logger.debug("Packing list does not already exist. Creating with new info.")
+            let newPackingList = PackingList(type: type, template: template, name: name, countAsDays: countAsDays)
+            newPackingList.user = user
+            
+            context.insert(newPackingList)
+            
+            if let trip {
+                logger.debug("New list belongs to trip, applying to trip's lists.")
+                trip.addList(newPackingList)
+            }
+        }
+        logger.info("Packing list saved!")
+    }
+    
+    static func delete(_ packingList: PackingList, from context: ModelContext) -> Bool {
+        let list_name = packingList.name
+        logger.info("Deleting \(list_name)")
+        
+        if let trip = packingList.trip {
+            logger.info("Removing \(list_name) from trip \(trip.name)")
+            _ = trip.removeList(packingList)
+        }
+        
+        context.delete(packingList)
+        logger.info("Successfully deleted \(list_name)")
+        return true
     }
 }
 

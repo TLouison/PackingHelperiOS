@@ -76,6 +76,7 @@
 		51C8BBA82C2CE73B005D2B71 /* ColorUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */; };
 		51C8BBAA2C2D08B7005D2B71 /* UserColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */; };
 		51C8BBAC2C2F77C9005D2B71 /* PackingAddItemForGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBAB2C2F77C9005D2B71 /* PackingAddItemForGroupView.swift */; };
+		51C8BBB02C30799F005D2B71 /* LoggerUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBAF2C30799F005D2B71 /* LoggerUtilities.swift */; };
 		51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */; };
 /* End PBXBuildFile section */
 
@@ -153,6 +154,7 @@
 		51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtilities.swift; sourceTree = "<group>"; };
 		51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserColorPicker.swift; sourceTree = "<group>"; };
 		51C8BBAB2C2F77C9005D2B71 /* PackingAddItemForGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingAddItemForGroupView.swift; sourceTree = "<group>"; };
+		51C8BBAF2C30799F005D2B71 /* LoggerUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerUtilities.swift; sourceTree = "<group>"; };
 		51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionBoxView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -369,6 +371,7 @@
 				5110C6332AE5DA70002742D0 /* StyleUtilities.swift */,
 				5110C63B2AE75F55002742D0 /* NotificationUtilities.swift */,
 				519C8AAF2BFEEFE10008B1B0 /* WeatherUtilities.swift */,
+				51C8BBAF2C30799F005D2B71 /* LoggerUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -645,6 +648,7 @@
 				5110C6342AE5DA70002742D0 /* StyleUtilities.swift in Sources */,
 				5134EC6C2C06D90A00862E19 /* PackingListPillView.swift in Sources */,
 				510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */,
+				51C8BBB02C30799F005D2B71 /* LoggerUtilities.swift in Sources */,
 				519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */,
 				51C8BB6A2C250666005D2B71 /* PackingListDetailEditTabBarView.swift in Sources */,
 				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,

@@ -22,6 +22,24 @@ final class User {
     }
 }
 
+// All non-init CRUD functions go here
+extension User {
+    // Attempts to delete the user, but may fail for various reasons. Returns true
+    // if the delete was successful, false otherwise.
+    static func delete(_ user: User, from context: ModelContext) -> Bool {
+        // Try and delete all related packing lists first, then delete the user
+        if let userLists = user.lists {
+            for packingList in userLists {
+                print("Deleting packing list for deleted user \(user.name) for trip \(packingList.trip?.name ?? "Unknown Name")")
+                context.delete(packingList)
+            }
+        }
+        print("Deleting user", user.name)
+        context.delete(user)
+        return true
+    }
+}
+
 extension User {
     func setUserColor(_ color: Color) {
         self.colorHex = color.toHex() ?? Color.accentColor.toHex()!

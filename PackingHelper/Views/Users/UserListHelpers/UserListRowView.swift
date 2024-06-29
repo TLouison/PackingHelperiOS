@@ -60,13 +60,10 @@ struct UserListRowView: View {
     }
     
     func deleteUser(_ user: User) {
-        let usersPackingLists = packingLists.filter( { $0.user == user })
-        for packingList in usersPackingLists {
-            print("Deleting packing list for deleted user \(user.name) for trip \(packingList.trip?.name ?? "Unknown Name")")
-            modelContext.delete(packingList)
+        switch User.delete(user, from: modelContext) {
+            case false: print("Couldn't delete user!!!")
+            default: print("Deleted user.")
         }
-        print("Deleting user", user.name)
-        modelContext.delete(user)
     }
 }
 

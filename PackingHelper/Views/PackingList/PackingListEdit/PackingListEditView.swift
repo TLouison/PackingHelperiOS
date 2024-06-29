@@ -16,6 +16,7 @@ struct PackingListEditView: View {
     var isTemplate: Bool = false
     
     var trip: Trip? = nil
+    var forceListType: ListType? = nil
     
     @Query private var users: [User]
     @State private var selectedUser: User?
@@ -41,9 +42,19 @@ struct PackingListEditView: View {
                 Form {
                     Section("List Details") {
                         TextField("List Name", text: $listName)
-                        Picker("List Type", selection: $listType) {
-                            ForEach(ListType.allCases, id: \.rawValue) { type in
-                                Text(type.rawValue).tag(type)
+                        
+                        if let forceListType {
+                            HStack {
+                                Text("List Type")
+                                Spacer()
+                                Text(forceListType.rawValue)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            Picker("List Type", selection: $listType) {
+                                ForEach(ListType.allCases, id: \.rawValue) { type in
+                                    Text(type.rawValue).tag(type)
+                                }
                             }
                         }
                     }
@@ -110,6 +121,10 @@ struct PackingListEditView: View {
                     selectedUser = users.sorted(by: { $0.created < $1.created }).first!
                 }
             }
+            
+            if let forceListType {
+                listType = forceListType
+            }
         }
         .alert("Delete \(packingList?.name ?? "list")?", isPresented: $isDeleting) {
             Button("Yes, delete \(packingList?.name ?? "list")", role: .destructive) {
@@ -119,28 +134,20 @@ struct PackingListEditView: View {
     }
     
     func save() {
-        if let packingList {
-            packingList.name = listName
-            packingList.type = listType
-            packingList.user = selectedUser!
-            packingList.countAsDays = countAsDays
-        } else {
-            let newPackingList = PackingList(type: listType, template: isTemplate, name: listName, countAsDays: countAsDays)
-            newPackingList.user = selectedUser!
-            
-            modelContext.insert(newPackingList)
-            
-            if let trip {
-                trip.addList(newPackingList)
-            }
-        }
+        PackingList.save(
+            packingList,
+            name: listName,
+            type: listType,
+            template: isTemplate,
+            countAsDays: countAsDays,
+            user: selectedUser!,
+            in: modelContext,
+            for: trip
+        )
     }
     
     private func delete(_ packingList: PackingList) {
-        trip?.removeList(packingList)
-        modelContext.delete(packingList)
-        try? modelContext.save()
-        isDeleted = true
+        isDeleted = PackingList.delete(packingList, from: modelContext)
         dismiss()
     }
 }

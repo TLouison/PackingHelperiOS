@@ -8,6 +8,9 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import OSLog
+
+private let logger = Logger(subsystem: "PackingHelper Models", category: "Trip")
 
 enum TripType: Codable, CaseIterable {
     case plane, car, train, boat, ferry
@@ -127,11 +130,18 @@ final class Trip {
         self.lists!.append(list)
     }
     
-    func removeList(_ listToRemove: PackingList) {
+    func addDefaultList(_ list: PackingList, to context: ModelContext) {
+        
+    }
+    
+    func removeList(_ listToRemove: PackingList) -> Bool {
         // Make sure to remove the list from the model context as well if fully deleting!
         if var lists = self.lists {
+            logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
             lists.remove(at: (lists.firstIndex(of: listToRemove))!)
+            return true
         }
+        return false
     }
 }
 
