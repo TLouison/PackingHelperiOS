@@ -96,7 +96,7 @@ final class Trip {
     
     var startDate: Date = Date.now
     var endDate: Date = Date.now.advanced(by: SECONDS_IN_DAY)
-    var createdDate: Date = Date()
+    var createdDate: Date = Date.now
     
     var type: TripType = TripType.plane
     var accomodation: TripAccomodation = TripAccomodation.hotel

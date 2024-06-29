@@ -5,6 +5,7 @@
 //  Created by Todd Louison on 10/22/23.
 //
 
+import Foundation
 import SwiftData
 
 @Model
@@ -14,6 +15,8 @@ class Item {
     var count: Int = 1
     var category: String = "Clothing"
     var isPacked: Bool = false
+    
+    var created: Date = Date.now
     
     init(name: String, category: String, count: Int, isPacked: Bool) {
         self.name = name

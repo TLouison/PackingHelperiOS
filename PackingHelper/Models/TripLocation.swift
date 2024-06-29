@@ -19,6 +19,8 @@ final class TripLocation {
     var latitude: Double = 40.7128
     var longitude: Double = -74.0060
     
+    var created: Date = Date.now
+    
     @Transient var weather: TripWeather = TripWeather(currentWeather: nil, dailyForecast: nil)
     var weatherFetched: Date = Date.distantPast
     

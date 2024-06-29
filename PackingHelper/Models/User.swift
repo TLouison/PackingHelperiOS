@@ -11,7 +11,7 @@ import SwiftData
 @Model
 final class User {
     var name: String = "Packer"
-    var created: Date = Date()
+    var created: Date = Date.now
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
     
@@ -35,7 +35,7 @@ extension User {
 extension User {
     var pillIcon: some View {
         return Text(self.name)
-            .font(.caption)
+            .font(.caption2.smallCaps())
             .fontWeight(.semibold)
             .shadow(
                 color: Color.gray.opacity(0.3), /// shadow color
@@ -45,7 +45,8 @@ extension User {
             )
             .padding(.horizontal)
             .padding(.vertical, 5)
-            .background(self.userColor)
+            .background(self.userColor.opacity(0.5))
             .clipShape(.capsule)
+            .shaded()
     }
 }
