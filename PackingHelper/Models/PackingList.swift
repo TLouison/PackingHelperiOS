@@ -42,6 +42,19 @@ enum ListType: String, Codable, CaseIterable, Comparable {
     }
 }
 
+enum PackingListSortOrder: String, CaseIterable {
+    case byDate, byUser, byNameAsc, byNameDesc 
+    
+    var name: String {
+        switch self {
+        case .byDate: "By Created Date"
+        case .byNameAsc: "By Name (A-Z)"
+        case .byNameDesc: "By Name (Z-A)"
+        case .byUser: "By User (A-Z)"
+        }
+    }
+}
+
 @Model
 final class PackingList {
     var created: Date = Date.now
@@ -154,6 +167,29 @@ extension PackingList {
         context.delete(packingList)
         logger.info("Successfully deleted \(list_name)")
         return true
+    }
+}
+
+extension PackingList {
+    static func filtered(user: User?, _ lists: [PackingList]) -> [PackingList] {
+        if let user {
+            return lists.filter{ $0.user == user }
+        } else {
+            return lists
+        }
+    }
+    
+    static func sorted(_ lists: [PackingList], sortOrder: PackingListSortOrder = .byDate) -> [PackingList] {
+        switch sortOrder {
+            case .byNameAsc:
+                return lists.sorted { $0.name < $1.name }
+            case .byNameDesc:
+                return lists.sorted { $0.name > $1.name}
+            case .byUser:
+                return lists.sorted { $0.user ?? User(name: "aaa") < $1.user ?? User(name: "ZZZ") }
+            case .byDate:
+                return lists.sorted { $0.created < $1.created }
+            }
     }
 }
 

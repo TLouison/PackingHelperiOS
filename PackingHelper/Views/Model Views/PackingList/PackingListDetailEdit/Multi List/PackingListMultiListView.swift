@@ -23,7 +23,9 @@ struct PackingListMultiListView: View {
     var trip: Trip
     @Binding var user: User?
 
+    @State private var sortOrder: PackingListSortOrder = .byDate
     @State private var currentView: PackingListDetailViewCurrentSelection = .unpacked
+    
     @State private var isShowingListSettings: Bool = false
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
@@ -32,10 +34,6 @@ struct PackingListMultiListView: View {
     @State private var isShowingAddItem: Bool = false
     @State private var isShowingEditList: Bool = false
     @State private var isApplyingDefaultPackingList: Bool = false
-
-    var shouldShowAddItemSheet: Bool {
-        return currentView == .unpacked && isShowingAddItem && selectedList != nil
-    }
     
     func shouldShowSection(list: PackingList) -> Bool {
         if currentView == .packed && !list.completeItems.isEmpty {
@@ -46,13 +44,10 @@ struct PackingListMultiListView: View {
         return false
     }
     
-    var listsForUser: [PackingList] {
-        let lists = trip.getLists(for: listType)
-        if let user {
-            return lists.filter{ $0.user == user }
-        } else {
-            return lists
-        }
+    var visibleLists: [PackingList] {
+        let allLists = trip.getLists(for: listType)
+        let filteredLists = PackingList.filtered(user: user, allLists)
+        return PackingList.sorted(filteredLists, sortOrder: sortOrder)
     }
     
     var body: some View {
@@ -83,7 +78,13 @@ struct PackingListMultiListView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup {
-                multipackFilterAndSortMenu()
+                MultipackFilterAndSortMenu(
+                    user: $user,
+                    selectedList: $selectedList,
+                    sortOrder: $sortOrder,
+                    isShowingEditList: $isShowingEditList,
+                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                )
                 
                 TripDetailPackingProgressView(
                     val: Double(trip.getCompleteItems(for: listType)),
@@ -94,7 +95,7 @@ struct PackingListMultiListView: View {
             }
         }
         .sheet(isPresented: $isShowingAddItem) {
-            PackingAddItemForGroupView(selectedPackingList: $selectedList, availableLists: listsForUser)
+            PackingAddItemForGroupView(selectedPackingList: $selectedList, availableLists: visibleLists, currentView: currentView)
                 .presentationDetents([.height(200)])
         }
         .sheet(isPresented: $isShowingEditList) {
@@ -104,42 +105,22 @@ struct PackingListMultiListView: View {
             PackingListApplyDefaultView(trip: trip)
                 .presentationDetents([.height(175)])
         }
-        .onChange(of: selectedList) {
-            // If the value of shouldShowAddItemSheet changed, one of the conditions
-            // updated so we should change the binding too
-            isShowingAddItem = shouldShowAddItemSheet
+        .onChange(of: user) {
+            if user != nil {
+                sortOrder = .byDate
+            }
         }
     }
     
     @ViewBuilder func listView(currentView: PackingListDetailViewCurrentSelection) -> some View {
         List {
-            ForEach(listsForUser, id: \.id) { packingList in
+            ForEach(visibleLists, id: \.id) { packingList in
                 PackingListMultiListEditView(packingList: packingList, user: user, currentView: .constant(currentView), selectedList: $selectedList, isAddingNewItem: $isShowingAddItem, isShowingEditList: $isShowingEditList)
             }
         }
         .listStyle(.inset)
         .listRowSeparator(.hidden)
         .listSectionSeparator(.hidden)
-    }
-    
-    @ViewBuilder func multipackFilterAndSortMenu() -> some View {
-        Menu {
-            Button {
-                selectedList = nil
-                isShowingEditList.toggle()
-            } label: {
-                Label("Add New List", systemImage: "plus.circle")
-            }
-            Button {
-                isApplyingDefaultPackingList.toggle()
-            } label: {
-                Label("Apply Default List", systemImage: "suitcase.rolling.fill")
-            }
-            UserPickerBaseView(selectedUser: $user.animation())
-            
-        } label: {
-            Label("Filter and Sort", systemImage: "line.3.horizontal.decrease.circle.fill")
-        }
     }
 }
 

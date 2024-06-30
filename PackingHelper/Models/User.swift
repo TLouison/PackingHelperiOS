@@ -9,7 +9,11 @@ import SwiftUI
 import SwiftData
 
 @Model
-final class User {
+final class User: Comparable {
+    static func < (lhs: User, rhs: User) -> Bool {
+        lhs.name < rhs.name
+    }
+    
     var name: String = "Packer"
     var created: Date = Date.now
     

@@ -18,30 +18,28 @@ struct PackingListApplyDefaultView: View {
         sort: \.created, order: .reverse,
         animation: .snappy
     ) private var defaultPackingListOptions: [PackingList]
-    @State private var defaultPackingList: PackingList? = nil
+    @State private var defaultPackingLists: [PackingList] = []
     
     @State private var selectedUser: User?
     
     var formIsValid: Bool {
-        return defaultPackingList != nil
+        return !defaultPackingLists.isEmpty
     }
     
     var body: some View {
         NavigationStack {
             VStack {
-                HStack {
-                    Picker("Default Packing List", selection: $defaultPackingList) {
-                        Text("No Default").tag(nil as PackingList?)
-                        ForEach(defaultPackingListOptions) { packingList in
-                            Text(packingList.name)
-                                .tag(packingList as PackingList?)
-                        }
+                VStack {
+                    NavigationLink {
+                        PackingListSelectionView(packingLists: $defaultPackingLists)
+                    } label: {
+                        Label("Select Packing Lists", systemImage: "suitcase")
                     }
-                    Text("for packer")
-                    UserPickerView(selectedUser: $selectedUser, showLabel: false, allowAll: false)
+                    
+                    PackingListPillView(packingLists: defaultPackingLists)
                 }
-                .roundedBox()
-                Text("Apply default packing list to \(trip.name) .")
+                
+                Text("Apply default packing lists to \(trip.name) .")
                     .font(.footnote)
             }
             .toolbar {
@@ -64,10 +62,12 @@ struct PackingListApplyDefaultView: View {
     }
     
     func save() {
-        if let defaultPackingList {
-            let defaultList = PackingList.copyForTrip(defaultPackingList)
-            defaultList.tripID = trip.id
-            trip.addList(defaultList)
+        if !defaultPackingLists.isEmpty {
+            for list in defaultPackingLists {
+                let defaultList = PackingList.copyForTrip(list)
+                defaultList.tripID = trip.id
+                trip.addList(defaultList)
+            }
         }
     }
 }

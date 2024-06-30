@@ -12,6 +12,8 @@ struct PackingAddItemForGroupView: View {
     @Binding var selectedPackingList: PackingList?
     let availableLists: [PackingList]
     
+    let currentView: PackingListDetailViewCurrentSelection
+    
     var body: some View {
         VStack {
             HStack {
@@ -25,7 +27,7 @@ struct PackingAddItemForGroupView: View {
             .font(.title)
             .padding(.horizontal)
             
-            PackingAddItemView(packingList: selectedPackingList!)
+            PackingAddItemView(packingList: selectedPackingList!, newItemIsPacked: currentView == .packed)
         }
         .padding(.bottom)
     }
@@ -34,5 +36,5 @@ struct PackingAddItemForGroupView: View {
 @available(iOS 18, *)
 #Preview(traits: .sampleData) {
     @Previewable @Query var packingLists: [PackingList]
-    PackingAddItemForGroupView(selectedPackingList: .constant(packingLists.first!), availableLists: packingLists)
+    PackingAddItemForGroupView(selectedPackingList: .constant(packingLists.first!), availableLists: packingLists, currentView: .unpacked)
 }

@@ -62,6 +62,12 @@ struct PackingListMultiListEditView: View {
                     showButton: packingList.template == false
                 )
             }
+            Button {
+                selectedList = packingList
+                isAddingNewItem.toggle()
+            } label: {
+                Label("Add Item", systemImage: "plus.circle")
+            }
         }
         .confirmationDialog(
             Text("Are you sure you want to save \(packingList.name) as a default list? This will save both packed and unpacked items from this list to a default list with the same name."),
@@ -113,23 +119,23 @@ struct PackingListMultiListEditView: View {
             .rounded()
             .shaded()
             
-            if currentView == .unpacked {
-                Button {
-                    withAnimation(.snappy) {
-                        selectedList = packingList
-                        isAddingNewItem.toggle()
-                    }
-                } label: {
-                    Label("Add Item", systemImage: "plus.circle.fill")
-                        .labelStyle(.iconOnly)
-                        .tint(.green)
-                        .font(.headline)
-                }
-                .padding(10)
-                .background(.thickMaterial)
-                .rounded()
-                .shaded()
-            }
+//            if currentView == .unpacked {
+//                Button {
+//                    withAnimation(.snappy) {
+//                        selectedList = packingList
+//                        isAddingNewItem.toggle()
+//                    }
+//                } label: {
+//                    Label("Add Item", systemImage: "plus.circle.fill")
+//                        .labelStyle(.iconOnly)
+//                        .tint(.green)
+//                        .font(.headline)
+//                }
+//                .padding(10)
+//                .background(.thickMaterial)
+//                .rounded()
+//                .shaded()
+//            }
         }
         .fixedSize(horizontal: false, vertical: true)
     }

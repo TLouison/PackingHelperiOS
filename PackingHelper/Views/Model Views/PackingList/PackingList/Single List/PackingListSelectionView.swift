@@ -15,17 +15,26 @@ struct PackingListSelectionView: View {
     
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
+    let user: User? = nil
+    
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },
         sort: \.created, order: .reverse,
         animation: .snappy
     ) private var defaultPackingListOptions: [PackingList]
     
+    var visiblePackingListOptions: [PackingList] {
+        if let user {
+            return defaultPackingListOptions.filter { $0.user == user }
+        }
+        return defaultPackingListOptions
+    }
+    
     var searchResults: [PackingList] {
         if searchText.isEmpty {
-            return defaultPackingListOptions
+            return visiblePackingListOptions
         } else {
-            return defaultPackingListOptions.filter { $0.name == (searchText) }
+            return visiblePackingListOptions.filter { $0.name == (searchText) }
         }
     }
     
@@ -44,7 +53,7 @@ struct PackingListSelectionView: View {
         VStack {
             PackingListPillView(packingLists: packingLists)
             
-            if defaultPackingListOptions.isEmpty {
+            if visiblePackingListOptions.isEmpty {
                 ContentUnavailableView {
                     Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
                 } description: {

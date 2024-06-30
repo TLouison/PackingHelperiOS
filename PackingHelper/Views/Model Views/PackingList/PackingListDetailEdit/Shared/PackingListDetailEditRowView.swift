@@ -38,26 +38,31 @@ struct PackingListDetailEditRowView: View {
     
     var body: some View {
         HStack {
-            if showButton {
-                itemCheckbox(item)
-            }
-            
             Text(item.name).font(.headline)
             
             if showCount {
-                Spacer()
-                Text(String(item.count)).font(.subheadline).bold()
+                Divider()
+                Text(String(item.count))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .bold()
+            }
+            
+            Spacer()
+            
+            if showButton {
+                itemCheckbox(item)
+                    .onTapGesture {
+                        // Only allow toggle if the list is actually being used for packing
+                        if showButton {
+                            withAnimation {
+                                item.isPacked.toggle()
+                            }
+                        }
+                    }
             }
         }
         .contentShape(.rect)
-        .onTapGesture {
-            // Only allow toggle if the list is actually being used for packing
-            if showButton {
-                withAnimation {
-                    item.isPacked.toggle()
-                }
-            }
-        }
         .swipeActions {
             Button(role: .destructive) {
                 packingList.removeItem(item)
@@ -80,6 +85,7 @@ struct PackingListDetailEditRowView: View {
                 .padding(.horizontal)
                 .presentationDetents([.height(200)])
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 

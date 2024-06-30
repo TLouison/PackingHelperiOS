@@ -14,6 +14,7 @@ struct PackingAddItemView: View {
     @FocusState private var nameIsFocused: Bool
     
     let packingList: PackingList
+    var newItemIsPacked: Bool = false
     
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
     
@@ -100,18 +101,19 @@ struct PackingAddItemView: View {
 //                .padding([.horizontal, .bottom], 10)
             }
             .rounded()
-//            .shaded()
-            
+
             HStack {
-                Button("Add Item") {
+                Button {
                     addItem()
+                } label: {
+                    Label("Add Item", systemImage: "plus.circle.fill")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(.thinMaterial)
+                        .rounded()
+                        .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
                 }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(.thinMaterial)
-                .rounded()
             }
-//            .shaded()
         }
         .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
@@ -119,20 +121,8 @@ struct PackingAddItemView: View {
     
     func addItem() {
         if newItemName != "" {
-            if packingList.type == .task {
-                newItemCategory = .Task
-            } else {
-                if newItemCategory == nil {
-                    newItemCategory = PackingEngine.interpretItem(itemName: newItemName)
-                }
-            }
-            
             withAnimation {
-                let newItem = Item(name: newItemName, category: newItemCategory!.rawValue.capitalized, count: newItemCount, isPacked: false)
-                newItem.list = packingList
-                
-                packingList.addItem(newItem)
-                modelContext.insert(newItem)
+                Item.create(for: packingList, in: modelContext, category: newItemCategory, name: newItemName, count: newItemCount, isPacked: newItemIsPacked)
                 
                 newItemName = ""
                 newItemCount = 1

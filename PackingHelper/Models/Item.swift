@@ -36,4 +36,26 @@ class Item {
         copyItem.list = item.list
         return copyItem
     }
+    
+    static func create(for list: PackingList, in context: ModelContext, category: PackingRecommendationCategory?, name: String, count: Int, isPacked: Bool) {
+        var itemCategory = category
+        if list.type == .task {
+            itemCategory = .Task
+        } else {
+            if itemCategory == nil {
+                itemCategory = PackingEngine.interpretItem(itemName: name)
+            }
+        }
+        
+        let newItem = Item(
+            name: name,
+            category: category!.rawValue.capitalized,
+            count: count,
+            isPacked: isPacked
+        )
+        newItem.list = list
+        
+        list.addItem(newItem)
+        context.insert(newItem)
+    }
 }
