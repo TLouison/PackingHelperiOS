@@ -39,7 +39,7 @@ struct TripListRowView: View {
                 HStack {
                     Spacer()
                     Text(trip.name)
-                        .font(.headline)
+                        .font(.title)
                         .roundedBox()
                         .shaded()
                 }
