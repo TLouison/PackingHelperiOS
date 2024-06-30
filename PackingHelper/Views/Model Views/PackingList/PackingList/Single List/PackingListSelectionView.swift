@@ -25,19 +25,16 @@ struct PackingListSelectionView: View {
     
     var alreadyAppliedLists: [PackingList] {
         if let trip {
-            return trip.listsFromTemplates
+            return  trip.alreadyUsedTemplates
         } else {
             return []
         }
     }
     
     var availableLists: [PackingList] {
+        print("\(alreadyAppliedLists.count) lists already applied to this trip for this user")
         let availableLists = defaultPackingListOptions.filter { !alreadyAppliedLists.contains($0) }
-        
-        if let user {
-            return availableLists.filter { $0.user == user }
-        }
-        return availableLists
+        return PackingList.filtered(user: user, availableLists)
     }
     
     var searchResults: [PackingList] {
@@ -59,6 +56,18 @@ struct PackingListSelectionView: View {
         }
     }
     
+    var noListText: Text {
+        if let user {
+            if alreadyAppliedLists.isEmpty {
+                return Text("\(user.name) has not created any default packing lists! Visit the Lists tab to create a new list.")
+            } else {
+                return Text("\(user.name) has already applied all their default packing lists! Visit the Lists tab to create a new list.")
+            }
+        } else {
+            return Text("You haven't created any default packing lists! Visit the Lists tab to create a new list.")
+        }
+    }
+    
     var body: some View {
         VStack {
             PackingListPillView(packingLists: selectedPackingLists)
@@ -67,7 +76,7 @@ struct PackingListSelectionView: View {
                 ContentUnavailableView {
                     Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
                 } description: {
-                    Text("You haven't created any default packing lists! Visit the home screen to create a new list.")
+                    noListText
                 }
             } else {
                 List {

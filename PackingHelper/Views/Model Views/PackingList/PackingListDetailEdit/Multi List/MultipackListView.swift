@@ -12,10 +12,9 @@ struct MultipackListView: View {
     var packingLists: [PackingList]
     
     @Binding var selectedUser: User?
-    @Binding var selectedList: PackingList?
-    @Binding var isShowingEditList: Bool
+    @State var selectedListToEdit: PackingList?
+    @State var selectedListToAdd: PackingList?
     
-    @State private var isShowingAddItem: Bool = false
     @State private var isDeleted: Bool = false
     
     let currentView: PackingListDetailViewCurrentSelection
@@ -30,9 +29,8 @@ struct MultipackListView: View {
                     user: selectedUser,
                     listType: listType,
                     currentView: currentView,
-                    selectedList: $selectedList,
-                    isAddingNewItem: $isShowingAddItem,
-                    isShowingEditList: $isShowingEditList,
+                    selectedListToAdd: $selectedListToAdd,
+                    selectedListToEdit: $selectedListToEdit,
                     isDeleted: $isDeleted
                 )
             }
@@ -40,18 +38,18 @@ struct MultipackListView: View {
         .listStyle(.inset)
         .listRowSeparator(.hidden)
         .listSectionSeparator(.hidden)
-        .sheet(isPresented: $isShowingEditList) {
+        .sheet(item: $selectedListToEdit) { list in
             PackingListEditView(
-                packingList: selectedList,
+                packingList: list,
                 isTemplate: false,
                 trip: trip,
                 forceListType: listType,
                 isDeleted: $isDeleted
             )
         }
-        .sheet(isPresented: $isShowingAddItem) {
+        .sheet(item: $selectedListToAdd) { _ in
             PackingAddItemForGroupView(
-                selectedPackingList: $selectedList,
+                selectedPackingList: $selectedListToAdd,
                 availableLists: trip.getLists(for: selectedUser, ofType: listType).sorted {
                     $0.name < $1.name
                 },

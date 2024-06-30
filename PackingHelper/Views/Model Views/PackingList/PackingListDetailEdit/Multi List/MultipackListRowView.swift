@@ -18,9 +18,8 @@ struct MultipackListRowView: View {
     
     let currentView: PackingListDetailViewCurrentSelection
     
-    @Binding var selectedList: PackingList?
-    @Binding var isAddingNewItem: Bool
-    @Binding var isShowingEditList: Bool
+    @Binding var selectedListToAdd: PackingList?
+    @Binding var selectedListToEdit: PackingList?
     @Binding var isDeleted: Bool
     
     @State private var isShowingSaveAsDefaultConfirmation: Bool = false
@@ -66,8 +65,7 @@ struct MultipackListRowView: View {
                     )
                 }
                 Button {
-                    selectedList = packingList
-                    isAddingNewItem.toggle()
+                    selectedListToAdd = packingList
                 } label: {
                     Label("Add Item", systemImage: "plus.circle")
                 }
@@ -102,8 +100,7 @@ struct MultipackListRowView: View {
             Menu {
                 Button {
                     withAnimation(.snappy) {
-                        selectedList = packingList
-                        isShowingEditList.toggle()
+                        selectedListToEdit = packingList
                     }
                 } label: {
                     Label("Edit List", systemImage: "pencil")

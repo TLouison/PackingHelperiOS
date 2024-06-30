@@ -14,7 +14,6 @@ struct PackingListApplyDefaultView: View {
     var trip: Trip
 
     @State private var defaultPackingLists: [PackingList] = []
-
     @State private var selectedUser: User?
 
     var formIsValid: Bool {
@@ -42,6 +41,10 @@ struct PackingListApplyDefaultView: View {
                 Form {
                     Section("Default Lists") {
                         UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+                            .onChange(of: selectedUser) {
+                                // Only let them apply one user at a time. Remove all if they change users
+                                defaultPackingLists.removeAll()
+                            }
 
                         NavigationLink {
                             PackingListSelectionView(
@@ -59,7 +62,7 @@ struct PackingListApplyDefaultView: View {
                     }
                     
                     Section("Already Applied") {
-                        PackingListPillView(packingLists: trip.listsFromTemplates)
+                        PackingListPillView(packingLists: PackingList.filtered(user: selectedUser, trip.alreadyUsedTemplates))
                     }
                 }
             }

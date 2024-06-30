@@ -204,6 +204,11 @@ extension Trip {
         return self.lists?.filter { $0.appliedFromTemplate != nil } ?? []
     }
     
+    var alreadyUsedTemplates: [PackingList] {
+        // We already filtered out all appliedFromTemplate == nil, so force unwrap is safe
+        return self.listsFromTemplates.map { $0.appliedFromTemplate! }
+    }
+    
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
         return self.lists?.reduce(0, {x,y in

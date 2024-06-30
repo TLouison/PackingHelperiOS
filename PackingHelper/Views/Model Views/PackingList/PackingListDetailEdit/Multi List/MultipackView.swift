@@ -18,9 +18,8 @@ struct MultipackView: View {
     @State private var sortOrder: PackingListSortOrder = .byDate
     @State private var currentView: PackingListDetailViewCurrentSelection = .unpacked
     
-    @State private var isShowingEditList: Bool = false
+    @State private var isCreatingNewList: Bool = false
     @State private var isApplyingDefaultList: Bool = false
-    
     
     @Query private var packingLists: [PackingList]
     
@@ -62,8 +61,6 @@ struct MultipackView: View {
                     trip: trip,
                     packingLists: sortedLists,
                     selectedUser: $selectedUser,
-                    selectedList: $selectedList,
-                    isShowingEditList: $isShowingEditList,
                     currentView: .unpacked,
                     listType: listType
                 )
@@ -73,8 +70,6 @@ struct MultipackView: View {
                     trip: trip,
                     packingLists: sortedLists,
                     selectedUser: $selectedUser,
-                    selectedList: $selectedList,
-                    isShowingEditList: $isShowingEditList,
                     currentView: .packed,
                     listType: listType
                 )
@@ -89,7 +84,7 @@ struct MultipackView: View {
                     user: $selectedUser,
                     selectedList: $selectedList,
                     sortOrder: $sortOrder,
-                    isShowingEditList: $isShowingEditList,
+                    isShowingEditList: $isCreatingNewList,
                     isApplyingDefaultPackingList: $isApplyingDefaultList
                 )
                 
@@ -103,6 +98,20 @@ struct MultipackView: View {
         }
         .sheet(isPresented: $isApplyingDefaultList) {
             PackingListApplyDefaultView(trip: trip)
+        }
+        .sheet(isPresented: $isCreatingNewList) {
+            PackingListEditView(
+                packingList: nil,
+                isTemplate: false,
+                trip: trip,
+                forceListType: listType,
+                isDeleted: .constant(false)
+            )
+        }
+        .onChange(of: selectedUser) { before, after in
+            if before == nil && after != nil {
+                sortOrder = .byDate
+            }
         }
     }
 }
