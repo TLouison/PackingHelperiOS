@@ -86,12 +86,6 @@ struct PackingListApplyDefaultView: View {
     }
 
     func save() {
-        if !defaultPackingLists.isEmpty {
-            for list in defaultPackingLists {
-                let defaultList = PackingList.copyForTrip(list, for: selectedUser)
-                defaultList.tripID = trip.id
-                trip.addList(defaultList)
-            }
-        }
+        trip.applyDefaultLists(to: selectedUser, lists: defaultPackingLists)
     }
 }

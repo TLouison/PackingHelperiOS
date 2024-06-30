@@ -72,14 +72,7 @@ struct UserEditView: View {
     }
     
     private func save() {
-        if let user {
-            user.name = name
-            user.setUserColor(userColor)
-        } else {
-            let newUser = User(name: name)
-            newUser.setUserColor(userColor)
-            modelContext.insert(newUser)
-        }
+        User.create_or_update(user, name: name, color: userColor, in: modelContext)
     }
 }
 

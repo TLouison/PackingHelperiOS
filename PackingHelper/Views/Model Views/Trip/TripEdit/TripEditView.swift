@@ -34,11 +34,12 @@ struct TripEditView: View {
     @State private var origin: TripLocation = TripLocation.sampleOrigin
     @State private var destination: TripLocation = TripLocation.sampleDestination
     
-    @State var navigationPath: [Int] = []
+    @State private var navigationPath: [Int] = []
     
     @State private var defaultPackingLists: [PackingList] = []
     
     let trip: Trip?
+    @Binding var isDeleted: Bool
     
     private var editorTitle: String {
         trip == nil ? "Add Trip" : "Edit Trip"
@@ -220,32 +221,26 @@ struct TripEditView: View {
     }
     
     private func save() {
-        if let trip {
-            trip.name = name
-            
-            trip.startDate = startDate
-            trip.endDate = endDate
-            
-            trip.type = tripType
-            trip.accomodation = accomodation
-            
-            trip.origin = origin
-            trip.destination = destination
-        } else {
-            let newTrip = Trip(name: name, startDate: startDate, endDate: endDate, type: tripType, origin: origin, destination: destination, accomodation: accomodation)
-            
-            for pList in defaultPackingLists {
-                let defaultList = PackingList.copyForTrip(pList)
-                defaultList.tripID = newTrip.id
-                newTrip.addList(defaultList)
-            }
-            
-            modelContext.insert(newTrip)
+        let trip = Trip.create_or_update(
+            trip,
+            name: name,
+            startDate: startDate,
+            endDate: endDate,
+            tripType: tripType,
+            origin: origin,
+            destination: destination,
+            accomodation: accomodation,
+            in: modelContext
+        )
+        
+        if !defaultPackingLists.isEmpty {
+            trip.applyDefaultLists(to: nil, lists: defaultPackingLists)
         }
     }
     
     private func deleteTrip() {
-        modelContext.delete(trip!)
+        Trip.delete(trip!, in: modelContext)
+        isDeleted = true
         dismiss()
     }
 }

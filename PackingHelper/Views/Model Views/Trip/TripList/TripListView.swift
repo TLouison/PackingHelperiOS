@@ -98,7 +98,7 @@ struct TripListView: View {
                 TripDetailView(trip: trip)
             }
             .sheet(isPresented: $isShowingAddTripSheet) {
-                TripEditView(trip: nil)
+                TripEditView(trip: nil, isDeleted: .constant(false))
             }
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {

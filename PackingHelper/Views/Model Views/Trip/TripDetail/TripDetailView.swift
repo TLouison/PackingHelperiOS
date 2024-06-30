@@ -33,6 +33,7 @@ struct TripDetailView: View {
     
     let trip: Trip
     
+    @State private var isDeleted: Bool = false
     @State private var isShowingTripDetailSheet: Bool = false
     @State private var isShowingTripSettingsSheet: Bool = false
     
@@ -70,7 +71,7 @@ struct TripDetailView: View {
             }
             .padding()
             .sheet(isPresented: $isShowingTripDetailSheet) { TripDetailSheet(trip: trip) }
-            .sheet(isPresented: $isShowingTripSettingsSheet) { TripEditView(trip: trip) }
+            .sheet(isPresented: $isShowingTripSettingsSheet) { TripEditView(trip: trip, isDeleted: $isDeleted) }
             .sheet(isPresented: $isAddingNewPackingList) {
                 PackingListEditView(trip: trip, isDeleted: .constant(false))
                     .presentationDetents([.height(250)])
@@ -82,6 +83,11 @@ struct TripDetailView: View {
             .onAppear {
                 Task {
                     tripWeather = await trip.destination?.getTripWeather()
+                }
+            }
+            .onChange(of: isDeleted) {
+                if isDeleted {
+                    dismiss()
                 }
             }
         }

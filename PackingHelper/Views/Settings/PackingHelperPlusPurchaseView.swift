@@ -42,11 +42,11 @@ struct PackingHelperPlusPurchaseView: View {
                     VStack(alignment: .leading) {
                         Text("• Add unlimited users")
                         Text("• Intelligent Categorization")
-                        Text("• Share lists with friends and family")
+                        Text("• Pack with friends and family")
                     }
                     .roundedBox(background: .thickMaterial)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 10)
             }
         }
         .roundedBox()
