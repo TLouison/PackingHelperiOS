@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct NewUserOnboardingView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     
     @Query private var users: [User]
     @State private var foundExistingData = false

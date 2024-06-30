@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CreateNewUserOnboardingView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
     @State private var name: String = ""
     

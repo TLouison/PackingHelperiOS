@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct UserEditView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
     @State private var name = ""
     @State private var userColor = Color.accentColor

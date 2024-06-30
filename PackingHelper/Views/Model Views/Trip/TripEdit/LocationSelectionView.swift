@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct LocationSelectionView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
     @ObservedObject var locationService: LocationService

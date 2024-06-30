@@ -10,8 +10,8 @@ import SwiftData
 import WeatherKit
 
 struct TripDetailOverlay: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
     @Bindable var trip: Trip
     @Binding var tripWeather: TripWeather?

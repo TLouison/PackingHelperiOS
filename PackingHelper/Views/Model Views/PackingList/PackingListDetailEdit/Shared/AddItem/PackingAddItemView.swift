@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct PackingAddItemView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var nameIsFocused: Bool
     
     let packingList: PackingList

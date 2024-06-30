@@ -13,8 +13,8 @@ enum PackingListDetailViewCurrentSelection: CaseIterable, Codable, Hashable, Sen
 }
 
 struct PackingListDetailView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
     var packingList: PackingList
 

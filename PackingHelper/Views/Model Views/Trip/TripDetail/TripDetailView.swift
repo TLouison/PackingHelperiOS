@@ -29,7 +29,7 @@ struct SheetModifier: ViewModifier {
 }
 
 struct TripDetailView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     
     let trip: Trip
     
@@ -77,7 +77,7 @@ struct TripDetailView: View {
             }
             .sheet(isPresented: $isApplyingDefaultPackingList) {
                 PackingListApplyDefaultView(trip: trip)
-                    .presentationDetents([.height(175)])
+                    .presentationDetents([.height(300)])
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {

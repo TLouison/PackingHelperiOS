@@ -17,7 +17,7 @@ import SwiftData
 import MapKit
 
 struct TripEditView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
     @State private var name = ""

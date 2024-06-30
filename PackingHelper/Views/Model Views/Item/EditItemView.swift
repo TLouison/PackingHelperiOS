@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EditItemView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     
     var item: Item?
     

@@ -9,8 +9,8 @@ import SwiftUI
 import WeatherKit
 
 struct TripDetailForecastView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     
     let trip: Trip
     @Binding var tripWeather: TripWeather?
