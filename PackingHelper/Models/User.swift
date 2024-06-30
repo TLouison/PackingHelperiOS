@@ -24,6 +24,17 @@ final class User: Comparable {
     init(name: String) {
         self.name = name
     }
+    
+    static func create_or_update(_ user: User?, name: String, color: Color, in context: ModelContext) {
+        if let user {
+            user.name = name
+            user.setUserColor(color)
+        } else {
+            let newUser = User(name: name)
+            newUser.setUserColor(color)
+            context.insert(newUser)
+        }
+    }
 }
 
 // All non-init CRUD functions go here

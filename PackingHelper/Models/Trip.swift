@@ -124,25 +124,46 @@ final class Trip {
         self.createDayOfPackingNotification()
     }
     
-    func addList(_ list: PackingList) {
-        if self.lists == nil {
-            self.lists = []
+    static func create_or_update(
+        _ trip: Trip?,
+        name: String,
+        startDate: Date,
+        endDate: Date,
+        tripType: TripType,
+        origin: TripLocation,
+        destination: TripLocation,
+        accomodation: TripAccomodation,
+        in context: ModelContext
+    ) -> Trip {
+        if let trip {
+            trip.name = name
+            
+            trip.startDate = startDate
+            trip.endDate = endDate
+            
+            trip.type = tripType
+            trip.accomodation = accomodation
+            
+            trip.origin = origin
+            trip.destination = destination
+            return trip
+        } else {
+            let newTrip = Trip(
+                name: name,
+                startDate: startDate,
+                endDate: endDate,
+                type: tripType,
+                origin: origin,
+                destination: destination,
+                accomodation: accomodation
+            )
+            context.insert(newTrip)
+            return newTrip
         }
-        self.lists!.append(list)
     }
     
-    func addDefaultList(_ list: PackingList, to context: ModelContext) {
-        
-    }
-    
-    func removeList(_ listToRemove: PackingList) -> Bool {
-        // Make sure to remove the list from the model context as well if fully deleting!
-        if var lists = self.lists {
-            logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
-            lists.remove(at: (lists.firstIndex(of: listToRemove))!)
-            return true
-        }
-        return false
+    static func delete(_ trip: Trip, in context: ModelContext) {
+        context.delete(trip)
     }
 }
 
@@ -192,6 +213,7 @@ extension Trip {
 
 // List-related Trip Code
 extension Trip {
+    // MARK: List metadata
     var hasMultiplePackers: Bool {
         return self.lists?.compactMap( { $0.user } ).count ?? 0 > 1
     }
@@ -209,6 +231,7 @@ extension Trip {
         return self.listsFromTemplates.map { $0.appliedFromTemplate! }
     }
     
+    // MARK: List counts
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
         return self.lists?.reduce(0, {x,y in
@@ -244,6 +267,7 @@ extension Trip {
         return self.getTotalItems(for: listType) == self.getCompleteItems(for: listType)
     }
     
+    // MARK: Get Lists
     func getLists(for listType: ListType) -> [PackingList] {
         return self.lists?.filter {$0.type == listType} ?? []
     }
@@ -261,6 +285,34 @@ extension Trip {
             return self.getLists(for: user).filter {$0.type == listType }
         } else {
             return self.getLists(for: listType)
+        }
+    }
+    
+    // MARK: CRUD Lists
+    func addList(_ list: PackingList) {
+        if self.lists == nil {
+            self.lists = []
+        }
+        self.lists!.append(list)
+    }
+    
+    func removeList(_ listToRemove: PackingList) -> Bool {
+        // Make sure to remove the list from the model context as well if fully deleting!
+        if var lists = self.lists {
+            logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
+            lists.remove(at: (lists.firstIndex(of: listToRemove))!)
+            return true
+        }
+        return false
+    }
+    
+    func applyDefaultLists(to user: User?, lists: [PackingList]) {
+        if !lists.isEmpty {
+            for list in lists {
+                let defaultList = PackingList.copyForTrip(list, for: user)
+                defaultList.tripID = self.id
+                self.addList(defaultList)
+            }
         }
     }
 }
