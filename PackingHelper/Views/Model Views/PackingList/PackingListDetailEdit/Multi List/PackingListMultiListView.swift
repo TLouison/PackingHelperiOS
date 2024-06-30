@@ -16,13 +16,13 @@ import SwiftData
 //}
 
 struct PackingListMultiListView: View {
-    @Environment(\.modelContext) var modelContext
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     
     var listType: ListType
-    var trip: Trip
+    @Bindable var trip: Trip
     @Binding var user: User?
-
+    
     @State private var sortOrder: PackingListSortOrder = .byDate
     @State private var currentView: PackingListDetailViewCurrentSelection = .unpacked
     
@@ -43,13 +43,7 @@ struct PackingListMultiListView: View {
         }
         return false
     }
-    
-    var visibleLists: [PackingList] {
-        let allLists = trip.getLists(for: listType)
-        let filteredLists = PackingList.filtered(user: user, allLists)
-        return PackingList.sorted(filteredLists, sortOrder: sortOrder)
-    }
-    
+
     var body: some View {
         VStack {
             PackingListDetailEditTabBarView(listType: listType, currentView: $currentView)
@@ -57,15 +51,33 @@ struct PackingListMultiListView: View {
             
             // Having two instances of the same view so that we can nicely transition
             // between states.
-            if currentView == .unpacked {
-                listView(currentView: .unpacked)
-                    .transition(.pushAndPull(.leading))
-                    .listRowSeparator(.hidden)
-            } else {
-                listView(currentView: .packed)
-                    .transition(.pushAndPull(.trailing))
-            }
-            
+//            if currentView == .unpacked {
+//                MultipackListView(
+//                    trip: trip,
+//                    user: $user,
+//                    selectedList: $selectedList,
+//                    sortOrder: $sortOrder,
+//                    isShowingAddItem: $isShowingAddItem,
+//                    isShowingEditList: $isShowingEditList,
+//                    currentView: .unpacked,
+//                    listType: listType
+//                )
+//                    .transition(.pushAndPull(.leading))
+//                    .listRowSeparator(.hidden)
+//            } else {
+//                MultipackListView(
+//                    trip: trip,
+//                    user: $user,
+//                    selectedList: $selectedList,
+//                    sortOrder: $sortOrder,
+//                    isShowingAddItem: $isShowingAddItem,
+//                    isShowingEditList: $isShowingEditList,
+//                    currentView: .packed,
+//                    listType: listType
+//                )
+//                    .transition(.pushAndPull(.trailing))
+//            }
+//            
             if (trip.getTotalItems(for: listType) == 0) {
                 ContentUnavailableView {
                     Label("No Items On List", systemImage: "bag")
@@ -94,38 +106,33 @@ struct PackingListMultiListView: View {
                 .scaleEffect(x: 0.5, y: 0.5)
             }
         }
-        .sheet(isPresented: $isShowingAddItem) {
-            PackingAddItemForGroupView(selectedPackingList: $selectedList, availableLists: visibleLists, currentView: currentView)
-                .presentationDetents([.height(200)])
-        }
+//        .sheet(isPresented: $isShowingAddItem) {
+//            PackingAddItemForGroupView(
+//                selectedPackingList: $selectedList,
+//                availableLists: trip.getLists(for: user, ofType: listType).sorted {
+//                    $0.name < $1.name
+//                },
+//                currentView: currentView)
+//                .presentationDetents([.height(200)])
+//        }
         .sheet(isPresented: $isShowingEditList) {
             PackingListEditView(packingList: selectedList, isTemplate: false, trip: trip, forceListType: listType, isDeleted: $isDeleted)
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
             PackingListApplyDefaultView(trip: trip)
-                .presentationDetents([.height(175)])
+                .presentationDetents([.height(300)])
         }
         .onChange(of: user) {
             if user != nil {
                 sortOrder = .byDate
             }
         }
-    }
-    
-    @ViewBuilder func listView(currentView: PackingListDetailViewCurrentSelection) -> some View {
-        List {
-            ForEach(visibleLists, id: \.id) { packingList in
-                PackingListMultiListEditView(packingList: packingList, user: user, currentView: .constant(currentView), selectedList: $selectedList, isAddingNewItem: $isShowingAddItem, isShowingEditList: $isShowingEditList)
-            }
-        }
-        .listStyle(.inset)
-        .listRowSeparator(.hidden)
-        .listSectionSeparator(.hidden)
+
     }
 }
 
-@available(iOS 18, *)
-#Preview(traits: .sampleData) {
-    @Previewable @Query var trips: [Trip]
-    PackingListMultiListView(listType: .packing, trip: trips.first!, user: .constant(nil))
-}
+//@available(iOS 18, *)
+//#Preview(traits: .sampleData) {
+//    @Previewable @Query var trips: [Trip]
+//    PackingListMultiListView(listType: .packing, trip: trips.first!, user: .constant(nil))
+//}

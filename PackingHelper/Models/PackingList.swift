@@ -60,6 +60,10 @@ final class PackingList {
     var created: Date = Date.now
     
     var type: ListType = ListType.packing
+    var typeString: String {
+        type.rawValue
+    }
+    
     var name: String = "List"
     
     // Default Packing List Variables
@@ -165,6 +169,7 @@ extension PackingList {
         }
         
         context.delete(packingList)
+        try! context.save()
         logger.info("Successfully deleted \(list_name)")
         return true
     }

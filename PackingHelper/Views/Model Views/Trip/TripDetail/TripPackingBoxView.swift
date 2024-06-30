@@ -5,7 +5,6 @@
 //  Created by Todd Louison on 10/11/23.
 //
 
-import Combine
 import SwiftUI
 import SwiftData
 
@@ -15,27 +14,7 @@ struct TripPackingBoxView: View {
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     
-    @Query(animation: .bouncy) private var lists: [PackingList]
-    @Query private var users: [User]
     @State private var selectedUser: User?
-
-    // Get the packing lists for the provided user
-    var packingLists: [PackingList] {
-        if let selectedUser {
-            return trip.lists?.filter( { $0.user == selectedUser } ) ?? []
-        } else {
-            return trip.lists ?? []
-        }
-    }
-    
-    var visibleListTypes: [ListType] {
-        let listTypes = Set(packingLists.map{ $0.type })
-        return listTypes.sorted()
-    }
-    
-    var defaultListsExist: Bool {
-        return !lists.filter{ $0.template == true }.isEmpty
-    }
     
     var body: some View {
             TripDetailCustomSectionView {
@@ -44,7 +23,10 @@ struct TripPackingBoxView: View {
                         .font(.title)
                     Spacer()
                     
-                    createListMenu()
+                    CreateListMenu(
+                        isAddingNewPackingList: $isAddingNewPackingList,
+                        isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                    )
                 }
             } content: {
                 if !(trip.lists?.isEmpty ?? true) {
@@ -54,9 +36,9 @@ struct TripPackingBoxView: View {
                                 .transition(.scale)
                         }
                         
-                        ForEach(visibleListTypes, id: \.rawValue) { listType in
+                        ForEach(trip.containsListTypes, id: \.rawValue) { listType in
                             NavigationLink {
-                                PackingListMultiListView(listType: listType, trip: trip, user: $selectedUser)
+                                MultipackView(trip: trip, listType: listType, user: $selectedUser)
                             } label: {
                                 HStack {
                                     Text(listType.rawValue).font(.headline)
@@ -75,33 +57,6 @@ struct TripPackingBoxView: View {
                         }
                     }
                 }
-        }
-    }
-    
-    @ViewBuilder func createListMenu() -> some View {
-        if defaultListsExist {
-            Menu {
-                Button("Create List") {
-                    withAnimation {
-                        isAddingNewPackingList.toggle()
-                    }
-                }
-                Button("Apply Default List") {
-                    withAnimation {
-                        isApplyingDefaultPackingList.toggle()
-                    }
-                }
-            } label: {
-                Label("Create List", systemImage: "plus.circle")
-            }
-        } else {
-            Button {
-                withAnimation {
-                    isAddingNewPackingList.toggle()
-                }
-            } label: {
-                Label("Create List", systemImage: "plus.circle")
-            }
         }
     }
 }

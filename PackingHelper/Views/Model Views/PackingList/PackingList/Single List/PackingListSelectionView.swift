@@ -12,7 +12,6 @@ struct PackingListSelectionView: View {
     @Binding var packingLists: [PackingList]
     
     @State private var searchText = ""
-    
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
     var user: User? = nil

@@ -91,6 +91,7 @@ final class Trip {
         case upcoming, departing, active, returning, complete
     }
     
+    var uuid: UUID = UUID()
     var name: String = "Trip"
     
     @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var origin: TripLocation?
@@ -195,6 +196,10 @@ extension Trip {
         return self.lists?.compactMap( { $0.user } ).count ?? 0 > 1
     }
     
+    var containsListTypes: [ListType] {
+        return Set(self.lists?.compactMap( { $0.type } ) ?? []).sorted()
+    }
+    
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
         return self.lists?.reduce(0, {x,y in
@@ -232,6 +237,22 @@ extension Trip {
     
     func getLists(for listType: ListType) -> [PackingList] {
         return self.lists?.filter {$0.type == listType} ?? []
+    }
+    
+    func getLists(for user: User?) -> [PackingList] {
+        if let user {
+            return self.lists?.filter {$0.user == user} ?? []
+        } else {
+            return self.lists ?? []
+        }
+    }
+    
+    func getLists(for user: User?, ofType listType: ListType) -> [PackingList] {
+        if let user {
+            return self.getLists(for: user).filter {$0.type == listType }
+        } else {
+            return self.getLists(for: listType)
+        }
     }
 }
 

@@ -16,6 +16,11 @@ struct PackingAddItemForGroupView: View {
     
     var body: some View {
         VStack {
+            if selectedPackingList == nil {
+                Label("Please select a list to continue.", systemImage: "exclamationmark.triangle.fill")
+                    .background(.yellow.opacity(0.2))
+                    .roundedBox()
+            }
             HStack {
                 Text("Adding new item to").font(.headline)
                 Picker("Packing List", selection: $selectedPackingList) {
@@ -27,14 +32,16 @@ struct PackingAddItemForGroupView: View {
             .font(.title)
             .padding(.horizontal)
             
-            PackingAddItemView(packingList: selectedPackingList!, newItemIsPacked: currentView == .packed)
+            if let selectedPackingList {
+                PackingAddItemView(packingList: selectedPackingList, newItemIsPacked: currentView == .packed)
+            }
         }
         .padding(.bottom)
     }
 }
 
-@available(iOS 18, *)
-#Preview(traits: .sampleData) {
-    @Previewable @Query var packingLists: [PackingList]
-    PackingAddItemForGroupView(selectedPackingList: .constant(packingLists.first!), availableLists: packingLists, currentView: .unpacked)
-}
+//@available(iOS 18, *)
+//#Preview(traits: .sampleData) {
+//    @Previewable @Query var packingLists: [PackingList]
+//    PackingAddItemForGroupView(selectedPackingList: packingLists.first!, availableLists: packingLists, currentView: .unpacked)
+//}
