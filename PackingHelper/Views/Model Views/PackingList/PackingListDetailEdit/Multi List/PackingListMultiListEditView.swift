@@ -9,16 +9,16 @@ import SwiftUI
 import SwiftData
 
 struct PackingListMultiListEditView: View {
-    @Environment(\.modelContext) var modelContext
-    @Bindable var packingList: PackingList
+    @Environment(\.modelContext) private var modelContext
     
+    @Bindable var packingList: PackingList
     let user: User?
     
     @Binding var currentView: PackingListDetailViewCurrentSelection
     
     @State private var isShowingSaveAsDefaultConfirmation: Bool = false
     @State private var isShowingSaveSuccessful: Bool = false
-    @State private var isDeleted: Bool = false
+    @State private var isShowingDeleteConfirmation: Bool = false
     
     @Binding var selectedList: PackingList?
     @Binding var isAddingNewItem: Bool
@@ -83,6 +83,15 @@ struct PackingListMultiListEditView: View {
         .alert("\(packingList.name) saved as default", isPresented: $isShowingSaveSuccessful) {
             Button("OK", role: .cancel) {}
         }
+        .confirmationDialog(
+            Text("Are you sure you want to delete \(packingList.name) from this trip? This cannot be undone."),
+            isPresented: $isShowingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                delete()
+            }
+        }
     }
     
     @ViewBuilder func sectionButtons(packingList: PackingList) -> some View {
@@ -105,7 +114,7 @@ struct PackingListMultiListEditView: View {
                 }
                 
                 Button(role: .destructive) {
-                    modelContext.delete(packingList)
+                    isShowingDeleteConfirmation.toggle()
                 } label: {
                     Label("Delete from Trip", systemImage: "trash")
                 }
@@ -118,26 +127,14 @@ struct PackingListMultiListEditView: View {
             .background(.thickMaterial)
             .rounded()
             .shaded()
-            
-//            if currentView == .unpacked {
-//                Button {
-//                    withAnimation(.snappy) {
-//                        selectedList = packingList
-//                        isAddingNewItem.toggle()
-//                    }
-//                } label: {
-//                    Label("Add Item", systemImage: "plus.circle.fill")
-//                        .labelStyle(.iconOnly)
-//                        .tint(.green)
-//                        .font(.headline)
-//                }
-//                .padding(10)
-//                .background(.thickMaterial)
-//                .rounded()
-//                .shaded()
-//            }
         }
         .fixedSize(horizontal: false, vertical: true)
+    }
+    
+    func delete() {
+        withAnimation {
+            let _ = PackingList.delete(packingList, from: modelContext)
+        }
     }
 }
 
