@@ -5,42 +5,48 @@
 //  Created by Todd Louison on 11/14/23.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct PackingListApplyDefaultView: View {
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss) private var dismiss
+
     var trip: Trip
-    
+
     @Query(
-        filter: #Predicate<PackingList>{ $0.template == true },
+        filter: #Predicate<PackingList> { $0.template == true },
         sort: \.created, order: .reverse,
         animation: .snappy
     ) private var defaultPackingListOptions: [PackingList]
     @State private var defaultPackingLists: [PackingList] = []
-    
+
     @State private var selectedUser: User?
-    
+
     var formIsValid: Bool {
         return !defaultPackingLists.isEmpty
     }
-    
+
     var body: some View {
         NavigationStack {
+            Text("Apply default packing lists to \(trip.name).")
+                .font(.headline)
             VStack {
-                VStack {
-                    NavigationLink {
-                        PackingListSelectionView(packingLists: $defaultPackingLists)
-                    } label: {
-                        Label("Select Packing Lists", systemImage: "suitcase")
+                Form {
+                    Section("Default Lists") {
+                        NavigationLink {
+                            PackingListSelectionView(
+                                packingLists: $defaultPackingLists,
+                                user: selectedUser)
+                        } label: {
+                            Label(
+                                "Select Packing Lists", systemImage: "suitcase")
+                        }
                     }
-                    
-                    PackingListPillView(packingLists: defaultPackingLists)
+
+                    Section("Lists To Be Applied") {
+                        PackingListPillView(packingLists: defaultPackingLists)
+                    }
                 }
-                
-                Text("Apply default packing lists to \(trip.name) .")
-                    .font(.footnote)
             }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -58,9 +64,9 @@ struct PackingListApplyDefaultView: View {
                 }
             }
         }
-        
+
     }
-    
+
     func save() {
         if !defaultPackingLists.isEmpty {
             for list in defaultPackingLists {
