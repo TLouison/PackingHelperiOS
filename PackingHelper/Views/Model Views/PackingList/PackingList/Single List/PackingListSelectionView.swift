@@ -15,7 +15,7 @@ struct PackingListSelectionView: View {
     
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
-    let user: User? = nil
+    var user: User? = nil
     
     @Query(
         filter: #Predicate<PackingList>{ $0.template == true },

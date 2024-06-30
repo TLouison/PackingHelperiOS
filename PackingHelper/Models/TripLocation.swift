@@ -132,7 +132,7 @@ extension TripLocation {
         
         print("Fetching weather")
         print("Before: \(self.weatherFetched)")
-        self.weatherFetched = Date()
+        self.weatherFetched = Date.now
         print("After: \(self.weatherFetched)")
         let weatherService = WeatherService()
         

@@ -33,10 +33,6 @@ struct TripPackingBoxView: View {
         return listTypes.sorted()
     }
     
-    var visibleLists: [PackingList] {
-        return packingLists.filter{ $0.trip == trip }.sorted(by: {$0.type < $1.type})
-    }
-    
     var defaultListsExist: Bool {
         return !lists.filter{ $0.template == true }.isEmpty
     }
