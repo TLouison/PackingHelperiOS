@@ -9,52 +9,61 @@ import SwiftUI
 import SwiftData
 
 struct PackingListSelectionView: View {
-    @Binding var packingLists: [PackingList]
+    var trip: Trip?
+    @Binding var selectedPackingLists: [PackingList]
+    
+    @Query(
+        filter: #Predicate<PackingList> { $0.template == true },
+        sort: \.name, order: .forward,
+        animation: .snappy
+    ) private var defaultPackingListOptions: [PackingList]
     
     @State private var searchText = ""
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
     var user: User? = nil
     
-    @Query(
-        filter: #Predicate<PackingList>{ $0.template == true },
-        sort: \.created, order: .reverse,
-        animation: .snappy
-    ) private var defaultPackingListOptions: [PackingList]
-    
-    var visiblePackingListOptions: [PackingList] {
-        if let user {
-            print("Filtering default lists by user \(user.name)")
-            return defaultPackingListOptions.filter { $0.user == user }
+    var alreadyAppliedLists: [PackingList] {
+        if let trip {
+            return trip.listsFromTemplates
+        } else {
+            return []
         }
-        print("Not filtering default lists by user")
-        return defaultPackingListOptions
+    }
+    
+    var availableLists: [PackingList] {
+        let availableLists = defaultPackingListOptions.filter { !alreadyAppliedLists.contains($0) }
+        
+        if let user {
+            return availableLists.filter { $0.user == user }
+        }
+        return availableLists
     }
     
     var searchResults: [PackingList] {
         if searchText.isEmpty {
-            return visiblePackingListOptions
+            return availableLists
         } else {
-            return visiblePackingListOptions.filter { $0.name == (searchText) }
+            return availableLists.filter { $0.name == (searchText) }
         }
     }
     
     func addToSelected(_ list: PackingList) {
-        packingLists.append(list)
+        selectedPackingLists.append(list)
     }
     
     func removeFromSelected(_ list: PackingList) {
-        let index = packingLists.firstIndex(of: list)
+        let index = selectedPackingLists.firstIndex(of: list)
         if let index {
-            packingLists.remove(at: index)
+            selectedPackingLists.remove(at: index)
         }
     }
     
     var body: some View {
         VStack {
-            PackingListPillView(packingLists: packingLists)
+            PackingListPillView(packingLists: selectedPackingLists)
             
-            if visiblePackingListOptions.isEmpty {
+            if availableLists.isEmpty {
                 ContentUnavailableView {
                     Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
                 } description: {
@@ -67,7 +76,7 @@ struct PackingListSelectionView: View {
                             Text(packingList.name)
                             Spacer()
                             
-                            if packingLists.contains(packingList) {
+                            if selectedPackingLists.contains(packingList) {
                                 Button {
                                     withAnimation {
                                         removeFromSelected(packingList)

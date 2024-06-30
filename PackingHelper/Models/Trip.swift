@@ -200,6 +200,10 @@ extension Trip {
         return Set(self.lists?.compactMap( { $0.type } ) ?? []).sorted()
     }
     
+    var listsFromTemplates: [PackingList] {
+        return self.lists?.filter { $0.appliedFromTemplate != nil } ?? []
+    }
+    
     // Gets amount of Items stored in related lists regardless of type
     var totalListEntries: Int {
         return self.lists?.reduce(0, {x,y in

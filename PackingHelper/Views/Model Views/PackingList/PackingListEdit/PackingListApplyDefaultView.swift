@@ -13,11 +13,6 @@ struct PackingListApplyDefaultView: View {
 
     var trip: Trip
 
-    @Query(
-        filter: #Predicate<PackingList> { $0.template == true },
-        sort: \.name, order: .forward,
-        animation: .snappy
-    ) private var defaultPackingListOptions: [PackingList]
     @State private var defaultPackingLists: [PackingList] = []
 
     @State private var selectedUser: User?
@@ -50,7 +45,8 @@ struct PackingListApplyDefaultView: View {
 
                         NavigationLink {
                             PackingListSelectionView(
-                                packingLists: $defaultPackingLists,
+                                trip: trip,
+                                selectedPackingLists: $defaultPackingLists,
                                 user: selectedUser)
                         } label: {
                             Label(
@@ -60,6 +56,10 @@ struct PackingListApplyDefaultView: View {
 
                     Section("Lists To Be Applied") {
                         PackingListPillView(packingLists: defaultPackingLists)
+                    }
+                    
+                    Section("Already Applied") {
+                        PackingListPillView(packingLists: trip.listsFromTemplates)
                     }
                 }
             }
@@ -85,7 +85,7 @@ struct PackingListApplyDefaultView: View {
     func save() {
         if !defaultPackingLists.isEmpty {
             for list in defaultPackingLists {
-                let defaultList = PackingList.copyForTrip(list)
+                let defaultList = PackingList.copyForTrip(list, for: selectedUser)
                 defaultList.tripID = trip.id
                 trip.addList(defaultList)
             }

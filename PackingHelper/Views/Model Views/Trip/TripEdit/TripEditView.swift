@@ -155,7 +155,7 @@ struct TripEditView: View {
                     if trip == nil {
                         Section {
                             NavigationLink {
-                                PackingListSelectionView(packingLists: $defaultPackingLists)
+                                PackingListSelectionView(trip: trip, selectedPackingLists: $defaultPackingLists)
                             } label: {
                                 Label("Select Packing Lists", systemImage: "suitcase")
                             }

@@ -69,6 +69,8 @@ final class PackingList {
     // Default Packing List Variables
     var template: Bool = false
     var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
+    var appliedFromTemplate: PackingList? = nil // What default list did we create this list from?
+    @Relationship(deleteRule:.noAction, inverse: \PackingList.appliedFromTemplate) var appliedToLists: [PackingList]?
     
     var user: User?
     var trip: Trip?
@@ -81,6 +83,7 @@ final class PackingList {
         self.type = type
         self.template = template
         self.items = []
+        self.appliedToLists = []
         self.name = name
         self.countAsDays = countAsDays
     }
@@ -231,13 +234,21 @@ extension PackingList {
         logger.info("Copying packing list \(list.name) to apply to a trip.")
         let newList = PackingList.copy(list)
         newList.template = false
+        
+        // Make sure to note what default packing list this was created from
+        if list.template {
+            newList.appliedFromTemplate = list
+        }
+        
         return newList
     }
     
-    static func copyForTrip(_ list: PackingList, for user: User) -> PackingList {
-        logger.info("Copying packing list \(list.name) to apply to a trip for user \(user.name).")
+    static func copyForTrip(_ list: PackingList, for user: User?) -> PackingList {
         let newList = PackingList.copyForTrip(list)
-        newList.user = user
+        if let user {
+            logger.info("Copied packing list \(list.name) to apply to a trip for user \(user.name).")
+            newList.user = user
+        }
         return newList
     }
     
