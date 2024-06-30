@@ -53,15 +53,33 @@ struct MultipackView: View {
         VStack {
             PackingListDetailEditTabBarView(listType: listType, currentView: $currentView)
             
-            MultipackListView(
-                trip: trip,
-                packingLists: sortedLists,
-                selectedUser: $selectedUser,
-                selectedList: $selectedList,
-                isShowingEditList: $isShowingEditList,
-                currentView: currentView,
-                listType: listType
-            )
+            // By using a conditional we can transition between the two views
+            // as if they were different pages, instead of just removing and
+            // adding items to them
+            switch currentView {
+            case .unpacked:
+                MultipackListView(
+                    trip: trip,
+                    packingLists: sortedLists,
+                    selectedUser: $selectedUser,
+                    selectedList: $selectedList,
+                    isShowingEditList: $isShowingEditList,
+                    currentView: .unpacked,
+                    listType: listType
+                )
+                .transition(.pushAndPull(.leading))
+            case .packed:
+                MultipackListView(
+                    trip: trip,
+                    packingLists: sortedLists,
+                    selectedUser: $selectedUser,
+                    selectedList: $selectedList,
+                    isShowingEditList: $isShowingEditList,
+                    currentView: .packed,
+                    listType: listType
+                )
+                .transition(.pushAndPull(.trailing))
+            }
         }
         .navigationTitle(listType.rawValue)
         .navigationBarTitleDisplayMode(.inline)

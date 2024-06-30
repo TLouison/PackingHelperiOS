@@ -34,7 +34,10 @@ struct PackingListApplyDefaultView: View {
                 
                 Group {
                     if let selectedUser {
-                        Text("Lists will be applied to packer \(selectedUser.name)")
+                        HStack {
+                            Text("Lists will be applied to packer")
+                            selectedUser.pillIcon
+                        }
                     } else {
                         Text("Lists will be applied to the packer who created it.")
                     }
