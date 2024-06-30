@@ -201,8 +201,10 @@ extension PackingList {
 extension PackingList {
     private static func copy(_ packingList: PackingList, template: Bool = false) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays)
+        logger.info("Copied list.")
 
         if let items = packingList.items {
+            logger.info("Original list contained items, copying items to new list.")
             for item in items {
                 let newItem: Item
                 if template {
@@ -212,7 +214,9 @@ extension PackingList {
                 }
                 // Modify the numbers on the list based on number of days if desired
                 if !template && packingList.countAsDays {
-                    newItem.count = packingList.trip?.duration ?? newItem.count
+                    let itemCount = packingList.trip?.duration ?? newItem.count
+                    logger.info("Original list is marked as 'countAsDays=true', setting item count to \(itemCount)")
+                    newItem.count = itemCount
                 }
                 
                 newList.items?.append(newItem)
@@ -224,8 +228,16 @@ extension PackingList {
     }
     
     static func copyForTrip(_ list: PackingList) -> PackingList {
+        logger.info("Copying packing list \(list.name) to apply to a trip.")
         let newList = PackingList.copy(list)
         newList.template = false
+        return newList
+    }
+    
+    static func copyForTrip(_ list: PackingList, for user: User) -> PackingList {
+        logger.info("Copying packing list \(list.name) to apply to a trip for user \(user.name).")
+        let newList = PackingList.copyForTrip(list)
+        newList.user = user
         return newList
     }
     

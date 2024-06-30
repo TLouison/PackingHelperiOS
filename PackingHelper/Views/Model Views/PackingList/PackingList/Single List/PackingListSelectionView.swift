@@ -24,8 +24,10 @@ struct PackingListSelectionView: View {
     
     var visiblePackingListOptions: [PackingList] {
         if let user {
+            print("Filtering default lists by user \(user.name)")
             return defaultPackingListOptions.filter { $0.user == user }
         }
+        print("Not filtering default lists by user")
         return defaultPackingListOptions
     }
     

@@ -83,6 +83,9 @@ struct MultipackView: View {
                 .scaleEffect(x: 0.5, y: 0.5)
             }
         }
+        .sheet(isPresented: $isApplyingDefaultList) {
+            PackingListApplyDefaultView(trip: trip)
+        }
     }
 }
 

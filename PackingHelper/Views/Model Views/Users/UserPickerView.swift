@@ -16,15 +16,13 @@ struct UserPickerView: View {
     var showIcon: Bool = true
     var allowAll: Bool = true
     
-    
-    
     var body: some View {
         HStack {
             if showLabel {
                 Label("Showing Lists For", systemImage: "person.circle")
                 Spacer()
             }
-            UserPickerBaseView(selectedUser: $selectedUser.animation(), showIcon: showIcon, allowAll: allowAll)
+            UserPickerBaseView(selectedUser: $selectedUser.animation(.snappy), showIcon: showIcon, allowAll: allowAll)
             .background(.thickMaterial)
             .rounded()
         }

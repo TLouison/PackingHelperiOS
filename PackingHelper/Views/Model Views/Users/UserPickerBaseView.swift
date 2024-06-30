@@ -43,6 +43,12 @@ struct UserPickerBaseView: View {
                     Text(user.name).tag(user as User?)
                 }
             }
+            .padding(.horizontal)
+        }
+        .onAppear {
+            if selectedUser == nil && allowAll == false {
+                selectedUser = users.first!
+            }
         }
     }
 }

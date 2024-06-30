@@ -15,7 +15,7 @@ struct PackingListApplyDefaultView: View {
 
     @Query(
         filter: #Predicate<PackingList> { $0.template == true },
-        sort: \.created, order: .reverse,
+        sort: \.name, order: .forward,
         animation: .snappy
     ) private var defaultPackingListOptions: [PackingList]
     @State private var defaultPackingLists: [PackingList] = []
@@ -28,11 +28,23 @@ struct PackingListApplyDefaultView: View {
 
     var body: some View {
         NavigationStack {
-            Text("Apply default packing lists to \(trip.name).")
-                .font(.headline)
+            VStack {
+                Text("Apply default packing lists to \(trip.name)")
+                    .font(.headline)
+                
+                Group {
+                    if let selectedUser {
+                        Text("Lists will be applied to packer \(selectedUser.name)")
+                    } else {
+                        Text("Lists will be applied to the packer who created it.")
+                    }
+                }.font(.subheadline)
+            }
             VStack {
                 Form {
                     Section("Default Lists") {
+                        UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+
                         NavigationLink {
                             PackingListSelectionView(
                                 packingLists: $defaultPackingLists,
@@ -64,7 +76,7 @@ struct PackingListApplyDefaultView: View {
                 }
             }
         }
-
+        .presentationDetents([.medium, .large])
     }
 
     func save() {

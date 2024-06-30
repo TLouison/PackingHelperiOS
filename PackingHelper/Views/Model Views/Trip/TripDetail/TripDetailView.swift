@@ -77,7 +77,6 @@ struct TripDetailView: View {
             }
             .sheet(isPresented: $isApplyingDefaultPackingList) {
                 PackingListApplyDefaultView(trip: trip)
-                    .presentationDetents([.height(300)])
             }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
