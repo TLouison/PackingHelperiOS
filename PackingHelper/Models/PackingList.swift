@@ -94,6 +94,9 @@ final class PackingList {
     var completeItems: [Item] {
         self.items?.filter{ $0.isPacked == true } ?? []
     }
+    var totalItems: Int {
+        self.items?.count ?? 0
+    }
     
     func addItem(_ item: Item) {
         if self.items == nil {

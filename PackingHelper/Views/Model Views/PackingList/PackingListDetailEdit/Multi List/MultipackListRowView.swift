@@ -43,10 +43,20 @@ struct MultipackListRowView: View {
                         Text(packingList.name)
                             .font(.title)
                         
-                        if user == nil {
-                            if let pUser = packingList.user {
-                                pUser.pillIcon
+                        HStack {
+                            if user == nil {
+                                if let pUser = packingList.user {
+                                    pUser.pillIcon
+                                }
                             }
+                            
+                            Group {
+                                if currentView == .unpacked {
+                                    Text("\(currentItems.count) remaining")
+                                } else {
+                                    Text("\(currentItems.count)/\(packingList.totalItems) packed")
+                                }
+                            }.font(.caption)
                         }
                     }
                     
@@ -64,10 +74,13 @@ struct MultipackListRowView: View {
                         showButton: packingList.template == false
                     )
                 }
-                Button {
-                    selectedListToAdd = packingList
-                } label: {
-                    Label("Add Item", systemImage: "plus.circle")
+                
+                if currentView == .unpacked {
+                    Button {
+                        selectedListToAdd = packingList
+                    } label: {
+                        Label("Add Item", systemImage: "plus.circle")
+                    }
                 }
             }
             .confirmationDialog(
