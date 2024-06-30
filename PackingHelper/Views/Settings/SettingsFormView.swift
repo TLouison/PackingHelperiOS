@@ -12,7 +12,7 @@ struct SettingsFormView: View {
     
     @AppStorage("isDarkMode") private var isDarkMode = false
     
-    @Bindable var preferences: Preferences
+//    @Bindable var preferences: Preferences
     
     func setDarkMode() {
         isDarkMode = colorScheme == .dark

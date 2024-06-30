@@ -9,14 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
-    @Environment(\.modelContext) var modelContext
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         NavigationStack {
                 VStack {
                     PackingHelperPlusPurchaseView()
                     
-                    SettingsFormView(preferences: Preferences.instance(with: modelContext))
+                    SettingsFormView(/*preferences: Preferences.instance(with: modelContext)*/)
                 }
                 .background(Color(.systemGroupedBackground))
             .navigationTitle("Settings")

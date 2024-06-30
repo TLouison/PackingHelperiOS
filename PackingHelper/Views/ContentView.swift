@@ -54,15 +54,13 @@ struct ContentView: View {
                 }
         }
         .task {
+//            Preferences.ensureExists(with: modelContext)
             if checkIfFirstLaunch() && !doUsersExist() {
                 showOnboardingScreen.toggle()
             }
         }
         .sheet(isPresented: $showOnboardingScreen) {
             NewUserOnboardingView()
-        }
-        .onAppear {
-            Preferences.ensureExists(with: modelContext)
         }
     }
 }

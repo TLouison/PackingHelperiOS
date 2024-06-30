@@ -13,20 +13,26 @@ final class Preferences {
         
     }
 }
-
-// Extension to handle getting the singleton preference model instance
-extension Preferences {
-    static func instance(with modelContext: ModelContext) -> Preferences {
-        if let result = try! modelContext.fetch(FetchDescriptor<Preferences>()).first {
-            return result
-        } else {
-            let instance = Preferences()
-            modelContext.insert(instance)
-            return instance
-        }
-    }
-    
-    static func ensureExists(with modelContext: ModelContext) {
-        _ = instance(with: modelContext)
-    }
-}
+//
+//// Extension to handle getting the singleton preference model instance
+//extension Preferences {
+//    static func instance(with modelContext: ModelContext) -> Preferences {
+//        do {
+//            if let result = try modelContext.fetch(FetchDescriptor<Preferences>()).first {
+//                return result
+//            } else {
+//                let instance = Preferences()
+//                modelContext.insert(instance)
+//                return instance
+//            }
+//        } catch {
+//            let instance = Preferences()
+//            modelContext.insert(instance)
+//            return instance
+//        }
+//    }
+//    
+//    static func ensureExists(with modelContext: ModelContext) {
+//        _ = instance(with: modelContext)
+//    }
+//}
