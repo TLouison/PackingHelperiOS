@@ -15,9 +15,15 @@ struct UserListView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(users, id: \.id) { user in
-                    UserListRowView(user: user)
+            Group {
+                if users.isEmpty {
+                    MissingUsersView()
+                } else {
+                    List {
+                        ForEach(users, id: \.id) { user in
+                            UserListRowView(user: user)
+                        }
+                    }
                 }
             }
             .navigationTitle("Packers")

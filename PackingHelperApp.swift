@@ -21,6 +21,8 @@ struct PackingHelperApp: App {
         } catch {
             fatalError("Could not initialize ModelContainer")
         }
+        
+//        let iapManager = IAPManager()
     }
     
     var body: some Scene {

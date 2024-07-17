@@ -37,6 +37,7 @@ struct TripListView: View {
     ),
            animation: .snappy
     ) var completedTrips: [Trip]
+    @Query private var users: [User]
     
     enum Symbol: Hashable, CaseIterable {
         case completed, upcoming
@@ -59,37 +60,52 @@ struct TripListView: View {
         }
     }
     
+    var allTripsCompletedView: some View {
+        ContentUnavailableView {
+            TripType.plane.startLabel(text: "No Upcoming Trips")
+        } description: {
+            Text("You've completed all of your trips! Add a new one to start packing.")
+        } actions: {
+            Button("Create Trip", systemImage: "folder.badge.plus") {
+                isShowingAddTripSheet.toggle()
+            }
+        }
+    }
+    
+    var noTripsAddedView: some View {
+        ContentUnavailableView {
+            Label("No Trips", systemImage: "airplane")
+        } description: {
+            Text("Add a trip to get started with your packing!")
+        } actions: {
+            Button("Create Trip", systemImage: "folder.badge.plus") {
+                isShowingAddTripSheet.toggle()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func tripList() -> some View {
+        if !completedTrips.isEmpty && isShowingCompletedTrips {
+            TripListScrollView(path: $viewModel.path, trips: completedTrips)
+                .transition(.pushAndPull(.leading))
+        } else if !upcomingTrips.isEmpty {
+            TripListScrollView(path: $viewModel.path, trips: upcomingTrips)
+                .transition(.pushAndPull(.trailing))
+        } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
+            allTripsCompletedView
+        } else {
+            noTripsAddedView
+        }
+    }
+    
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            VStack {
-                if !completedTrips.isEmpty && isShowingCompletedTrips {
-                    TripListScrollView(path: $viewModel.path, trips: completedTrips)
-                        .transition(.pushAndPull(.leading))
-                } else if !upcomingTrips.isEmpty {
-                    TripListScrollView(path: $viewModel.path, trips: upcomingTrips)
-                        .transition(.pushAndPull(.trailing))
-                } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
-                    ContentUnavailableView {
-                        TripType.plane.startLabel(text: "No Upcoming Trips")
-                    } description: {
-                        Text("You've completed all of your trips! Add a new one to start packing.")
-                    } actions: {
-                        Button("Create Trip", systemImage: "folder.badge.plus") {
-                            isShowingAddTripSheet.toggle()
-                        }
-                    }
+            Group {
+                if users.isEmpty {
+                    MissingUsersView()
                 } else {
-                    if completedTrips.isEmpty && upcomingTrips.isEmpty{
-                        ContentUnavailableView {
-                            Label("No Trips", systemImage: "airplane")
-                        } description: {
-                            Text("Add a trip to get started with your packing!")
-                        } actions: {
-                            Button("Create Trip", systemImage: "folder.badge.plus") {
-                                isShowingAddTripSheet.toggle()
-                            }
-                        }
-                    }
+                    tripList()
                 }
             }
             .navigationTitle(viewTitle)
@@ -102,7 +118,7 @@ struct TripListView: View {
             }
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    if !completedTrips.isEmpty {
+                    if !users.isEmpty && !completedTrips.isEmpty {
                         Button {
                             withAnimation {
                                 toggleVisibleTrips()
@@ -119,16 +135,17 @@ struct TripListView: View {
                         }
                     }
                 }
-                
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation {
-                            isShowingAddTripSheet.toggle()
+                    if !users.isEmpty {
+                        Button {
+                            withAnimation {
+                                isShowingAddTripSheet.toggle()
+                            }
+                        } label: {
+                            Label("Add Trip", systemImage: "plus.circle")
+                                .labelStyle(.iconOnly)
+                                .symbolEffect(.bounce.down, value: isShowingAddTripSheet)
                         }
-                    } label: {
-                        Label("Add Trip", systemImage: "plus.circle")
-                            .labelStyle(.iconOnly)
-                            .symbolEffect(.bounce.down, value: isShowingAddTripSheet)
                     }
                 }
             }

@@ -9,7 +9,7 @@
       }
     ]
   },
-  "identifier" : "4F65B45E",
+  "identifier" : "92FB1819",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -17,7 +17,7 @@
     {
       "displayPrice" : "4.99",
       "familyShareable" : false,
-      "internalID" : "C37D6985",
+      "internalID" : "6504784150",
       "localizations" : [
         {
           "description" : "Unlock even more ways to help you pack!",
@@ -25,13 +25,16 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "J4P7QR9Z",
+      "productID" : "packinghelperplus",
       "referenceName" : "Packing Helper Plus",
       "type" : "NonConsumable"
     }
   ],
   "settings" : {
+    "_applicationInternalID" : "6470132702",
+    "_developerTeamID" : "49K677HL7Z",
     "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 742871540.38582301,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [
@@ -84,13 +87,9 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "BC638E58",
+      "id" : "21511922",
       "localizations" : [
-        {
-          "description" : "Unlock even more ways to pack!",
-          "displayName" : "Packing Helper Premium",
-          "locale" : "en_US"
-        }
+
       ],
       "name" : "Packing Helper Plus",
       "subscriptions" : [
@@ -101,26 +100,22 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "1.99",
+          "displayPrice" : "14.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "internalID" : "3C71EF37",
-          "introductoryOffer" : {
-            "internalID" : "7F7C2E3A",
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P1W"
-          },
+          "internalID" : "6550891754",
+          "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "A low-commitment way to access all features.",
-              "displayName" : "Monthly",
+              "description" : "Improve your packing for a discounted rate!",
+              "displayName" : "Packing Helper Plus (Annual)",
               "locale" : "en_US"
             }
           ],
-          "productID" : "premiumMonthly",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Packing Helper Premium (Monthly)",
-          "subscriptionGroupID" : "BC638E58",
+          "productID" : "FY2X7BQ9",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual Subscription",
+          "subscriptionGroupID" : "21511922",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 
@@ -133,26 +128,22 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "14.99",
+          "displayPrice" : "1.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "A15BC085",
-          "introductoryOffer" : {
-            "internalID" : "00B5D2DF",
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P1W"
-          },
+          "groupNumber" : 2,
+          "internalID" : "6550891836",
+          "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "All the same features for a discounted rate!",
-              "displayName" : "Annual",
+              "description" : "Improve your packing with powerful features!",
+              "displayName" : "Packing Helper Plus (Monthly)",
               "locale" : "en_US"
             }
           ],
-          "productID" : "premiumYearly",
-          "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Packing Helper Premium (Annual)",
-          "subscriptionGroupID" : "BC638E58",
+          "productID" : "4HT3JM8D",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Subscription",
+          "subscriptionGroupID" : "21511922",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 

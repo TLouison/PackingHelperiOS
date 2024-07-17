@@ -54,8 +54,7 @@ struct ContentView: View {
                 }
         }
         .task {
-//            Preferences.ensureExists(with: modelContext)
-            if checkIfFirstLaunch() && !doUsersExist() {
+            if checkIfFirstLaunch() {
                 showOnboardingScreen.toggle()
             }
         }

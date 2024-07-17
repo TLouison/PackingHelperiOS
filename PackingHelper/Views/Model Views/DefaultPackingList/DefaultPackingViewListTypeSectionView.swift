@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct DefaultPackingViewListTypeSectionView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     let listType: ListType
     let packingLists: [PackingList]
     
     var showUserBadge: Bool = false
     
-    @State private var isExpanded: Bool = true
+    @State private var isShowingDeleteConfirmation: Bool = false
+    @State private var listToDelete: PackingList? = nil
     
     var listsOfType: [PackingList] {
         packingLists.filter({$0.type == listType})
@@ -38,6 +41,24 @@ struct DefaultPackingViewListTypeSectionView: View {
                         }
                     }
                 }
+                .swipeActions {
+                    // Not setting role = .destructive so item doesn't disappear before deleting
+                    Button {
+                        listToDelete = packingList
+                        isShowingDeleteConfirmation.toggle()
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .tint(.red)
+                    }
+                }
+            }
+        }
+        .alert("Delete \(listToDelete?.name ?? "default packing List")?", isPresented: $isShowingDeleteConfirmation) {
+            Button("Yes, delete \(listToDelete?.name ?? "list")", role: .destructive) {
+                if let listToDelete {
+                    PackingList.delete(listToDelete, from: modelContext)
+                }
+                listToDelete = nil
             }
         }
     }
