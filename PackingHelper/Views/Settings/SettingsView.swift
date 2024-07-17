@@ -14,7 +14,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
                 VStack {
-                    PackingHelperPlusPurchaseView()
+                    PackingHelperPlusCTA(headerText: "Subscribe to")
                     
                     SettingsFormView(/*preferences: Preferences.instance(with: modelContext)*/)
                 }

@@ -1,28 +1,29 @@
 //
-//  SettingsStoreView.swift
+//  PackingHelperPlusCTA.swift
 //  PackingHelper
 //
-//  Created by Todd Louison on 6/24/24.
+//  Created by Todd Louison on 7/16/24.
 //
 
 import SwiftUI
-import RevenueCat
-import StoreKit
 
-struct PackingHelperPlusPurchaseView: View {
+struct PackingHelperPlusCTA: View {
     @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
     
-    @State private var showStoreSheet = false
+    @State private var showingStoreSheet: Bool = false
+    
+    let showAfterPurchase: Bool = false
+    let headerText: String
     
     var body: some View {
         Group {
-            if purchaseManager.hasUnlockedPlus {
+            if purchaseManager.hasUnlockedPlus && showAfterPurchase {
                 VStack {
                     Text("Thanks for subscribing to")
                     purchaseManager.plusSubscriptionName()
                     
                     Button("View Your Subscription") {
-                        showStoreSheet.toggle()
+                        showingStoreSheet.toggle()
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 5)
@@ -34,10 +35,10 @@ struct PackingHelperPlusPurchaseView: View {
                     purchaseManager.plusLogoImage(size: 32)
                     
                     VStack {
-                        purchaseManager.plusSubscriptionHeader()
+                        purchaseManager.plusSubscriptionHeader(header: headerText)
                         
                         Button("Learn More") {
-                            showStoreSheet.toggle()
+                            showingStoreSheet.toggle()
                         }
                         .padding(.horizontal)
                         .padding(.vertical, 5)
@@ -48,12 +49,21 @@ struct PackingHelperPlusPurchaseView: View {
                 }
             }
         }
-        .sheet(isPresented: $showStoreSheet) {
+        .frame(maxWidth: .infinity)
+        .roundedBox()
+        .shaded()
+        .overlay(
+            RoundedRectangle(cornerRadius: defaultCornerRadius)
+                .strokeBorder(defaultLinearGradient)
+        )
+        .transition(.move(edge: .top))
+        .padding()
+        .sheet(isPresented: $showingStoreSheet) {
             PackingHelperPlusStoreView()
         }
     }
 }
-
+//
 //#Preview {
-//    PackingHelperPlusPurchaseView()
+//    PackingHelperPlusCTA()
 //}

@@ -101,21 +101,35 @@ extension PurchaseManager {
             .borderGradient()
     }
     
+    func plusSubscriptionIcon() -> some View {
+        Image(systemName: "plus.diamond.fill")
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(.white, defaultLinearGradient)
+    }
+    
     func plusSubscriptionName() -> some View {
         HStack {
             Text("Packing Helper")
-            Image(systemName: "plus.diamond.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(.white, defaultLinearGradient)
+            self.plusSubscriptionIcon()
                 .padding(.leading, -5)
         }
         .font(.headline)
         .bold()
     }
     
-    func plusSubscriptionHeader() -> some View {
+    func plusSubscriptionWithText(before: String, after: String = "") -> some View {
+        HStack {
+            Text(before)
+            self.plusSubscriptionName()
+            if after != "" {
+                Text(after)
+            }
+        }
+    }
+    
+    func plusSubscriptionHeader(header: String = "Subscribe to") -> some View {
         VStack {
-            Text("Subscribe to")
+            Text(header)
                 .font(.subheadline)
                 .fontWeight(.light)
             

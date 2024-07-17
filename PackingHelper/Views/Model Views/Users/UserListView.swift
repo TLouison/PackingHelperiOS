@@ -9,9 +9,17 @@ import SwiftUI
 import SwiftData
 
 struct UserListView: View {
+    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
+    
     @Query(sort: \User.created, order: .forward, animation: .smooth) private var users: [User]
     
     @State private var isShowingAddUserSheet = false
+    @State private var isShowingSubscriptionStoreSheet = false
+    
+    var reachedMaxFreeUsers: Bool {
+        // Allow user to create 1 user if Plus is not unlocked, infinite if they do.
+        return users.count > 0
+    }
 
     var body: some View {
         NavigationStack {
@@ -19,9 +27,16 @@ struct UserListView: View {
                 if users.isEmpty {
                     MissingUsersView()
                 } else {
-                    List {
-                        ForEach(users, id: \.id) { user in
-                            UserListRowView(user: user)
+                    VStack {
+                        List {
+                            ForEach(users, id: \.id) { user in
+                                UserListRowView(user: user)
+                            }
+                        }
+                        
+                        if !purchaseManager.hasUnlockedPlus {
+                            PackingHelperPlusCTA(headerText: "Add unlimited packers with")
+                                .padding(.bottom)
                         }
                     }
                 }
@@ -30,13 +45,10 @@ struct UserListView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation {
-                            isShowingAddUserSheet.toggle()
-                        }
+                    SubscriptionAwareButton(localLimitMet: reachedMaxFreeUsers) {
+                        isShowingAddUserSheet.toggle()
                     } label: {
                         Label("Add Packer", systemImage: "plus.circle")
-                            .labelStyle(.iconOnly)
                             .symbolEffect(.bounce.down, value: isShowingAddUserSheet)
                     }
                 }
@@ -44,6 +56,9 @@ struct UserListView: View {
             .sheet(isPresented: $isShowingAddUserSheet) {
                 UserEditView(user: nil)
                     .presentationDetents([.height(400)])
+            }
+            .sheet(isPresented: $isShowingSubscriptionStoreSheet) {
+                PackingHelperPlusStoreView()
             }
         }
     }
