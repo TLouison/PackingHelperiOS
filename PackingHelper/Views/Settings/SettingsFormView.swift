@@ -9,8 +9,7 @@ import SwiftUI
 
 struct SettingsFormView: View {
     @Environment(\.colorScheme) var colorScheme
-    
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("isDarkMode") private var isDarkMode = true
     
 //    @Bindable var preferences: Preferences
     

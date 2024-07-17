@@ -51,7 +51,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../PackingHelper/PackingHelper.storekit">
+         identifier = "../../PackingHelper/Packing Helper.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

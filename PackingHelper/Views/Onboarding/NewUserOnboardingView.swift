@@ -9,24 +9,47 @@ import SwiftUI
 import SwiftData
 
 struct NewUserOnboardingView: View {
-    @Environment(\.dismiss) private var dismiss
+    @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
     
-    @Query private var users: [User]
-    @State private var foundExistingData = false
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    
+    @State private var name: String = ""
     
     var body: some View {
-        Group {
-            if foundExistingData {
-                FoundExistingDataView()
-            } else {
-                NewUserOnboardingView()
+        VStack {
+            Text("Welcome to Packing Helper!").font(.title).fontWeight(.bold)
+                .padding(.bottom, 10)
+            Text("To get started, enter your name below!").font(.headline)
+                .padding(.bottom, 20)
+            
+            TextField("Name", text: $name)
+                .padding()
+                .background(.thinMaterial)
+                .rounded()
+                .shaded()
+                .overlay(
+                    RoundedRectangle(cornerRadius: defaultCornerRadius)
+                        .strokeBorder(defaultLinearGradient)
+                )
+                .padding()
+            
+            Button("Get Started") {
+                saveNewUser()
+                hasLaunchedBefore = true
+                dismiss()
             }
+            .padding()
+            .background(.thickMaterial)
+            .rounded()
+            .shaded()
+            .disabled(name == "")
         }
-        .onChange(of: users) {
-            withAnimation {
-                foundExistingData = !users.isEmpty
-            }
-        }
+    }
+    
+    func saveNewUser() {
+        let newUser = User(name: name)
+        modelContext.insert(newUser)
     }
 }
 

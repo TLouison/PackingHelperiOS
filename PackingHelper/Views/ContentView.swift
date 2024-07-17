@@ -11,25 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @Query private var users: [User]
-    @State private var showOnboardingScreen = false
-    @State private var name = ""
-    
-    func checkIfFirstLaunch() -> Bool {
-        // Check if it's the user's first launch
-        if UserDefaults.standard.bool(forKey: "isFirstLaunch") {
-            // App is not the first launch
-            return false
-        } else {
-            // First launch, set the flag
-            UserDefaults.standard.set(true, forKey: "isFirstLaunch")
-            return true
-        }
-    }
-    
-    func doUsersExist() -> Bool {
-        return !users.isEmpty
-    }
+    @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
+    @State private var showOnboarding = false
     
     var body: some View {
         TabView {
@@ -54,12 +37,11 @@ struct ContentView: View {
                 }
         }
         .task {
-            if checkIfFirstLaunch() {
-                showOnboardingScreen.toggle()
-            }
+            showOnboarding = !hasLaunchedBefore
         }
-        .sheet(isPresented: $showOnboardingScreen) {
+        .sheet(isPresented: $showOnboarding) {
             NewUserOnboardingView()
+                .interactiveDismissDisabled()
         }
     }
 }
