@@ -21,7 +21,7 @@ struct Rounded: ViewModifier {
     func body(content: Content) -> some View {
         content
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-            .contentShape(.rect)
+            .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
     }
 }
 

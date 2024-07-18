@@ -62,7 +62,7 @@ struct PackingListDetailEditRowView: View {
                     }
             }
         }
-        .contentShape(.rect)
+        .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         .swipeActions {
             Button(role: .destructive) {
                 packingList.removeItem(item)

@@ -50,6 +50,10 @@ struct TripListView: View {
         }
     }
     
+    var atMaxFreeTrips: Bool {
+        upcomingTrips.count >= 3
+    }
+    
     var viewTitle: String {
         if isShowingCompletedTrips && !completedTrips.isEmpty {
             return "Completed Trips"
@@ -90,7 +94,7 @@ struct TripListView: View {
             TripListScrollView(path: $viewModel.path, trips: completedTrips)
                 .transition(.pushAndPull(.leading))
         } else if !upcomingTrips.isEmpty {
-            TripListScrollView(path: $viewModel.path, trips: upcomingTrips)
+            TripListScrollView(path: $viewModel.path, trips: upcomingTrips, showCTA: true)
                 .transition(.pushAndPull(.trailing))
         } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
             allTripsCompletedView
@@ -99,15 +103,18 @@ struct TripListView: View {
         }
     }
     
+    @ViewBuilder
+    var listView: some View {
+        if users.isEmpty {
+            MissingUsersView()
+        } else {
+            tripList()
+        }
+    }
+    
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            Group {
-                if users.isEmpty {
-                    MissingUsersView()
-                } else {
-                    tripList()
-                }
-            }
+            listView
             .navigationTitle(viewTitle)
             .navigationBarTitleDisplayMode(.large)
             .navigationDestination(for: Trip.self) { trip in
@@ -124,7 +131,6 @@ struct TripListView: View {
                                 toggleVisibleTrips()
                             }
                         } label: {
-                            
                             Image(systemName: visibleTripsSymbol.name)
                                 .symbolRenderingMode(.palette)
                                 .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.accentColor.gradient)
@@ -137,13 +143,12 @@ struct TripListView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     if !users.isEmpty {
-                        Button {
+                        SubscriptionAwareButton(localLimitMet: atMaxFreeTrips) {
                             withAnimation {
                                 isShowingAddTripSheet.toggle()
                             }
                         } label: {
                             Label("Add Trip", systemImage: "plus.circle")
-                                .labelStyle(.iconOnly)
                                 .symbolEffect(.bounce.down, value: isShowingAddTripSheet)
                         }
                     }

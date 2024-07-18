@@ -173,20 +173,27 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		51AC5FD22C48ACB300DF83F6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PackingHelperPlusCTA.swift,
+				PackingHelperPlusStoreView.swift,
+				PackingHelperPlusViews.swift,
+			);
+			target = 51289F152AD3B6CD00545115 /* PackingHelper */;
+		};
 		51C8BB792C287F68005D2B71 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SettingsFormView.swift,
 				SettingsView.swift,
-				Shop/PackingHelperPlusCTA.swift,
-				Shop/PackingHelperPlusPurchaseView.swift,
-				Shop/PackingHelperPlusStoreView.swift,
 			);
 			target = 51289F152AD3B6CD00545115 /* PackingHelper */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		51AC5FCE2C48ACB300DF83F6 /* Shop */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51AC5FD22C48ACB300DF83F6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Shop; sourceTree = "<group>"; };
 		51C8BB782C287F68005D2B71 /* Settings */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51C8BB792C287F68005D2B71 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Settings; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -323,6 +330,7 @@
 				510728162C1FD90900EBF362 /* Onboarding */,
 				5134EC682C06C72E00862E19 /* Weather */,
 				51C8BB782C287F68005D2B71 /* Settings */,
+				51AC5FCE2C48ACB300DF83F6 /* Shop */,
 			);
 			path = Views;
 			sourceTree = "<group>";

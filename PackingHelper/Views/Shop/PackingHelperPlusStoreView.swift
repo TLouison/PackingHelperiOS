@@ -15,9 +15,9 @@ struct PackingHelperPlusStoreView: View {
     var body: some View {
         SubscriptionStoreView(groupID: purchaseManager.subscriptionGroupId) {
             VStack(spacing: 16) {
-                purchaseManager.plusLogoImage(size: 100)
+                plusLogoImage(size: 100)
                 
-                purchaseManager.plusSubscriptionHeader()
+                plusSubscriptionHeader()
                     .multilineTextAlignment(.center)
                     .font(.title)
                     .bold()
@@ -28,23 +28,7 @@ struct PackingHelperPlusStoreView: View {
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                 
-                VStack(spacing: 8) {
-                    VStack(alignment: .leading) {
-                        Text("∙ Packing for Multiple Users")
-                        Text("∙ AI-Assisted Packing Suggestions")
-                        
-                        HStack(spacing: 0) {
-                            Text("∙ Collaborate With Friends and Family")
-                            Text("*").bold()
-                        }
-                    }
-                    .font(.callout)
-                    
-                    
-                    Text("* Coming soon")
-                        .font(.caption)
-                        .bold()
-                }
+                plusSubscriptionBenefits()
             }
             .padding()
         }

@@ -17,30 +17,35 @@ struct SubscriptionAwareButton<Label: View>: View {
     var paidAction: () -> Void
     @ViewBuilder let label: () -> Label
     
+    var canPerformAction: Bool {
+        purchaseManager.hasUnlockedPlus || !localLimitMet
+    }
+    
     var body: some View {
-            Button {
-                withAnimation {
-                    if purchaseManager.hasUnlockedPlus || !localLimitMet {
-                        print("User is Plus, running paid action")
-                        paidAction()
-                    } else {
-                        print("User is not subscribed, showing subscription page")
-                        isShowingSubscriptionStoreSheet.toggle()
-                    }
-                }
-            } label: {
-                if !purchaseManager.hasUnlockedPlus && localLimitMet {
-                    label()
-                        .labelStyle(.iconOnly)
-                        .overlay {
-                            purchaseManager.plusSubscriptionIcon()
-                                .offset(x:8, y:8)
-                        }
+        Button {
+            withAnimation {
+                if canPerformAction {
+                    print("User is Plus, running paid action")
+                    paidAction()
                 } else {
-                    label()
-                        .labelStyle(.iconOnly)
+                    print("User is not subscribed, showing subscription page")
+//                        isShowingSubscriptionStoreSheet.toggle()
                 }
             }
+        } label: {
+            if !purchaseManager.hasUnlockedPlus && localLimitMet {
+                label()
+                    .labelStyle(.iconOnly)
+                    .overlay {
+                        plusSubscriptionIcon()
+                            .offset(x:8, y:8)
+                    }
+            } else {
+                label()
+                    .labelStyle(.iconOnly)
+            }
+        }
+        .disabled(!canPerformAction)
         .sheet(isPresented: $isShowingSubscriptionStoreSheet) {
             PackingHelperPlusStoreView()
         }
