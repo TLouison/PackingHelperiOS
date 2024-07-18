@@ -41,6 +41,7 @@ struct PackingHelperPlusCTA: View {
                             .background(.thickMaterial)
                             .rounded()
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
             } else {
@@ -87,6 +88,7 @@ struct PackingHelperPlusCTA: View {
                         .background(.thickMaterial)
                         .rounded()
                     }
+                    .frame(maxWidth: .infinity)
                 }
             } else {
                 VStack {

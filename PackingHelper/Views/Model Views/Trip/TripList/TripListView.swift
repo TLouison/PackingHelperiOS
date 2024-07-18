@@ -94,7 +94,7 @@ struct TripListView: View {
             TripListScrollView(path: $viewModel.path, trips: completedTrips)
                 .transition(.pushAndPull(.leading))
         } else if !upcomingTrips.isEmpty {
-            TripListScrollView(path: $viewModel.path, trips: upcomingTrips, showCTA: true)
+            TripListScrollView(path: $viewModel.path, trips: upcomingTrips, canShowCTA: true)
                 .transition(.pushAndPull(.trailing))
         } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
             allTripsCompletedView

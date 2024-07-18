@@ -13,8 +13,11 @@ struct TripListScrollView: View {
     @Binding var path: NavigationPath
     
     var trips: [Trip]
+    var canShowCTA: Bool = false
     
-    var showCTA: Bool = false
+    var shouldShowCTA: Bool {
+        !purchaseManager.hasUnlockedPlus && canShowCTA && trips.count >= Trip.maxFreeTrips
+    }
     
     func shouldDisable(index: Int) -> Bool {
         !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips
@@ -37,7 +40,7 @@ struct TripListScrollView: View {
                     }
                 }
                 
-                if !purchaseManager.hasUnlockedPlus && showCTA {
+                if shouldShowCTA {
                     PackingHelperPlusCTA(headerText: "Add unlimited trips with", version: .tall)
                         .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
                         .scrollTransition { content, phase in
