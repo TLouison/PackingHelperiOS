@@ -5,12 +5,40 @@
 //  Created by Todd Louison on 6/23/24.
 //
 
+import Foundation
 import SwiftData
 
-@Model
 final class Preferences {
+    var selectedUserPersistentID: PersistentIdentifier? = nil
+    
     init() {
+        selectedUserPersistentID = UserDefaults.standard.object(forKey: "selectedUserPersistentID") as? PersistentIdentifier
+    }
+    
+    func setSelectedUser(_ user: User?) {
+        if let user {
+            selectedUserPersistentID = user.persistentModelID
+        } else {
+            selectedUserPersistentID = nil
+        }
+    }
+    
+    func getSelectedUser(in context: ModelContext) -> User? {
+        if selectedUserPersistentID == nil {
+            return nil
+        }
         
+        var fetchDescriptor = FetchDescriptor<User>(
+            predicate: #Predicate { $0.persistentModelID == selectedUserPersistentID! },
+            sortBy: [.init(\.created)]
+        )
+        fetchDescriptor.fetchLimit = 1
+        
+        do {
+            return try context.fetch(fetchDescriptor).first
+        } catch {
+            return nil
+        }
     }
 }
 //

@@ -14,6 +14,8 @@ struct TripListRowView: View {
     @State private var mapPosition: MapCameraPosition = .automatic
     
     @Bindable var trip: Trip
+    
+    var disabled: Bool
  
     @ViewBuilder private func dateInfo() -> some View {
         trip.getStatusLabel()
@@ -78,16 +80,44 @@ struct TripListRowView: View {
             position: $mapPosition,
             interactionModes: []
         )
-        .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         .overlay {
-            tripRowOverlay(trip)
-                .frame(maxWidth: .infinity)
-                .padding()
+            ZStack {
+                tripRowOverlay(trip)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                
+                
+                // Block the trip from being accessed if the user has more than the free amount
+                if disabled {
+                    Color.black.opacity(0.8).frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                    VStack(spacing: 32) {
+                        VStack {
+                            Text("This Trip is Disabled").font(.title)
+                            Text("You may only plan up to \(Trip.maxFreeTrips) trips.").font(.subheadline)
+                        }
+                        
+                        VStack {
+                            Text("To regain access, please:")
+                                .font(.headline)
+                            VStack {
+                                Text("- Complete your other trips.")
+                                Text("- Remove other upcoming trips.")
+                                plusSubscriptionWithText(before: "- Subscribe to")
+                            }
+                            .font(.subheadline)
+                        }
+                    }
+                }
+            }
         }
         .onTapGesture {
-            path.append(trip)
+            if !disabled {
+                path.append(trip)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         .shadow(radius: defaultShadowRadius)
         .onAppear {
             mapPosition = trip.destination?.mapCameraPosition ?? TripLocation.sampleOrigin.mapCameraPosition

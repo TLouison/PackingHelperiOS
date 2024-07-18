@@ -16,27 +16,35 @@ struct PackingHelperPlusCTA: View {
     
     @State private var showingStoreSheet: Bool = false
     
-    let showAfterPurchase: Bool = false
     let headerText: String
     
     var version: CTAVersion = .small
+    var showAfterPurchase: Bool = false
     
     var smallCTA: some View {
         Group {
-            if purchaseManager.hasUnlockedPlus && showAfterPurchase {
-                VStack {
-                    Text("Thanks for subscribing to")
-                    plusSubscriptionName()
-                    
-                    Button("View Your Subscription") {
-                        showingStoreSheet.toggle()
+            if purchaseManager.hasUnlockedPlus {
+                if showAfterPurchase {
+                    // We want to show a "Thank You" after purchase
+                    HStack {
+                        plusLogoImage(size: 32)
+                        
+                        VStack {
+                            Text("Thanks for subscribing to")
+                            plusSubscriptionName()
+                            
+                            Button("View Your Subscription") {
+                                showingStoreSheet.toggle()
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 5)
+                            .background(.thickMaterial)
+                            .rounded()
+                        }
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .background(.thickMaterial)
-                    .rounded()
                 }
             } else {
+                // The user is not subscribed
                 HStack {
                     plusLogoImage(size: 32)
                     
@@ -59,18 +67,26 @@ struct PackingHelperPlusCTA: View {
     
     var tallCTA: some View {
         Group {
-            if purchaseManager.hasUnlockedPlus && showAfterPurchase {
-                VStack {
-                    Text("Thanks for subscribing to")
-                    plusSubscriptionName()
-                    
-                    Button("View Your Subscription") {
-                        showingStoreSheet.toggle()
+            if purchaseManager.hasUnlockedPlus {
+                if showAfterPurchase {
+                    VStack {
+                        plusLogoImage(size: 100)
+                        
+                        Spacer()
+                        
+                        Text("Thanks for subscribing to")
+                        plusSubscriptionName()
+                        
+                        Spacer()
+                        
+                        Button("View Your Subscription") {
+                            showingStoreSheet.toggle()
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                        .background(.thickMaterial)
+                        .rounded()
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .background(.thickMaterial)
-                    .rounded()
                 }
             } else {
                 VStack {

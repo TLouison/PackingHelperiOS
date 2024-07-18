@@ -107,6 +107,8 @@ final class Trip {
     
     var dayOfNotificationUUID: String?
     
+    static let maxFreeTrips: Int = 3
+    
     init(name: String, startDate: Date, endDate: Date, type: TripType, origin: TripLocation, destination: TripLocation, accomodation: TripAccomodation) {
         self.createdDate = Date.now
         

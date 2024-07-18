@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsFormView: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
-    @AppStorage("isDarkMode") private var isDarkMode = true
     
-//    @Bindable var preferences: Preferences
+    @AppStorage("isDarkMode") private var isDarkMode = true
+//    @AppStorage("defaultUser") private var defaultUser = -1
+    
+//    let preferences: Preferences
+    
+//    @State private var user: User? = nil
     
     func setDarkMode() {
         isDarkMode = colorScheme == .dark
@@ -24,6 +30,16 @@ struct SettingsFormView: View {
                     Label("Dark Mode", systemImage: "moon.fill")
                 }
             }
+            
+//            Section("Functionality") {
+//                UserPickerView(selectedUser: $user)
+//            }
         }
+//        .onAppear {
+//            self.user = preferences.getSelectedUser(in: modelContext)
+//        }
+//        .onChange(of: user) {
+//            preferences.setSelectedUser(user)
+//        }
     }
 }

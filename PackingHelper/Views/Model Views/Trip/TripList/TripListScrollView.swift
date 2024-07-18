@@ -16,17 +16,25 @@ struct TripListScrollView: View {
     
     var showCTA: Bool = false
     
+    func shouldDisable(index: Int) -> Bool {
+        !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips
+    }
+    
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(trips) { trip in
-                    TripListRowView(path: $path, trip: trip)
-                        .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
-                        .scrollTransition { content, phase in
-                            content
-                                .opacity(phase.isIdentity ? 1.0 : 0.8)
-                                .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
-                        }
+                let enumerated = Array(trips.enumerated())
+                
+                ForEach(enumerated, id: \.offset) { index, trip in
+                    ZStack {
+                        TripListRowView(path: $path, trip: trip, disabled: shouldDisable(index: index))
+                    }
+                    .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
+                    .scrollTransition { content, phase in
+                        content
+                            .opacity(phase.isIdentity ? 1.0 : 0.8)
+                            .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
+                    }
                 }
                 
                 if !purchaseManager.hasUnlockedPlus && showCTA {

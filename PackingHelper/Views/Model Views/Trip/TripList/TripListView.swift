@@ -51,7 +51,7 @@ struct TripListView: View {
     }
     
     var atMaxFreeTrips: Bool {
-        upcomingTrips.count >= 3
+        upcomingTrips.count >= Trip.maxFreeTrips
     }
     
     var viewTitle: String {

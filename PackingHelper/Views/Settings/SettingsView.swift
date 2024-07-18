@@ -13,12 +13,12 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-                VStack {
-                    PackingHelperPlusCTA(headerText: "Subscribe to")
-                    
-                    SettingsFormView(/*preferences: Preferences.instance(with: modelContext)*/)
-                }
-                .background(Color(.systemGroupedBackground))
+            VStack {
+                PackingHelperPlusCTA(headerText: "Subscribe to", showAfterPurchase: true)
+                
+                SettingsFormView()
+            }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Settings")
         }
     }
