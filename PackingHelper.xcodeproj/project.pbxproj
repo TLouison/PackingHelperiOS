@@ -65,6 +65,8 @@
 		51AC5FC02C4749BF00DF83F6 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51AC5FBF2C4749BF00DF83F6 /* PurchaseManager.swift */; };
 		51AC5FC22C4751F100DF83F6 /* Packing Helper.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 51AC5FC12C4751F100DF83F6 /* Packing Helper.storekit */; };
 		51AC5FC72C476F2900DF83F6 /* SubscriptionAwareButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51AC5FC62C476F2900DF83F6 /* SubscriptionAwareButton.swift */; };
+		51AC5FD62C4CA10600DF83F6 /* PackingListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51AC5FD52C4CA10600DF83F6 /* PackingListRowView.swift */; };
+		51AC5FD82C4CA52100DF83F6 /* UserPickerMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51AC5FD72C4CA52100DF83F6 /* UserPickerMenu.swift */; };
 		51C8BB662C234A77005D2B71 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB652C234A77005D2B71 /* SampleData.swift */; };
 		51C8BB682C250304005D2B71 /* PackingListDetailEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB672C250304005D2B71 /* PackingListDetailEditView.swift */; };
 		51C8BB6A2C250666005D2B71 /* PackingListDetailEditTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BB692C250666005D2B71 /* PackingListDetailEditTabBarView.swift */; };
@@ -149,6 +151,8 @@
 		51AC5FBF2C4749BF00DF83F6 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		51AC5FC12C4751F100DF83F6 /* Packing Helper.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Packing Helper.storekit"; sourceTree = "<group>"; };
 		51AC5FC62C476F2900DF83F6 /* SubscriptionAwareButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionAwareButton.swift; sourceTree = "<group>"; };
+		51AC5FD52C4CA10600DF83F6 /* PackingListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListRowView.swift; sourceTree = "<group>"; };
+		51AC5FD72C4CA52100DF83F6 /* UserPickerMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerMenu.swift; sourceTree = "<group>"; };
 		51C8BB652C234A77005D2B71 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		51C8BB672C250304005D2B71 /* PackingListDetailEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListDetailEditView.swift; sourceTree = "<group>"; };
 		51C8BB692C250666005D2B71 /* PackingListDetailEditTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListDetailEditTabBarView.swift; sourceTree = "<group>"; };
@@ -220,6 +224,7 @@
 				510728122C1FD5D000EBF362 /* UserListView.swift */,
 				5107281B2C1FDA1900EBF362 /* UserEditView.swift */,
 				51AC5FB62C4326C400DF83F6 /* MissingUsersView.swift */,
+				51AC5FD72C4CA52100DF83F6 /* UserPickerMenu.swift */,
 			);
 			path = Users;
 			sourceTree = "<group>";
@@ -507,6 +512,7 @@
 				51748B592ADE3B45009E919B /* PackingListDetailView.swift */,
 				5134EC692C06CD3300862E19 /* PackingListSelectionView.swift */,
 				5134EC6B2C06D90A00862E19 /* PackingListPillView.swift */,
+				51AC5FD52C4CA10600DF83F6 /* PackingListRowView.swift */,
 			);
 			path = "Single List";
 			sourceTree = "<group>";
@@ -646,6 +652,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51AC5FD82C4CA52100DF83F6 /* UserPickerMenu.swift in Sources */,
 				51C8BBA32C2BA1DB005D2B71 /* DefaultPackingViewListTypeSectionView.swift in Sources */,
 				5110C6432AFD81C8002742D0 /* PackingListDetailView.swift in Sources */,
 				51289F312AD4EA5A00545115 /* Trip.swift in Sources */,
@@ -682,6 +689,7 @@
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
 				51C8BBA82C2CE73B005D2B71 /* ColorUtilities.swift in Sources */,
 				51C8BB832C2A5860005D2B71 /* TripDetailPackingProgressView.swift in Sources */,
+				51AC5FD62C4CA10600DF83F6 /* PackingListRowView.swift in Sources */,
 				510728232C228CDB00EBF362 /* FoundExistingDataView.swift in Sources */,
 				510728132C1FD5D000EBF362 /* UserListView.swift in Sources */,
 				519B72572ADA06C3009401C0 /* TripListView.swift in Sources */,

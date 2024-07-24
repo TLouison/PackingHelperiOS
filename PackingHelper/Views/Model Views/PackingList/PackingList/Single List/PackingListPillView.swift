@@ -20,7 +20,7 @@ struct PackingListPillView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(Capsule().foregroundStyle(.accent.opacity(0.7)))
+                                .background(Capsule().foregroundStyle(packingList.user?.userColor.opacity(0.7) ?? .accent.opacity(0.7)))
                         }
                     }
                 }
@@ -32,7 +32,7 @@ struct PackingListPillView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(Capsule().foregroundStyle(.accent))
+                                .background(Capsule().foregroundStyle(packingList.user?.userColor ?? .accent))
                                 .fixedSize(horizontal: true, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
                         }
                     }

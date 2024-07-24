@@ -20,7 +20,7 @@ struct TripListScrollView: View {
     }
     
     func shouldDisable(index: Int) -> Bool {
-        !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips
+        !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips && canShowCTA
     }
     
     var body: some View {

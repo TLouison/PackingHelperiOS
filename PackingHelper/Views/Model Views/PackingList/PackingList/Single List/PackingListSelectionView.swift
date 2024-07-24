@@ -22,6 +22,8 @@ struct PackingListSelectionView: View {
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     
     var user: User? = nil
+    var lockToProvidedUser: Bool = false
+    @State private var selectedUser: User? = nil
     
     var alreadyAppliedLists: [PackingList] {
         if let trip {
@@ -34,7 +36,7 @@ struct PackingListSelectionView: View {
     var availableLists: [PackingList] {
         print("\(alreadyAppliedLists.count) lists already applied to this trip for this user")
         let availableLists = defaultPackingListOptions.filter { !alreadyAppliedLists.contains($0) }
-        return PackingList.filtered(user: user, availableLists)
+        return PackingList.filtered(user: selectedUser, availableLists)
     }
     
     var searchResults: [PackingList] {
@@ -43,6 +45,10 @@ struct PackingListSelectionView: View {
         } else {
             return availableLists.filter { $0.name == (searchText) }
         }
+    }
+    
+    var hasMultiplePackerOptions: Bool {
+        return trip?.hasMultiplePackers ?? false || PackingList.containsMultiplePackers(defaultPackingListOptions)
     }
     
     func addToSelected(_ list: PackingList) {
@@ -68,6 +74,31 @@ struct PackingListSelectionView: View {
         }
     }
     
+    @ViewBuilder
+    func addRemoveButton(_ packingList: PackingList) -> some View {
+        switch selectedPackingLists.contains(packingList) {
+        case true:
+            Button {
+                withAnimation {
+                    removeFromSelected(packingList)
+                }
+            } label: {
+                Label("Remove \(packingList.name) from packing lists", systemImage: "minus.circle.fill")
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.red)
+            }
+        case false:
+            Button {
+                withAnimation {
+                    addToSelected(packingList)
+                }
+            } label: {
+                Label("Add \(packingList.name) to packing lists", systemImage: "plus.circle.fill")
+                    .labelStyle(.iconOnly)
+            }
+        }
+    }
+    
     var body: some View {
         VStack {
             PackingListPillView(packingLists: selectedPackingLists)
@@ -82,37 +113,34 @@ struct PackingListSelectionView: View {
                 List {
                     ForEach(searchResults, id: \.id) { packingList in
                         HStack {
-                            Text(packingList.name)
+                            PackingListRowView(packingList: packingList, showUserPill: hasMultiplePackerOptions)
+                            
                             Spacer()
                             
-                            if selectedPackingLists.contains(packingList) {
-                                Button {
-                                    withAnimation {
-                                        removeFromSelected(packingList)
-                                    }
-                                } label: {
-                                    Label("Remove \(packingList.name) from packing lists", systemImage: "minus.circle.fill")
-                                        .labelStyle(.iconOnly)
-                                        .foregroundStyle(.red)
-                                }
-                            } else {
-                                Button {
-                                    withAnimation {
-                                        addToSelected(packingList)
-                                    }
-                                } label: {
-                                    Label("Add \(packingList.name) to packing lists", systemImage: "plus.circle.fill")
-                                        .labelStyle(.iconOnly)
-                                }
-                            }
+                            addRemoveButton(packingList)
                         }
                     }
                     .listRowBackground(Color(.secondarySystemBackground))
                 }
-                .navigationTitle("Default Packing Lists")
                 .scrollContentBackground(.hidden)
             }
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search For Packing Lists")
+        .navigationTitle("Default Packing Lists")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if !lockToProvidedUser {
+                    Menu {
+                        UserPickerBaseView(selectedUser: $selectedUser.animation())
+                    } label: {
+                        Image(systemName: "person.circle")
+                    }
+                }
+            }
+        }
+        .onAppear {
+            selectedUser = user
+        }
     }
 }

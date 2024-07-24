@@ -202,6 +202,10 @@ extension PackingList {
                 return lists.sorted { $0.created < $1.created }
             }
     }
+    
+    static func containsMultiplePackers(_ lists: [PackingList]) -> Bool {
+        return lists.map { $0.user }.count > 1
+    }
 }
 
 extension PackingList {

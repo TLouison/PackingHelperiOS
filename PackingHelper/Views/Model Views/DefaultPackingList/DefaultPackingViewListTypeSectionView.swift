@@ -14,6 +14,7 @@ struct DefaultPackingViewListTypeSectionView: View {
     let packingLists: [PackingList]
     
     var showUserBadge: Bool = false
+    var showIndent: Bool = false
     
     @State private var isShowingDeleteConfirmation: Bool = false
     @State private var listToDelete: PackingList? = nil
@@ -24,7 +25,9 @@ struct DefaultPackingViewListTypeSectionView: View {
     
     var body: some View {
         CollapsibleSection {
-            Text("\(listType.rawValue) | \(listsOfType.count)")
+            Label("\(listType.rawValue) | \(listsOfType.count)", systemImage: listType.icon)
+                .bold()
+                .foregroundStyle(.accent)
         } content: {
             ForEach(listsOfType, id: \.id) { packingList in
                 NavigationLink {
@@ -32,7 +35,7 @@ struct DefaultPackingViewListTypeSectionView: View {
                         .padding(.vertical)
                 } label: {
                     HStack {
-                        Label(packingList.name, systemImage: packingList.icon)
+                        Text(packingList.name)
                         
                         if showUserBadge {
                             if let user = packingList.user {
@@ -51,6 +54,7 @@ struct DefaultPackingViewListTypeSectionView: View {
                             .tint(.red)
                     }
                 }
+                .padding(.leading, showIndent ? 24 : 0)
             }
         }
         .alert("Delete \(listToDelete?.name ?? "default packing List")?", isPresented: $isShowingDeleteConfirmation) {

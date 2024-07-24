@@ -23,8 +23,8 @@ struct PackingListApplyDefaultView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Apply default packing lists to \(trip.name)")
-                    .font(.headline)
+                Text("Apply Default Packing Lists to \(trip.name)")
+                    .font(.title3)
                 
                 Group {
                     if let selectedUser {
@@ -50,19 +50,29 @@ struct PackingListApplyDefaultView: View {
                             PackingListSelectionView(
                                 trip: trip,
                                 selectedPackingLists: $defaultPackingLists,
-                                user: selectedUser)
+                                user: selectedUser,
+                                lockToProvidedUser: true
+                            )
                         } label: {
                             Label(
                                 "Select Packing Lists", systemImage: "suitcase")
                         }
                     }
 
-                    Section("Lists To Be Applied") {
+                    Section {
                         PackingListPillView(packingLists: defaultPackingLists)
+                    } header: {
+                        Text("Lists To Be Applied")
+                    } footer: {
+                        Text("Newly selected lists that will be added to \(trip.name) for \(selectedUser?.name ?? "packer").")
                     }
                     
-                    Section("Already Applied") {
+                    Section {
                         PackingListPillView(packingLists: PackingList.filtered(user: selectedUser, trip.alreadyUsedTemplates))
+                    } header: {
+                        Text("Already Applied")
+                    } footer: {
+                        Text("These lists have already been applied to this trip for \(selectedUser?.name ?? "packer") and cannot be applied again.")
                     }
                 }
             }
@@ -82,7 +92,7 @@ struct PackingListApplyDefaultView: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.height(500), .large])
     }
 
     func save() {

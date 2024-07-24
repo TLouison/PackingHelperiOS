@@ -21,6 +21,8 @@ struct DefaultPackingListView: View {
     @State private var selectedUser: User?
     @Query private var users: [User]
     
+    @State private var separateByUser: Bool = false
+    
     @State private var isShowingDefaultPackingListAddSheet: Bool = false
     @State private var isShowingExplanationSheet: Bool = false
     
@@ -58,28 +60,66 @@ struct DefaultPackingListView: View {
     }
     
     var showUserBadges: Bool {
-        return selectedUser == nil
+        return selectedUser == nil && separateByUser == false
+    }
+    
+    @ViewBuilder
+    func listOfLists(_ lists: [PackingList]) -> some View {
+        ForEach(ListType.allCases, id: \.rawValue) { listType in
+            let listsOfType = lists.filter{ $0.type == listType }
+            if !listsOfType.isEmpty {
+                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType, showUserBadge: showUserBadges, showIndent: separateByUser)
+                    .listStyle(.insetGrouped)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var userSeparatedLists: some View {
+        List {
+            ForEach(users, id: \.id) { user in
+                CollapsibleSection {
+                    HStack {
+                        user.pillIcon
+                            .font(.title)
+                        
+                        Spacer()
+                    }
+                } content: {
+                    listOfLists(PackingList.filtered(user: user, visiblePackingLists))
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var combinedLists: some View {
+        List {
+            listOfLists(visiblePackingLists)
+        }
+//        .listStyle(.grouped)
+    }
+    
+    var listView: some View {
+        switch separateByUser {
+        case false:
+            return combinedLists
+        case true:
+            return userSeparatedLists
+        }
     }
     
     var body: some View {
         NavigationStack {
             VStack {
-                if users.count > 1 {
+                if users.count > 1 && !separateByUser {
                     UserPickerView(selectedUser: $selectedUser)
                         .padding(.horizontal)
                 }
                 
                 if !visiblePackingLists.isEmpty {
-                    List {
-                        ForEach(ListType.allCases, id: \.rawValue) { listType in
-                            let listsOfType = visiblePackingLists.filter{ $0.type == listType }
-                            if !listsOfType.isEmpty {
-                                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType, showUserBadge: showUserBadges)
-                            }
-                        }
-                    }
-                    .listStyle(.grouped)
-                    .navigationTitle("Packing Lists")
+                    listView
+                        .navigationTitle("Packing Lists")
                 } else {
                     ContentUnavailableView {
                         Label("No Packing Lists", systemImage: "suitcase.rolling.fill")
@@ -96,15 +136,34 @@ struct DefaultPackingListView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button {
-                        isShowingExplanationSheet.toggle()
+                    Menu {
+                        Button {
+                            withAnimation {
+                                separateByUser.toggle()
+                                selectedUser = nil
+                            }
+                        } label: {
+                            HStack {
+                                Text("Separate By User")
+                                if separateByUser {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
                     } label: {
-                        Image(systemName: "info.circle")
+                            Label("Separate By User", systemImage: "person.circle")
                     }
                     Button {
                         isShowingDefaultPackingListAddSheet.toggle()
                     } label: {
                         Image(systemName: "plus.circle")
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    Button {
+                        isShowingExplanationSheet.toggle()
+                    } label: {
+                        Image(systemName: "info.circle")
                     }
                 }
             }

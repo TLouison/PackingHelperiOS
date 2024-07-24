@@ -35,7 +35,6 @@ struct TripDetailHeroView: View {
                 }
                 .frame(minHeight: 400)
         }
-        .borderGradient(width: 2)
     }
 }
 //
