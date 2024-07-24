@@ -41,7 +41,3 @@ struct NewUserPackersExplainer: View {
         }
     }
 }
-
-#Preview {
-    NewUserPackersExplainer()
-}
