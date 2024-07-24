@@ -120,7 +120,9 @@ struct TripListRowView: View {
         .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
         .shadow(radius: defaultShadowRadius)
         .onAppear {
-            mapPosition = trip.destination?.mapCameraPosition ?? TripLocation.sampleOrigin.mapCameraPosition
+            if let destination = trip.destination {
+                mapPosition = destination.mapCameraPosition
+            }
         }
         .padding(.vertical)
     }

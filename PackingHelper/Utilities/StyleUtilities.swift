@@ -14,3 +14,4 @@ let defaultLinearGradient: LinearGradient = LinearGradient(colors: [.accentColor
 
 let suitcaseIcon: String = "suitcase.rolling.fill"
 let defaultPackingListIcon: String = suitcaseIcon
+let userIcon: String = "person.circle"

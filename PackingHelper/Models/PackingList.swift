@@ -209,6 +209,17 @@ extension PackingList {
 }
 
 extension PackingList {
+    static func samplePackingList() -> PackingList {
+        return PackingList(type: .packing, template: false, name: "Packing List", countAsDays: false)
+    }
+    
+    
+    static func sampleDefaultList() -> PackingList {
+        return PackingList(type: .packing, template: true, name: "Default List", countAsDays: false)
+    }
+}
+
+extension PackingList {
     private static func copy(_ packingList: PackingList, template: Bool = false) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays)
         logger.info("Copied list.")

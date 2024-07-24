@@ -18,7 +18,6 @@ func plusLogoImage(size: CGFloat) -> some View {
         .borderGradient()
 }
 
-@ViewBuilder
 func plusSubscriptionIcon() -> some View {
     Image(systemName: "plus.diamond.fill")
         .symbolRenderingMode(.palette)
@@ -30,7 +29,6 @@ func plusSubscriptionName() -> some View {
     HStack {
         Text("Packing Helper")
         plusSubscriptionIcon()
-            .padding(.leading, -5)
     }
     .font(.headline)
     .bold()
@@ -41,6 +39,7 @@ func plusSubscriptionWithText(before: String, after: String = "") -> some View {
     HStack {
         Text(before)
         plusSubscriptionName()
+        
         if after != "" {
             Text(after)
         }

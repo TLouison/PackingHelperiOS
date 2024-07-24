@@ -56,6 +56,12 @@ extension User {
 }
 
 extension User {
+    static var sampleUser: User {
+        return User(name: "Todd")
+    }
+}
+
+extension User {
     func setUserColor(_ color: Color) {
         self.colorHex = color.toHex() ?? Color.accentColor.toHex()!
     }
