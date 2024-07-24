@@ -60,7 +60,7 @@ struct DefaultPackingListView: View {
     }
     
     var showUserBadges: Bool {
-        return selectedUser == nil && separateByUser == false
+        return selectedUser == nil && separateByUser == false && users.count > 1
     }
     
     @ViewBuilder

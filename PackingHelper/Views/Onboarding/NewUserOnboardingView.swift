@@ -114,7 +114,7 @@ struct NewUserOnboardingView: View {
                 .background(.thickMaterial)
                 .rounded()
                 .shaded()
-                .disabled(name == "" || nextScreen() == .done)
+                .disabled(name == "" && nextScreen() == .done)
             }
             .padding()
         }

@@ -26,7 +26,7 @@ struct PackingListDetailItemListView: View {
                 )
             }
         }
-        .listStyle(.grouped)
+        .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
     }
 }
