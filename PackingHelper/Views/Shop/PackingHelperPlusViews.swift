@@ -9,7 +9,7 @@ import SwiftUI
 
 @ViewBuilder
 func plusLogoImage(size: CGFloat) -> some View {
-    Image(systemName: "suitcase.rolling.fill")
+    Image(systemName: suitcaseIcon)
         .resizable()
         .scaledToFit()
         .foregroundStyle(defaultLinearGradient)

@@ -11,3 +11,6 @@ let defaultShadowRadius: CGFloat = 2
 let defaultCornerRadius: CGFloat = 16
 
 let defaultLinearGradient: LinearGradient = LinearGradient(colors: [.accentColor, .purple], startPoint: .leading, endPoint: .trailing)
+
+let suitcaseIcon: String = "suitcase.rolling.fill"
+let defaultPackingListIcon: String = suitcaseIcon

@@ -33,7 +33,7 @@ struct DefaultPackingListView: View {
                     .font(.title)
                     .fontWeight(.semibold)
                 Spacer()
-                Image(systemName: "suitcase.cart")
+                Image(systemName: suitcaseIcon)
                     .imageScale(.large)
                     .foregroundStyle(.accent)
                     .onTapGesture {
@@ -122,7 +122,7 @@ struct DefaultPackingListView: View {
                         .navigationTitle("Packing Lists")
                 } else {
                     ContentUnavailableView {
-                        Label("No Packing Lists", systemImage: "suitcase.rolling.fill")
+                        Label("No Packing Lists", systemImage: suitcaseIcon)
                     } description: {
                         Text("You haven't created any packing lists! Create one to simplify your trip creation.")
                     } actions: {

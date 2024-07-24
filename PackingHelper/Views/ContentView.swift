@@ -23,7 +23,7 @@ struct ContentView: View {
             
             DefaultPackingListView()
                 .tabItem {
-                    Label("Lists", systemImage: "suitcase.rolling.fill")
+                    Label("Lists", systemImage: suitcaseIcon)
                 }
             
             UserListView()

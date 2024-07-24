@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct TripPackingBoxView: View {
+struct TripDetailPackingView: View {
     var trip: Trip
     
     @Binding var isAddingNewPackingList: Bool
@@ -29,6 +29,18 @@ struct TripPackingBoxView: View {
                     )
                 }
             } content: {
+                if trip.lists?.isEmpty ?? true {
+                    ContentUnavailableView{
+                        Label("No Packing Lists", systemImage: suitcaseIcon)
+                    } description: {
+                        Text("You haven't added any packing lists to this trip!")
+                    } actions: {
+                        CreateListMenu(
+                            isAddingNewPackingList: $isAddingNewPackingList,
+                            isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                        )
+                    }
+                }
                 if !(trip.lists?.isEmpty ?? true) {
                     VStack(alignment: .center) {
                         if trip.hasMultiplePackers {
@@ -66,5 +78,5 @@ struct TripPackingBoxView: View {
     @Previewable @Query var trips: [Trip]
     @Previewable @State var addingList = false
     @Previewable @State var applyingDefault = false
-    TripPackingBoxView(trip: trips.first!, isAddingNewPackingList: $addingList, isApplyingDefaultPackingList: $applyingDefault)
+    TripDetailPackingView(trip: trips.first!, isAddingNewPackingList: $addingList, isApplyingDefaultPackingList: $applyingDefault)
 }

@@ -32,7 +32,7 @@ struct PackingListDetailEditView: View {
                 }
             } else if currentView == .packed {
                 if packingList.completeItems.isEmpty {
-                    ContentUnavailableView("No Packed Items", systemImage: "suitcase.fill", description: Text("You haven't packed any items on this list yet!"))
+                    ContentUnavailableView("No Packed Items", systemImage: suitcaseIcon, description: Text("You haven't packed any items on this list yet!"))
                 } else {
                     PackingListDetailItemListView(packingList: packingList, items: packingList.completeItems)
                 }

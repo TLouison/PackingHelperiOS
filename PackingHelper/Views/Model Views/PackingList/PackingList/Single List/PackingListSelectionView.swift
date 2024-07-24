@@ -105,7 +105,7 @@ struct PackingListSelectionView: View {
             
             if availableLists.isEmpty {
                 ContentUnavailableView {
-                    Label("No Default Packing Lists", systemImage: "suitcase.rolling.fill")
+                    Label("No Default Packing Lists", systemImage: suitcaseIcon)
                 } description: {
                     noListText
                 }

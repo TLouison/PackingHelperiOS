@@ -56,7 +56,7 @@ struct TripDetailView: View {
                 )
                     .shadow(radius: defaultShadowRadius)
                 
-                TripPackingBoxView(
+                TripDetailPackingView(
                     trip: trip,
                     isAddingNewPackingList: $isAddingNewPackingList,
                     isApplyingDefaultPackingList: $isApplyingDefaultPackingList

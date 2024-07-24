@@ -26,7 +26,7 @@ struct MultipackFilterAndSortMenu: View {
             Button {
                 isApplyingDefaultPackingList.toggle()
             } label: {
-                Label("Apply Default List", systemImage: "suitcase.rolling.fill")
+                Label("Apply Default List", systemImage: suitcaseIcon)
             }
             
             Picker("Sort By", selection: $sortOrder) {

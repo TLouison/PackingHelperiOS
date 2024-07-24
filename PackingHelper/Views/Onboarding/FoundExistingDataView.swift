@@ -21,7 +21,7 @@ struct FoundExistingDataView: View {
             Button {
                 dismiss()
             } label: {
-                Label("Start Packing", systemImage: "suitcase.rolling")
+                Label("Start Packing", systemImage: suitcaseIcon)
             }
             .padding()
             .background(.thickMaterial)

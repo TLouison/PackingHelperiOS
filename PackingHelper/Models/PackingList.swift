@@ -27,7 +27,7 @@ enum ListType: String, Codable, CaseIterable, Comparable {
     
     var icon: String {
         switch self {
-            case .packing: "suitcase.rolling.fill"
+            case .packing: suitcaseIcon
             case .dayOf: "sun.horizon"
             case .task: "checklist"
         }
@@ -125,7 +125,7 @@ final class PackingList {
     
     static func icon(listType: ListType) -> String {
         return switch listType {
-            case .packing: "suitcase.rolling.fill"
+            case .packing: suitcaseIcon
             case .dayOf: "sun.horizon"
             case .task: "checklist"
         }
