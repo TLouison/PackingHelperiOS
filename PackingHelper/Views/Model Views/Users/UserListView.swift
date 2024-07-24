@@ -27,7 +27,7 @@ struct UserListView: View {
                 if users.isEmpty {
                     MissingUsersView()
                 } else {
-                    VStack {
+                    ZStack {
                         List {
                             ForEach(users, id: \.id) { user in
                                 UserListRowView(user: user)
@@ -35,8 +35,11 @@ struct UserListView: View {
                         }
                         
                         if !purchaseManager.hasUnlockedPlus {
-                            PackingHelperPlusCTA(headerText: "Add unlimited packers with")
-                                .padding(.bottom)
+                            VStack {
+                                Spacer()
+                                PackingHelperPlusCTA(headerText: "Add unlimited packers with")
+                                    .padding(.bottom)
+                            }
                         }
                     }
                 }

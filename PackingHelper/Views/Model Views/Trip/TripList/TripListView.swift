@@ -98,8 +98,10 @@ struct TripListView: View {
                 .transition(.pushAndPull(.trailing))
         } else if upcomingTrips.isEmpty && !completedTrips.isEmpty {
             allTripsCompletedView
+                .navigationTitle("Trips")
         } else {
             noTripsAddedView
+                .navigationTitle("Trips")
         }
     }
     

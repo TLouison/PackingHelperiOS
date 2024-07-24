@@ -63,7 +63,7 @@ func plusSubscriptionBenefits() -> some View {
     VStack(spacing: 8) {
         VStack(alignment: .leading) {
             Text("∙Packing for Multiple Users")
-            Text("∙AI-Assisted Packing Suggestions")
+            Text("∙AI-Assisted Packing Suggestions*")
             Text("∙Collaborate With Friends and Family*")
         }
         .font(.callout)
