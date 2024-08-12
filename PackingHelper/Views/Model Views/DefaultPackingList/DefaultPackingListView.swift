@@ -100,12 +100,13 @@ struct DefaultPackingListView: View {
 //        .listStyle(.grouped)
     }
     
+    @ViewBuilder
     var listView: some View {
         switch separateByUser {
         case false:
-            return combinedLists
+            combinedLists
         case true:
-            return userSeparatedLists
+            userSeparatedLists
         }
     }
     

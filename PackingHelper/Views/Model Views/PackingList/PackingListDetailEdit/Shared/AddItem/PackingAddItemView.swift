@@ -12,20 +12,24 @@ struct PackingAddItemView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @FocusState private var nameIsFocused: Bool
-    
+
     let packingList: PackingList
     var newItemIsPacked: Bool = false
-    
+
     @State private var packingRecommendation: PackingRecommendationResult = PackingEngine.suggest()
-    
+
     @State private var newItemName = ""
     @State private var newItemCount = 1
     @State private var newItemCategory: PackingRecommendationCategory?
-    
+
     var formIsValid: Bool {
         return newItemName != "" && newItemCount > 0 && newItemCategory != nil
     }
-    
+
+    var showCount: Bool {
+        packingList.type != .task && packingList.template == false
+    }
+
     var body: some View {
         VStack(spacing: 10) {
 //            if newItemName != "" && FeatureFlags.showingRecommendations {
@@ -42,7 +46,7 @@ struct PackingAddItemView: View {
 //                    }
 //                    .transition(.pushAndPull(.bottom))
 //            }
-            
+
             VStack {
                 HStack {
                     TextField("Item Name", text: $newItemName)
@@ -66,8 +70,8 @@ struct PackingAddItemView: View {
                         .onAppear {
                             self.nameIsFocused = true
                         }
-                    
-                    if packingList.type != .task {
+
+                    if showCount {
                         Spacer()
                         Divider()
                         Picker("Count", selection: $newItemCount) {
@@ -84,7 +88,7 @@ struct PackingAddItemView: View {
                 .frame(maxHeight: 55)
                 .background(.thickMaterial)
                 .rounded()
-                
+
 //                Menu(newItemCategory?.rawValue ?? "Select Category") {
 //                    ForEach(PackingRecommendationCategory.allCases, id: \.rawValue) { category in
 //                        Button {
@@ -118,12 +122,12 @@ struct PackingAddItemView: View {
         .toolbar(.hidden, for: .tabBar)
         .padding(.horizontal)
     }
-    
+
     func addItem() {
         if newItemName != "" {
             withAnimation {
                 Item.create(for: packingList, in: modelContext, category: newItemCategory, name: newItemName, count: newItemCount, isPacked: newItemIsPacked)
-                
+
                 newItemName = ""
                 newItemCount = 1
             }

@@ -23,9 +23,9 @@ struct PackingListDetailEditRowView: View {
     @Bindable var item: Item
     var showCount: Bool = true
     var showButton: Bool = true
-    
+
     @State private var isShowingItemEditSheet = false
-    
+
     @ViewBuilder
     func itemCheckbox(_ item: Item) -> some View {
         Image(systemName: item.isPacked ? Symbol.packed.name : Symbol.unpacked.name)
@@ -35,11 +35,11 @@ struct PackingListDetailEditRowView: View {
             .symbolRenderingMode(.multicolor)
             .contentTransition(.symbolEffect(.replace))
     }
-    
+
     var body: some View {
         HStack {
             Text(item.name).font(.headline)
-            
+
             if showCount {
                 Divider()
                 Text(String(item.count))
@@ -47,9 +47,9 @@ struct PackingListDetailEditRowView: View {
                     .foregroundStyle(.secondary)
                     .bold()
             }
-            
+
             Spacer()
-            
+
             if showButton {
                 itemCheckbox(item)
                     .onTapGesture {
@@ -71,7 +71,7 @@ struct PackingListDetailEditRowView: View {
                     .labelStyle(.iconOnly)
                     .tint(.red)
             }
-            
+
             Button {
                 isShowingItemEditSheet = true
             } label: {
@@ -88,4 +88,3 @@ struct PackingListDetailEditRowView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
 }
-

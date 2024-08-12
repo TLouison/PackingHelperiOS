@@ -9,12 +9,12 @@ import SwiftUI
 
 struct EditItemView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     var item: Item?
-    
+
     @State private var name: String = ""
     @State private var count: Int = 1
-    
+
     var editorTitle: String {
         if let item = item {
             return "Edit Item: \(item.name)"
@@ -22,15 +22,15 @@ struct EditItemView: View {
             return "New Item"
         }
     }
-    
+
     var formIsValid: Bool {
         return name != ""
     }
-    
+
     var showCount: Bool {
-        item?.list?.type != .task
+        item?.list?.type != .task && item?.list?.template == false
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -44,7 +44,7 @@ struct EditItemView: View {
                                 count = item.count
                             }
                         }
-                    
+
                     if showCount {
                         Spacer()
                         Divider()
@@ -83,7 +83,7 @@ struct EditItemView: View {
             }
         }
     }
-    
+
     private func save() {
         if let item {
             item.name = name
