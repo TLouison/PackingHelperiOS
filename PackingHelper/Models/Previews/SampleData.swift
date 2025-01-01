@@ -36,28 +36,22 @@ extension PreviewTrait where T == Preview.ViewTraits {
     
     // Trip and Location Creation
     let springBreakLocations = [
-        TripLocation(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060),
-        TripLocation(trip: nil, name: "Miami", latitude: 25.7617, longitude: 80.1918)
+        TripLocation(name: "New York City", latitude: 40.7128, longitude: -74.0060),
+        TripLocation(name: "Miami", latitude: 25.7617, longitude: 80.1918)
     ]
     let springBreakTrip = Trip(name: "Spring Break", startDate: Date.distantPast, endDate: Date.distantPast.advanced(by: SECONDS_IN_DAY), type: .plane, origin: springBreakLocations[0], destination: springBreakLocations[1], accomodation: .rental)
-    springBreakLocations[0].trip = springBreakTrip
-    springBreakLocations[1].trip = springBreakTrip
     
     let familyVisitLocations = [
-        TripLocation(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060),
-        TripLocation(trip: nil, name: "Jersey City", latitude: 40.7178, longitude: -74.0431)
+        TripLocation(name: "New York City", latitude: 40.7128, longitude: -74.0060),
+        TripLocation(name: "Jersey City", latitude: 40.7178, longitude: -74.0431)
     ]
     let familyVisitTrip = Trip(name: "Family Visit", startDate: Date.distantPast, endDate: Date.distantFuture, type: .car, origin: familyVisitLocations[0], destination: familyVisitLocations[1], accomodation: .rental)
-    familyVisitLocations[0].trip = familyVisitTrip
-    familyVisitLocations[1].trip = familyVisitTrip
     
     let workTripLocations = [
-        TripLocation(trip: nil, name: "New York City", latitude: 40.7128, longitude: -74.0060),
-        TripLocation(trip: nil, name: "Amsterdam", latitude: 52.3676, longitude: 4.9041)
+        TripLocation(name: "New York City", latitude: 40.7128, longitude: -74.0060),
+        TripLocation(name: "Amsterdam", latitude: 52.3676, longitude: 4.9041)
     ]
     let workTrip = Trip(name: "Family Visit", startDate: Date.distantFuture.advanced(by: -SECONDS_IN_DAY), endDate: Date.distantFuture, type: .car, origin: workTripLocations[0], destination: workTripLocations[1], accomodation: .hotel)
-    workTripLocations[0].trip = workTrip
-    workTripLocations[1].trip = workTrip
     
     // Packing List Creation
     let springBreakPackingList = PackingList(type: .packing, template: false, name: "Beachwear", countAsDays: true)

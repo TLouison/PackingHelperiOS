@@ -94,8 +94,8 @@ final class Trip {
     var uuid: UUID = UUID()
     var name: String = "Trip"
 
-    @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var origin: TripLocation?
-    @Relationship(deleteRule: .cascade, inverse: \TripLocation.trip) var destination: TripLocation?
+    @Relationship var origin: TripLocation?
+    @Relationship var destination: TripLocation?
     @Relationship(deleteRule: .cascade, inverse: \PackingList.trip) var lists: [PackingList]? = []
 
     var startDate: Date = Date.now
