@@ -21,8 +21,12 @@ final class User: Comparable {
     
     var colorHex: String = Color.teal.toHex()!
     
-    init(name: String) {
+    init(name: String, colorHex: String? = nil) {
         self.name = name
+        
+        if let colorHex {
+            self.colorHex = colorHex
+        }
     }
     
     static func create_or_update(_ user: User?, name: String, color: Color, in context: ModelContext) {

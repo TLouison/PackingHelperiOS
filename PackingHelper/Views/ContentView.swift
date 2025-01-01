@@ -11,38 +11,40 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
+    @State private var selectedTab = 0
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             TripListView()
                 .tabItem {
                     Label("Trips", systemImage: "airplane.departure")
                 }
+                .tag(0)
             
             DefaultPackingListView()
                 .tabItem {
                     Label("Lists", systemImage: suitcaseIcon)
                 }
+                .tag(1)
             
             UserListView()
                 .tabItem {
                     Label("Packers", systemImage: "person.circle")
                 }
+                .tag(2)
             
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
+                .tag(3)
         }
-        .task {
-            showOnboarding = !hasLaunchedBefore
-        }
-        .sheet(isPresented: $showOnboarding) {
-            NewUserOnboardingView()
+        .sheet(isPresented: .constant(!hasCompletedOnboarding), content: {
+            OnboardingContainerView(modelContext: modelContext)
                 .interactiveDismissDisabled()
-        }
+        })
     }
 }
 

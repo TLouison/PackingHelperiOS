@@ -13,6 +13,8 @@ struct SettingsFormView: View {
     @Environment(\.colorScheme) var colorScheme
     
     @AppStorage("isDarkMode") private var isDarkMode = true
+    
+    @State private var showDeveloperMenu = false
 //    @AppStorage("defaultUser") private var defaultUser = -1
     
 //    let preferences: Preferences
@@ -31,9 +33,18 @@ struct SettingsFormView: View {
                 }
             }
             
+            Section("Developer") {
+                Button("Open Developer Menu") {
+                    showDeveloperMenu = true
+                }
+            }
+            
 //            Section("Functionality") {
 //                UserPickerView(selectedUser: $user)
 //            }
+        }
+        .sheet(isPresented: $showDeveloperMenu) {
+            DeveloperMenuView()
         }
 //        .onAppear {
 //            self.user = preferences.getSelectedUser(in: modelContext)
