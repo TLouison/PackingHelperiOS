@@ -97,9 +97,13 @@ struct TripDetailOverlay: View {
                             }
                             
                             if let currentWeather = tripWeather?.currentWeather {
-                                Divider()
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Label(temperature, systemImage: currentWeather.symbolName)
+                                HStack {
+                                    Divider()
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    Label(temperature, systemImage: currentWeather.symbolName)
+                                }
+                                .opacity(tripWeather == nil ? 0 : 1)
+                                .animation(.easeIn(duration: 0.5), value: tripWeather != nil)
                             }
                         }
                         .font(.subheadline)
