@@ -15,3 +15,7 @@ let defaultLinearGradient: LinearGradient = LinearGradient(colors: [.accentColor
 let suitcaseIcon: String = "suitcase.rolling.fill"
 let defaultPackingListIcon: String = suitcaseIcon
 let userIcon: String = "person.circle"
+
+func pluralizeString(_ string: String, count: Int) -> String {
+    count == 1 ? string : string + "s"
+}

@@ -38,7 +38,12 @@ struct UserPickerBaseView: View {
             }
             ForEach(filteredUsers, id: \.id) { user in
                 if showIcon {
-                    Label(user.name, systemImage: "person.circle").tag(user as User?)
+                    HStack {
+                        Image(systemName: "person.circle").frame(width: 16, height: 16).padding(.trailing)
+                        Spacer(minLength: 10)
+                        Text(user.name)
+                    }
+                    .tag(user as User?)
                 } else {
                     Text(user.name).tag(user as User?)
                 }

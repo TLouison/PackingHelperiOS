@@ -51,6 +51,8 @@
 		51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */; };
 		518AE78B2D25EAEE00F8D8E9 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518AE78A2D25EAE900F8D8E9 /* OnboardingView.swift */; };
 		518AE7902D25EC6F00F8D8E9 /* DeveloperMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518AE78F2D25EC6F00F8D8E9 /* DeveloperMenu.swift */; };
+		518AE7942D25F85D00F8D8E9 /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518AE7932D25F85D00F8D8E9 /* UserView.swift */; };
+		518AE7962D25F90000F8D8E9 /* UserGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518AE7952D25F90000F8D8E9 /* UserGridView.swift */; };
 		519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */; };
 		519B72572ADA06C3009401C0 /* TripListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72562ADA06C3009401C0 /* TripListView.swift */; };
 		519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72582ADA1BF7009401C0 /* PackingList.swift */; };
@@ -136,6 +138,8 @@
 		51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierUtilities.swift; sourceTree = "<group>"; };
 		518AE78A2D25EAE900F8D8E9 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		518AE78F2D25EC6F00F8D8E9 /* DeveloperMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenu.swift; sourceTree = "<group>"; };
+		518AE7932D25F85D00F8D8E9 /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
+		518AE7952D25F90000F8D8E9 /* UserGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGridView.swift; sourceTree = "<group>"; };
 		519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = ProductSuggestionModel.mlmodel; sourceTree = "<group>"; };
 		519B72562ADA06C3009401C0 /* TripListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListView.swift; sourceTree = "<group>"; };
 		519B72582ADA1BF7009401C0 /* PackingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList.swift; sourceTree = "<group>"; };
@@ -217,11 +221,12 @@
 			isa = PBXGroup;
 			children = (
 				518AE7912D25F81900F8D8E9 /* Components */,
-				5107281E2C21296700EBF362 /* UserListHelpers */,
 				510728102C1FD47300EBF362 /* UserPickerView.swift */,
 				510728122C1FD5D000EBF362 /* UserListView.swift */,
 				5107281B2C1FDA1900EBF362 /* UserEditView.swift */,
 				51AC5FB62C4326C400DF83F6 /* MissingUsersView.swift */,
+				518AE7932D25F85D00F8D8E9 /* UserView.swift */,
+				518AE7952D25F90000F8D8E9 /* UserGridView.swift */,
 			);
 			path = Users;
 			sourceTree = "<group>";
@@ -241,13 +246,6 @@
 				51C8BBA22C2BA1DB005D2B71 /* DefaultPackingViewListTypeSectionView.swift */,
 			);
 			path = DefaultPackingList;
-			sourceTree = "<group>";
-		};
-		5107281E2C21296700EBF362 /* UserListHelpers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = UserListHelpers;
 			sourceTree = "<group>";
 		};
 		5110C6412AFD7F76002742D0 /* PackingList */ = {
@@ -715,9 +713,11 @@
 				515B859A2AD7693C002D614F /* PreviewContainer.swift in Sources */,
 				515B85A22AD77273002D614F /* TripEditView.swift in Sources */,
 				5134EC752C0EAF8E00862E19 /* User.swift in Sources */,
+				518AE7962D25F90000F8D8E9 /* UserGridView.swift in Sources */,
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
 				5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */,
 				5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */,
+				518AE7942D25F85D00F8D8E9 /* UserView.swift in Sources */,
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,
 				5110C6322AE5B028002742D0 /* CalendarUtilities.swift in Sources */,

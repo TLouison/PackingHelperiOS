@@ -1,12 +1,6 @@
-//
-//  UserEditSheet.swift
-//  PackingHelper
-//
-//  Created by Todd Louison on 6/16/24.
-//
-
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 struct UserEditView: View {
     @Environment(\.modelContext) private var modelContext
@@ -14,6 +8,8 @@ struct UserEditView: View {
     
     @State private var name = ""
     @State private var userColor = Color.accentColor
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedImage: UIImage?
     
     @Query private var users: [User]
     let user: User?
@@ -33,6 +29,37 @@ struct UserEditView: View {
                     Section {
                         TextField("Name", text: $name)
                     }
+                    
+                    Section {
+                        VStack {
+                            if let selectedImage {
+                                Image(uiImage: selectedImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle())
+                            } else if let profileImage = user?.profileImage {
+                                profileImage
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .frame(width: 100, height: 100)
+                                    .foregroundStyle(userColor)
+                            }
+                            
+                            PhotosPicker(selection: $selectedItem,
+                                       matching: .images) {
+                                Text("Select Photo")
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical)
+                    }
+                    
                     Section {
                         UserColorPicker(selectedColor: $userColor)
                     }
@@ -57,9 +84,17 @@ struct UserEditView: View {
                     }
                 }
             }
+            .onChange(of: selectedItem) { _, newValue in
+                Task {
+                    if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                        if let image = UIImage(data: data) {
+                            selectedImage = image
+                        }
+                    }
+                }
+            }
             .onAppear {
                 if let user {
-                    // Edit the incoming item.
                     name = user.name
                     userColor = user.userColor
                 }
@@ -72,10 +107,14 @@ struct UserEditView: View {
     }
     
     private func save() {
-        User.create_or_update(user, name: name, color: userColor, in: modelContext)
+        User.create_or_update(user, name: name, color: userColor, profileImage: selectedImage, in: modelContext)
+        
+        // Force save context
+        try? modelContext.save()
+        
+        // Verify persistence
+        if let user = user {
+            user.verifyImageData()
+        }
     }
 }
-
-//#Preview {
-//    UserEditView()
-//}

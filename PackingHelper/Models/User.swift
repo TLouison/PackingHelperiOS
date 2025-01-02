@@ -16,6 +16,7 @@ final class User: Comparable {
     
     var name: String = "Packer"
     var created: Date = Date.now
+    var profileImageData: Data? // Store image data
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
     
@@ -29,13 +30,19 @@ final class User: Comparable {
         }
     }
     
-    static func create_or_update(_ user: User?, name: String, color: Color, in context: ModelContext) {
+    static func create_or_update(_ user: User?, name: String, color: Color, profileImage: UIImage? = nil, in context: ModelContext) {
         if let user {
             user.name = name
             user.setUserColor(color)
+            if let image = profileImage {
+                user.setProfileImage(image)
+            }
         } else {
             let newUser = User(name: name)
             newUser.setUserColor(color)
+            if let image = profileImage {
+                newUser.setProfileImage(image)
+            }
             context.insert(newUser)
         }
     }
@@ -75,16 +82,61 @@ extension User {
     }
 }
 
+// Profile Picture methods
 extension User {
+    func setProfileImage(_ image: UIImage) {
+        // Add debug print
+        print("Setting profile image")
+        if let data = image.jpegData(compressionQuality: 0.7) {
+            print("Image data size: \(data.count) bytes")
+            self.profileImageData = data
+        }
+    }
+    
+    // Add persistence check method
+    func verifyImageData() {
+        if let data = profileImageData {
+            print("Profile image data exists: \(data.count) bytes")
+        } else {
+            print("No profile image data found")
+        }
+    }
+    
+    var profileImage: Image? {
+        if let data = profileImageData, let uiImage = UIImage(data: data) {
+            return Image(uiImage: uiImage)
+        }
+        return nil
+    }
+}
+
+extension User {
+    var profileView: some View {
+        Group {
+            if let profileImage = profileImage {
+                profileImage
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .foregroundStyle(userColor)
+            }
+        }
+        .frame(width: 60, height: 60)
+        .clipShape(Circle())
+        .shadow(radius: 2)
+    }
+    
     var pillIcon: some View {
-        return Text(self.name)
+        Text(self.name)
             .font(.caption2.smallCaps())
             .fontWeight(.semibold)
             .shadow(
-                color: Color.gray.opacity(0.3), /// shadow color
-                radius: 3, /// shadow radius
-                x: 0, /// x offset
-                y: 2 /// y offset
+                color: Color.gray.opacity(0.3),
+                radius: 3,
+                x: 0,
+                y: 2
             )
             .padding(.horizontal)
             .padding(.vertical, 5)
