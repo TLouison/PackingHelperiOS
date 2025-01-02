@@ -88,7 +88,7 @@ struct UserGridCell: View {
                 .foregroundStyle(user.userColor)
                 .lineLimit(1)
             
-            Text(pluralizeString("\(templateListCount) template lists", count: templateListCount))
+            Text(pluralizeString("\(templateListCount) template list", count: templateListCount))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
