@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PackingHelperPlusCTA: View {
     enum CTAVersion {
-        case small, tall
+        case small, tall, new
     }
     
     @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
@@ -120,11 +120,43 @@ struct PackingHelperPlusCTA: View {
         .frame(maxHeight: .infinity)
     }
     
+    var newCTA: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Upgrade to Premium", systemImage: "sparkles")
+                    .font(.title2.bold())
+                
+                Text("Get unlimited trips, custom templates, and more")
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                FeatureRow(icon: "infinity", text: "Create unlimited packing lists and trips")
+                FeatureRow(icon: "square.stack", text: "Save custom templates for future trips")
+                FeatureRow(icon: "person.2.fill", text: "Share lists with travel companions")
+            }
+            
+            Button(action: {
+                showingStoreSheet.toggle()
+            }) {
+                Text("View Plans")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.blue)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+    
     @ViewBuilder
     var ctaView: some View {
         switch version {
             case .small: smallCTA
             case .tall: tallCTA
+            case .new: newCTA
         }
     }
     
@@ -143,6 +175,72 @@ struct PackingHelperPlusCTA: View {
             }
     }
 }
+
+struct SubscriptionCTAView: View {
+   var body: some View {
+       VStack(alignment: .leading, spacing: 24) {
+           VStack(alignment: .leading, spacing: 8) {
+               Label("Upgrade to Premium", systemImage: "sparkles")
+                   .font(.title2.bold())
+               
+               Text("Get unlimited trips, custom templates, and more")
+                   .foregroundStyle(.secondary)
+                   .fixedSize(horizontal: false, vertical: true)
+           }
+           
+           VStack(alignment: .leading, spacing: 8) {
+               FeatureRow(icon: "infinity", text: "Create unlimited packing lists and trips")
+               FeatureRow(icon: "square.stack", text: "Save custom templates for future trips")
+               FeatureRow(icon: "person.2.fill", text: "Share lists with travel companions")
+           }
+           
+           Button(action: {
+               // Add navigation to subscription page
+           }) {
+               Text("View Plans")
+                   .font(.headline)
+                   .frame(maxWidth: .infinity)
+                   .padding()
+                   .background(.blue)
+                   .foregroundColor(.white)
+                   .clipShape(RoundedRectangle(cornerRadius: 10))
+           }
+       }
+       .padding(24)
+       .background(.ultraThinMaterial)
+       .overlay(
+           RoundedRectangle(cornerRadius: 16)
+               .stroke(defaultLinearGradient, lineWidth: 2)
+       )
+       .clipShape(RoundedRectangle(cornerRadius: 16))
+       .shadow(radius: 8)
+       .padding(.horizontal)
+   }
+}
+
+private struct FeatureRow: View {
+   let icon: String
+   let text: String
+   
+   var body: some View {
+       HStack(spacing: 12) {
+           Image(systemName: icon)
+               .font(.system(size: 16))
+               .frame(width: 32, height: 32)
+               .background(.blue.opacity(0.1))
+               .foregroundStyle(.blue)
+               .clipShape(Circle())
+           
+           Text(text)
+               .font(.subheadline)
+               .fixedSize(horizontal: false, vertical: true)
+               .padding(.vertical, 6)  // Add vertical padding to match icon height
+           
+           Spacer(minLength: 0)
+       }
+   }
+}
+
 
 @available(iOS 18, *)
 #Preview(traits: .sampleData) {

@@ -13,10 +13,12 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                PackingHelperPlusCTA(headerText: "Subscribe to", showAfterPurchase: true)
-                
-                SettingsFormView()
+            ScrollView {
+                VStack(spacing: 0) {
+                    PackingHelperPlusCTA(headerText: "", version: .new)
+                    
+                    SettingsFormView()
+                }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Settings")

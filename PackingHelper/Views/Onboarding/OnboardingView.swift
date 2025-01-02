@@ -142,26 +142,6 @@ struct ColorSelectionView: View {
             
             UserColorPicker(selectedColor: $viewModel.selectedColor)
             
-//            LazyVGrid(columns: columns, spacing: 20) {
-//                ForEach(viewModel.colorOptions, id: \.self) { color in
-//                    Circle()
-//                        .fill(color)
-//                        .frame(width: 60, height: 60)
-//                        .overlay {
-//                            if color == viewModel.selectedColor {
-//                                Circle()
-//                                    .strokeBorder(.white, lineWidth: 3)
-//                                    .padding(3)
-//                            }
-//                        }
-//                        .onTapGesture {
-//                            viewModel.selectedColor = color
-//                        }
-//                        .shadow(radius: color == viewModel.selectedColor ? 5 : 0)
-//                }
-//            }
-//            .padding()
-            
             Button("Continue", action: viewModel.nextPage)
                 .buttonStyle(.borderedProminent)
                 .tint(viewModel.selectedColor)

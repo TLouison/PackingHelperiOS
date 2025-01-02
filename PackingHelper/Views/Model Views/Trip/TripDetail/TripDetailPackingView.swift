@@ -17,58 +17,58 @@ struct TripDetailPackingView: View {
     @State private var selectedUser: User?
     
     var body: some View {
-            TripDetailCustomSectionView {
-                HStack {
-                    Text("Packing Lists")
-                        .font(.title)
-                    Spacer()
-                    
+        TripDetailCustomSectionView {
+            HStack {
+                Text("Packing Lists")
+                    .font(.title)
+                Spacer()
+                
+                CreateListMenu(
+                    isAddingNewPackingList: $isAddingNewPackingList,
+                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                )
+            }
+        } content: {
+            if trip.lists?.isEmpty ?? true {
+                ContentUnavailableView{
+                    Label("No Packing Lists", systemImage: suitcaseIcon)
+                } description: {
+                    Text("You haven't added any packing lists to this trip!")
+                } actions: {
                     CreateListMenu(
                         isAddingNewPackingList: $isAddingNewPackingList,
                         isApplyingDefaultPackingList: $isApplyingDefaultPackingList
                     )
                 }
-            } content: {
-                if trip.lists?.isEmpty ?? true {
-                    ContentUnavailableView{
-                        Label("No Packing Lists", systemImage: suitcaseIcon)
-                    } description: {
-                        Text("You haven't added any packing lists to this trip!")
-                    } actions: {
-                        CreateListMenu(
-                            isAddingNewPackingList: $isAddingNewPackingList,
-                            isApplyingDefaultPackingList: $isApplyingDefaultPackingList
-                        )
+            }
+            if !(trip.lists?.isEmpty ?? true) {
+                VStack(alignment: .center) {
+                    if trip.hasMultiplePackers {
+                        UserPickerView(selectedUser: $selectedUser)
+                            .transition(.scale)
                     }
-                }
-                if !(trip.lists?.isEmpty ?? true) {
-                    VStack(alignment: .center) {
-                        if trip.hasMultiplePackers {
-                            UserPickerView(selectedUser: $selectedUser)
-                                .transition(.scale)
-                        }
-                        
-                        ForEach(trip.containsListTypes, id: \.rawValue) { listType in
-                            NavigationLink {
-                                MultipackView(trip: trip, listType: listType, user: $selectedUser)
-                            } label: {
-                                HStack {
-                                    Text(listType.rawValue).font(.headline)
-                                    Spacer()
-                                    TripDetailPackingProgressView(
-                                        val: Double(trip.getCompleteItems(for: listType)),
-                                        total: Double(trip.getTotalItems(for: listType)),
-                                        image: PackingList.icon(listType: listType)
-                                    )
-                                    .scaleEffect(x: 0.75, y: 0.75)
-                                }
+                    
+                    ForEach(trip.containsListTypes, id: \.rawValue) { listType in
+                        NavigationLink {
+                            UnifiedPackingView(trip: trip, listType: listType, selectedUser: $selectedUser)
+                        } label: {
+                            HStack {
+                                Text(listType.rawValue).font(.headline)
+                                Spacer()
+                                TripDetailPackingProgressView(
+                                    val: Double(trip.getCompleteItems(for: listType)),
+                                    total: Double(trip.getTotalItems(for: listType)),
+                                    image: PackingList.icon(listType: listType)
+                                )
+                                .scaleEffect(x: 0.75, y: 0.75)
                             }
-                            .frame(maxWidth: .infinity, maxHeight: 30)
-                            .roundedBox(background: .ultraThick)
-                            .shaded()
                         }
+                        .frame(maxWidth: .infinity, maxHeight: 30)
+                        .roundedBox(background: .ultraThick)
+                        .shaded()
                     }
                 }
+            }
         }
     }
 }

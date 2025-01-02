@@ -43,6 +43,8 @@ struct SettingsFormView: View {
 //                UserPickerView(selectedUser: $user)
 //            }
         }
+        .scrollContentBackground(.hidden)
+        .scrollDisabled(true)
         .sheet(isPresented: $showDeveloperMenu) {
             DeveloperMenuView()
         }
