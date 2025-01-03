@@ -147,7 +147,8 @@ struct PackingListEditView: View {
     }
     
     private func delete(_ packingList: PackingList) {
-        isDeleted = PackingList.delete(packingList, from: modelContext)
+        PackingList.delete(packingList, from: modelContext)
+        isDeleted = true
         dismiss()
     }
 }

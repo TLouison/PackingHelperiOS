@@ -20,6 +20,7 @@ struct TripDetailPackingProgressView: View {
             }
             .gaugeStyle(.accessoryCircularCapacity)
             .tint(val == total ? .green : .accent)
+            .animation(.smooth, value: val)
         }
     }
 }

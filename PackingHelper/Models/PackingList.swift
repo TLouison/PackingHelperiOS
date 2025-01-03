@@ -165,7 +165,7 @@ extension PackingList {
         logger.info("Packing list saved!")
     }
 
-    static func delete(_ packingList: PackingList, from context: ModelContext) -> Bool {
+    static func delete(_ packingList: PackingList, from context: ModelContext) {
         let list_name = packingList.name
         logger.info("Deleting \(list_name)")
 
@@ -177,7 +177,6 @@ extension PackingList {
         context.delete(packingList)
         try! context.save()
         logger.info("Successfully deleted \(list_name)")
-        return true
     }
 }
 
