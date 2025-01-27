@@ -6,14 +6,12 @@
 //
 
 import SwiftUI
-import MapKit
 
 struct LocationSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
     @ObservedObject var locationService: LocationService
-    
     @Binding var location: TripLocation
     
     var title: String
@@ -21,14 +19,22 @@ struct LocationSelectionView: View {
     var body: some View {
         Form {
             Section {
-                ZStack(alignment: .trailing) {
+                HStack {
                     TextField("Search", text: $locationService.queryFragment)
-                    // This is optional and simply displays an icon during an active search
-                    if locationService.status == .isSearching {
-                        Image(systemName: "magnifyingglass.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .symbolEffect(.pulse, options: .repeating)
-                            .imageScale(.large)
+                    Button(action: {
+                        locationService.performSearch()
+                    }) {
+                        Text("Search")
+                    }
+                    .buttonStyle(.bordered)
+                }
+                
+                if locationService.status == .isSearching {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding(.vertical, 8)
+                        Spacer()
                     }
                 }
             } header: {
@@ -36,20 +42,20 @@ struct LocationSelectionView: View {
             }
             
             Section {
-                List {
-                    switch locationService.status {
-                    case .noResults: AnyView(Text("No Results"))
-                    case .error(let description):  AnyView(Text("Error: \(description)"))
-                    default: AnyView(EmptyView())
-                    }
-                    
-                    ForEach(locationService.searchResults, id: \.self) { completionResult in
-                        Button(completionResult.title) {
-                            Task {
-                                await getCoordsFromAddress(completionResult.title)
-                            }
+                switch locationService.status {
+                case .noResults:
+                    Text("No Results")
+                case .error(let description):
+                    Text("Error: \(description)")
+                        .foregroundColor(.red)
+                case .result:
+                    ForEach(locationService.searchResults) { result in
+                        Button(result.formattedName) {
+                            selectLocation(result)
                         }
                     }
+                case .idle, .isSearching:
+                    EmptyView()
                 }
             } header: {
                 Text("Results")
@@ -58,22 +64,20 @@ struct LocationSelectionView: View {
         .navigationTitle(title)
         .toolbarTitleDisplayMode(.inline)
         .presentationDetents([.large])
+        .submitLabel(.search)
+        .onSubmit {
+            locationService.performSearch()
+        }
     }
     
-    func getCoordsFromAddress(_ address: String) async {
-        do {
-            let result = try await CLGeocoder().geocodeAddressString(address)
-            location.latitude = (result[0].location?.coordinate.latitude)!
-            location.longitude = (result[0].location?.coordinate.longitude)!
-            location.name = result[0].name ?? "Unknown"
+    private func selectLocation(_ result: LocationService.LocationResult) {
+        if let latitude = Double(result.lat),
+           let longitude = Double(result.lon) {
+            location.latitude = latitude
+            location.longitude = longitude
+            location.name = result.abbreviatedName
             
             dismiss()
-        } catch {
-            print(error.localizedDescription)
         }
     }
 }
-
-//#Preview {
-//    LocationSelectionView()
-//}
