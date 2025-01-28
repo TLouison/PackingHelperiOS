@@ -15,6 +15,12 @@ struct LocationSelectionBoxView: View {
     
     var title: String
     
+    init(location: Binding<TripLocation>, title: String) {
+        self._location = location
+        self._mapCameraPosition = State(initialValue: location.wrappedValue.mapCameraPosition)
+        self.title = title
+    }
+    
     var body: some View {
         ZStack {
             Map(position: $mapCameraPosition)
@@ -22,7 +28,7 @@ struct LocationSelectionBoxView: View {
                 .frame(height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
                 .allowsHitTesting(false)
-                
+            
             HStack {
                 Text(location.name).bold().font(.headline)
                 Spacer()
@@ -34,15 +40,29 @@ struct LocationSelectionBoxView: View {
             .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
             .padding(.horizontal)
             .overlay {
-                NavigationLink {
-                    LocationSelectionView(locationService: LocationService(), location: $location, title: title)
-                } label: {
-                    EmptyView()
-                }.opacity(0)
-            }
+                            let locationBinding = Binding<TripLocation>(
+                                get: { location },
+                                set: { newValue in
+                                    var binding = self._location
+                                    location = newValue
+                                    binding.update()
+                                }
+                            )
+                            
+                            NavigationLink {
+                                LocationSelectionView(
+                                    locationService: LocationService(),
+                                    location: locationBinding,
+                                    title: title
+                                )
+                            } label: {
+                                EmptyView()
+                            }.opacity(0)
+                        }
+            
         }
-        .onChange(of: location, initial: true) {
-            mapCameraPosition = location.mapCameraPosition
+        .onChange(of: location, initial: true) { _, newLocation in
+            mapCameraPosition = newLocation.mapCameraPosition
         }
     }
 }

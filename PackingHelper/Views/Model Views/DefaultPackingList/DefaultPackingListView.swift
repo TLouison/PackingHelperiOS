@@ -10,176 +10,351 @@ import SwiftData
 
 struct DefaultPackingListView: View {
     @Environment(\.modelContext) private var modelContext
-
+    
     @Query(
-        filter: #Predicate<PackingList> {$0.template == true},
+        filter: #Predicate<PackingList> { $0.template == true },
         sort: [SortDescriptor(\.name)],
         animation: .snappy
     )
-    var defaultPackingLists: [PackingList]
+    private var defaultPackingLists: [PackingList]
     
-    @State private var selectedUser: User?
     @Query private var users: [User]
     
-    @State private var separateByUser: Bool = false
+    @State private var selectedUser: User?
+    @State private var searchText = ""
+    @State private var selectedListType: ListType?
+    @State private var showingAddSheet = false
+    @State private var showingFilters = false
     
-    @State private var isShowingDefaultPackingListAddSheet: Bool = false
-    @State private var isShowingExplanationSheet: Bool = false
-    
-    @ViewBuilder func explanationSheet() -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Default Packing Lists")
-                    .font(.title)
-                    .fontWeight(.semibold)
-                Spacer()
-                Image(systemName: suitcaseIcon)
-                    .imageScale(.large)
-                    .foregroundStyle(.accent)
-                    .onTapGesture {
-                        isShowingExplanationSheet.toggle()
-                    }
+    private var filteredLists: [PackingList] {
+        defaultPackingLists
+            .filter { list in
+                let userMatch = selectedUser == nil || list.user == selectedUser
+                let typeMatch = selectedListType == nil || list.type == selectedListType
+                let searchMatch = searchText.isEmpty ||
+                    list.name.localizedCaseInsensitiveContains(searchText)
+                return userMatch && typeMatch && searchMatch
             }
-            .padding(.bottom, 10)
-                ScrollView {
-                    Text("Packing lists are a convenient way to save lists of items or tasks that you can easily apply to trips. This means you can create a packing list once, and then add those items to any future trip you create.")
-                        .padding(.bottom, 10)
-                    
-                    Text("Create lists for categories such as electronics, toiletries, and clothing, or for travel occasions like vacations, business trips, weddings to make sure you always bring what you need.")
-                }
-        }
-        .padding()
     }
     
-    var visiblePackingLists: [PackingList] {
-        if let selectedUser {
-            return defaultPackingLists.filter{ $0.user == selectedUser }
-        } else {
-            return defaultPackingLists
-        }
+    private var hasActiveFilters: Bool {
+        selectedUser != nil || selectedListType != nil || !searchText.isEmpty
     }
     
-    var showUserBadges: Bool {
-        return selectedUser == nil && separateByUser == false && users.count > 1
-    }
-    
-    @ViewBuilder
-    func listOfLists(_ lists: [PackingList]) -> some View {
-        ForEach(ListType.allCases, id: \.rawValue) { listType in
-            let listsOfType = lists.filter{ $0.type == listType }
-            if !listsOfType.isEmpty {
-                DefaultPackingViewListTypeSectionView(listType: listType, packingLists: listsOfType, showUserBadge: showUserBadges, showIndent: separateByUser)
-                    .listStyle(.insetGrouped)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var userSeparatedLists: some View {
-        List {
-            ForEach(users, id: \.id) { user in
-                CollapsibleSection {
-                    HStack {
-                        user.pillIcon
-                            .font(.title)
-                        
-                        Spacer()
-                    }
-                } content: {
-                    listOfLists(PackingList.filtered(user: user, visiblePackingLists))
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var combinedLists: some View {
-        List {
-            listOfLists(visiblePackingLists)
-        }
-//        .listStyle(.grouped)
-    }
-    
-    @ViewBuilder
-    var listView: some View {
-        switch separateByUser {
-        case false:
-            combinedLists
-        case true:
-            userSeparatedLists
-        }
+    private var showUserPill: Bool {
+        users.count > 1 && selectedUser == nil
     }
     
     var body: some View {
         NavigationStack {
-            VStack {
-                if users.count > 1 && !separateByUser {
-                    UserPickerView(selectedUser: $selectedUser)
-                        .padding(.horizontal)
+            VStack(spacing: 0) {
+                if showingFilters {
+                    filterSection
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
                 
-                if !visiblePackingLists.isEmpty {
-                    listView
-                        .navigationTitle("Packing Lists")
+                // Main content
+                if filteredLists.isEmpty {
+                    emptyStateView
+                        .frame(maxHeight: .infinity)
                 } else {
-                    ContentUnavailableView {
-                        Label("No Packing Lists", systemImage: suitcaseIcon)
-                    } description: {
-                        Text("You haven't created any packing lists! Create one to simplify your trip creation.")
-                    } actions: {
-                        Button("Create Packing List", systemImage: "folder.badge.plus") {
-                            isShowingDefaultPackingListAddSheet.toggle()
-                        }
+                    ScrollView {
+                        packingListsGrid
+                            .padding(.top)
                     }
                 }
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Packing Lists")
-            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color(.systemGroupedBackground), for: .navigationBar)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Menu {
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack(spacing: 16) {
                         Button {
-                            withAnimation {
-                                separateByUser.toggle()
-                                selectedUser = nil
+                            withAnimation(.spring(response: 0.3)) {
+                                showingFilters.toggle()
                             }
                         } label: {
-                            HStack {
-                                Text("Separate By User")
-                                if separateByUser {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
+                            Image(systemName: "line.3.horizontal.decrease.circle\(hasActiveFilters ? ".fill" : "")")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(hasActiveFilters ? .accent : .primary)
                         }
-                    } label: {
-                            Label("Separate By User", systemImage: "person.circle")
-                    }
-                    Button {
-                        isShowingDefaultPackingListAddSheet.toggle()
-                    } label: {
-                        Image(systemName: "plus.circle")
-                    }
-                }
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    Button {
-                        isShowingExplanationSheet.toggle()
-                    } label: {
-                        Image(systemName: "info.circle")
+                        
+                        Button {
+                            showingAddSheet.toggle()
+                        } label: {
+                            Image(systemName: "plus")
+                                .fontWeight(.semibold)
+                        }
                     }
                 }
             }
-            .sheet(isPresented: $isShowingDefaultPackingListAddSheet) {
+            .sheet(isPresented: $showingAddSheet) {
                 PackingListEditView(isTemplate: true, isDeleted: .constant(false))
             }
-            .sheet(isPresented: $isShowingExplanationSheet) {
-                explanationSheet()
-                    .presentationDetents([.height(300)])
+        }
+    }
+    
+    private var filterSection: some View {
+        VStack(spacing: 12) {
+            // Search bar always visible in filter section
+            searchBar
+            
+            if users.count > 1 {
+                userFilterSection
             }
+            
+            listTypeFilterSection
+            
+            if hasActiveFilters {
+                Button {
+                    withAnimation {
+                        searchText = ""
+                        selectedUser = nil
+                        selectedListType = nil
+                    }
+                } label: {
+                    Text("Clear All Filters")
+                        .font(.subheadline)
+                        .foregroundColor(.red)
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color(.secondarySystemGroupedBackground))
+    }
+
+    private var userFilterSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Filter by User")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    FilterChip(
+                        isSelected: selectedUser == nil,
+                        label: "All Users",
+                        icon: Image(systemName: "person.2"),
+                        action: {
+                            withAnimation {
+                                selectedUser = nil
+                            }
+                        }
+                    )
+                    
+                    ForEach(users) { user in
+                        FilterChip(
+                            isSelected: selectedUser == user,
+                            label: user.name,
+                            icon: Image(systemName: "person.circle"),
+                            action: {
+                                withAnimation {
+                                    selectedUser = selectedUser == user ? nil : user
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+    
+    private var listTypeFilterSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Filter by Type")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    FilterChip(
+                        isSelected: selectedListType == nil,
+                        label: "All Types",
+                        icon: Image(systemName: "square.grid.2x2"),
+                        action: {
+                            withAnimation {
+                                selectedListType = nil
+                            }
+                        }
+                    )
+                    
+                    ForEach(ListType.allCases, id: \.self) { type in
+                        FilterChip(
+                            isSelected: selectedListType == type,
+                            label: type.rawValue,
+                            icon: Image(systemName: type.icon),
+                            action: {
+                                withAnimation {
+                                    selectedListType = selectedListType == type ? nil : type
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    
+    private var searchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            
+            TextField("Search lists...", text: $searchText)
+                .textFieldStyle(.plain)
+            
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.tertiarySystemGroupedBackground))
+        .cornerRadius(12)
+    }
+    
+    private var packingListsGrid: some View {
+        LazyVStack(spacing: 8) {
+            ForEach(filteredLists) { list in
+                PackingListCard(list: list, showUserPill: showUserPill)
+            }
+        }
+        .padding(.horizontal)
+    }
+
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "suitcase")
+                .font(.system(size: 48))
+                .foregroundColor(.accentColor)
+            
+            Text("No Lists Found")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            if !searchText.isEmpty || selectedUser != nil || selectedListType != nil {
+                Text("Try adjusting your filters")
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
+                Button {
+                    withAnimation {
+                        searchText = ""
+                        selectedUser = nil
+                        selectedListType = nil
+                    }
+                } label: {
+                    Text("Clear All Filters")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 32)
+            } else {
+                Text("Create your first packing list to get started")
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
+                Button {
+                    showingAddSheet.toggle()
+                } label: {
+                    Text("Create Packing List")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal, 32)
+            }
+        }
+        .padding(32)
+        .background(Color(.secondarySystemGroupedBackground))
+        .cornerRadius(16)
+        .padding(.horizontal)
+    }
+}
+
+struct FilterChip: View {
+    let isSelected: Bool
+    let label: String
+    let icon: Image
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                icon
+                    .foregroundColor(isSelected ? .white : .accentColor)
+                
+                Text(label)
+                    .fontWeight(.medium)
+                    .foregroundColor(isSelected ? .white : .primary)
+            }
+            .padding(.horizontal, 10) // Reduced from 12
+            .padding(.vertical, 6)    // Reduced from 8
+            .background(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
+            .cornerRadius(8)
         }
     }
 }
 
-@available(iOS 18, *)
-#Preview(traits: .sampleData) {
-    DefaultPackingListView()
+struct PackingListCard: View {
+    let list: PackingList
+    let showUserPill: Bool
+    
+    var body: some View {
+        NavigationLink(destination: PackingListDetailView(packingList: list)) {
+            HStack(spacing: 12) {
+                // Left side: Name and user pill
+                HStack(spacing: 8) {
+                    Text(list.name)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                    
+                    if let user = list.user, showUserPill {
+                        user.pillFirstInitialIcon
+                    }
+                }
+                
+                Spacer()
+                
+                // Right side: Count and type icon
+                HStack(spacing: 8) {
+                    HStack(spacing: 4) {
+                        Text("\(list.totalItems)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            
+                        Image(systemName: list.icon)
+                            .foregroundColor(.accentColor)
+                            .font(.subheadline)
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal)
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(12)
+        }
+    }
 }
+

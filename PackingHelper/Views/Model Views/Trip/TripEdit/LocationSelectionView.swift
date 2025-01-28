@@ -76,7 +76,7 @@ struct LocationSelectionView: View {
             location.latitude = latitude
             location.longitude = longitude
             location.name = result.abbreviatedName
-            
+            print("Selected location \(result.abbreviatedName)")
             dismiss()
         }
     }

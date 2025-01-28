@@ -12,7 +12,7 @@ import MapKit
 import WeatherKit
 
 @Model
-final class TripLocation {
+final class TripLocation: Codable {
     var name: String = "Location"
     
     @Relationship(inverse: \Trip.origin) var originTrips: [Trip]? = []
@@ -32,6 +32,14 @@ final class TripLocation {
         self.longitude = longitude
     }
     
+    // Custom decoder
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        latitude = try container.decode(Double.self, forKey: .latitude)
+        longitude = try container.decode(Double.self, forKey: .longitude)
+    }
+    
     func update(name: String, latitude: Double, longitude: Double) {
         self.name = name
         self.latitude = latitude
@@ -42,6 +50,21 @@ final class TripLocation {
         self.name = destination.name
         self.latitude = destination.latitude
         self.longitude = destination.longitude
+    }
+    
+    // Custom coding keys
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case latitude
+        case longitude
+    }
+    
+    // Custom encoder
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.name, forKey: .name)
+        try container.encode(self.latitude, forKey: .latitude)
+        try container.encode(self.longitude, forKey: .longitude)
     }
 }
 
@@ -55,15 +78,10 @@ extension TripLocation {
     }
     
     var mapCameraPosition: MapCameraPosition {
-        MapCameraPosition.region(
-            MKCoordinateRegion(
-                center:  self.coordinates,
-                span: MKCoordinateSpan(
-                    latitudeDelta: 0.5,
-                    longitudeDelta: 0.5
-                )
-            )
-        )
+        .region(MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        ))
     }
 }
 
@@ -164,5 +182,12 @@ extension TripLocation {
     
     static var sampleDestination: TripLocation {
         TripLocation(name: "Amsterdam", latitude: 52.3676, longitude: 4.9041)
+    }
+    
+    // Takes in data that should be in the form of DefaultLocationInformation and decodes that
+    // to a TripLocation that we can use elsewhere in the app.
+    static func from(data: Data) -> TripLocation {
+        let data = DefaultLocationInformation.decode(from: data)
+        return TripLocation(name: data!.name, latitude: data!.latitude, longitude: data!.longitude)
     }
 }

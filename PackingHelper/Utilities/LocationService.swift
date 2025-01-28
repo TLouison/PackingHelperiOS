@@ -131,12 +131,7 @@ class LocationService: ObservableObject {
                     return
                 }
                 
-                do {
-                    // Debug response
-                    if let responseString = String(data: data, encoding: .utf8) {
-                        print("API Response: \(responseString)")
-                    }
-                    
+                do {                    
                     let results = try JSONDecoder().decode([LocationResult].self, from: data)
                     
                     // Filter out invalid or unwanted results
@@ -180,6 +175,28 @@ class LocationService: ObservableObject {
             }
         }.resume()
     }
+}
 
+struct DefaultLocationInformation: Codable {
+    let name: String
+    let latitude: Double
+    let longitude: Double
+}
 
+// Extension to handle the encoding/decoding
+extension DefaultLocationInformation {
+    // Helper function to encode to Data
+    func encode() -> Data? {
+        try? JSONEncoder().encode(self)
+    }
+    
+    // Static helper function to decode from Data
+    static func decode(from data: Data) -> DefaultLocationInformation? {
+        try? JSONDecoder().decode(DefaultLocationInformation.self, from: data)
+    }
+    
+    // Provide a default value
+    static var `default`: DefaultLocationInformation {
+        DefaultLocationInformation(name: "New York, New York", latitude: 40.7128, longitude: -74.006)
+    }
 }

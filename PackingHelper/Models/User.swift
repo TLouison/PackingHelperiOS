@@ -140,8 +140,18 @@ extension User {
             )
             .padding(.horizontal)
             .padding(.vertical, 5)
-            .background(self.userColor.opacity(0.5))
+            .background(self.userColor.opacity(0.6))
             .clipShape(.capsule)
             .shaded()
+    }
+    
+    var pillFirstInitialIcon: some View {
+        Text(name.prefix(1).uppercased())
+            .font(.caption)
+            .fontWeight(.bold)
+            .foregroundStyle(.white)
+            .frame(width: 24, height: 24)
+            .background(self.userColor.opacity(0.6))
+            .clipShape(Circle())
     }
 }
