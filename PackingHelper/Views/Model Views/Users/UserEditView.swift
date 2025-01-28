@@ -10,6 +10,8 @@ struct UserEditView: View {
     @State private var userColor = Color.accentColor
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImage: UIImage?
+    @State private var showingDeleteConfirmation = false
+    
     
     @Query private var users: [User]
     let user: User?
@@ -52,7 +54,7 @@ struct UserEditView: View {
                             }
                             
                             PhotosPicker(selection: $selectedItem,
-                                       matching: .images) {
+                                         matching: .images) {
                                 Text("Select Photo")
                             }
                         }
@@ -62,6 +64,20 @@ struct UserEditView: View {
                     
                     Section {
                         UserColorPicker(selectedColor: $userColor)
+                    }
+                    
+                    if let user {
+                        Section {
+                            Button(role: .destructive) {
+                                showingDeleteConfirmation = true
+                            } label: {
+                                HStack {
+                                    Spacer()
+                                    Text("Delete User")
+                                    Spacer()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -83,6 +99,17 @@ struct UserEditView: View {
                         dismiss()
                     }
                 }
+            }
+            .alert("Delete User", isPresented: $showingDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    if let user {
+                        deleteUser(user)
+                        dismiss()
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to delete this user? This will also delete all associated lists and cannot be undone.")
             }
             .onChange(of: selectedItem) { _, newValue in
                 Task {
@@ -116,5 +143,20 @@ struct UserEditView: View {
         if let user = user {
             user.verifyImageData()
         }
+    }
+    
+    private func deleteUser(_ user: User) {
+        // Delete all associated lists first
+        if let lists = user.lists {
+            for list in lists {
+                modelContext.delete(list)
+            }
+        }
+        
+        // Delete the user
+        modelContext.delete(user)
+        
+        // Save changes
+        try? modelContext.save()
     }
 }
