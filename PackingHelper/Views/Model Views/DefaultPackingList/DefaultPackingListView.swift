@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Refactored DefaultPackingListView
+
 struct DefaultPackingListView: View {
     @Environment(\.modelContext) private var modelContext
     
@@ -49,14 +51,30 @@ struct DefaultPackingListView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if showingFilters {
-                    filterSection
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                    PackingListFilterSection(
+                        searchText: $searchText,
+                        selectedListType: $selectedListType,
+                        selectedUser: $selectedUser,
+                        users: users,
+                        showUserFilter: users.count > 1,
+                        hasActiveFilters: hasActiveFilters,
+                        onClearFilters: clearFilters
+                    )
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
                 
-                // Main content
                 if filteredLists.isEmpty {
-                    emptyStateView
-                        .frame(maxHeight: .infinity)
+                    PackingListEmptyStateView(
+                        hasFilters: hasActiveFilters,
+                        message: hasActiveFilters ?
+                            "Try adjusting your filters" :
+                            "Create your first packing list to get started",
+                        actionButtonTitle: hasActiveFilters ?
+                            "Clear All Filters" : "Create Packing List",
+                        onAction: hasActiveFilters ?
+                            clearFilters : { showingAddSheet.toggle() }
+                    )
+                    .frame(maxHeight: .infinity)
                 } else {
                     ScrollView {
                         packingListsGrid
@@ -96,131 +114,6 @@ struct DefaultPackingListView: View {
         }
     }
     
-    private var filterSection: some View {
-        VStack(spacing: 12) {
-            // Search bar always visible in filter section
-            searchBar
-            
-            if users.count > 1 {
-                userFilterSection
-            }
-            
-            listTypeFilterSection
-            
-            if hasActiveFilters {
-                Button {
-                    withAnimation {
-                        searchText = ""
-                        selectedUser = nil
-                        selectedListType = nil
-                    }
-                } label: {
-                    Text("Clear All Filters")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-                }
-            }
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
-        .background(Color(.secondarySystemGroupedBackground))
-    }
-
-    private var userFilterSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Filter by User")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    FilterChip(
-                        isSelected: selectedUser == nil,
-                        label: "All Users",
-                        icon: Image(systemName: "person.2"),
-                        action: {
-                            withAnimation {
-                                selectedUser = nil
-                            }
-                        }
-                    )
-                    
-                    ForEach(users) { user in
-                        FilterChip(
-                            isSelected: selectedUser == user,
-                            label: user.name,
-                            icon: Image(systemName: "person.circle"),
-                            action: {
-                                withAnimation {
-                                    selectedUser = selectedUser == user ? nil : user
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-    
-    private var listTypeFilterSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Filter by Type")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    FilterChip(
-                        isSelected: selectedListType == nil,
-                        label: "All Types",
-                        icon: Image(systemName: "square.grid.2x2"),
-                        action: {
-                            withAnimation {
-                                selectedListType = nil
-                            }
-                        }
-                    )
-                    
-                    ForEach(ListType.allCases, id: \.self) { type in
-                        FilterChip(
-                            isSelected: selectedListType == type,
-                            label: type.rawValue,
-                            icon: Image(systemName: type.icon),
-                            action: {
-                                withAnimation {
-                                    selectedListType = selectedListType == type ? nil : type
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
-            
-            TextField("Search lists...", text: $searchText)
-                .textFieldStyle(.plain)
-            
-            if !searchText.isEmpty {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-        .padding(12)
-        .background(Color(.tertiarySystemGroupedBackground))
-        .cornerRadius(12)
-    }
-    
     private var packingListsGrid: some View {
         LazyVStack(spacing: 8) {
             ForEach(filteredLists) { list in
@@ -229,62 +122,13 @@ struct DefaultPackingListView: View {
         }
         .padding(.horizontal)
     }
-
     
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "suitcase")
-                .font(.system(size: 48))
-                .foregroundColor(.accentColor)
-            
-            Text("No Lists Found")
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            if !searchText.isEmpty || selectedUser != nil || selectedListType != nil {
-                Text("Try adjusting your filters")
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                Button {
-                    withAnimation {
-                        searchText = ""
-                        selectedUser = nil
-                        selectedListType = nil
-                    }
-                } label: {
-                    Text("Clear All Filters")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal, 32)
-            } else {
-                Text("Create your first packing list to get started")
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                Button {
-                    showingAddSheet.toggle()
-                } label: {
-                    Text("Create Packing List")
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal, 32)
-            }
+    private func clearFilters() {
+        withAnimation {
+            searchText = ""
+            selectedUser = nil
+            selectedListType = nil
         }
-        .padding(32)
-        .background(Color(.secondarySystemGroupedBackground))
-        .cornerRadius(16)
-        .padding(.horizontal)
     }
 }
 

@@ -38,7 +38,8 @@ struct TripListRowView: View {
     @ViewBuilder func tripRowOverlay(_ trip: Trip) -> some View {
         ViewThatFits {
             VStack {
-                HStack {
+                HStack(alignment: .top) {
+                    UserIndicators(users: trip.packers)
                     Spacer()
                     Text(trip.name)
                         .font(.title)
@@ -125,6 +126,19 @@ struct TripListRowView: View {
             }
         }
         .padding(.vertical)
+    }
+}
+
+struct UserIndicators: View {
+    let users: [User]
+    
+    var body: some View {
+        HStack {
+            ForEach(users) { user in
+                user.pillFirstInitialIconSolid
+                    
+            }
+        }
     }
 }
 

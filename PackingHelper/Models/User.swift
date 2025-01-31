@@ -154,4 +154,8 @@ extension User {
             .background(self.userColor.opacity(0.6))
             .clipShape(Circle())
     }
+    
+    var pillFirstInitialIconSolid: some View {
+        pillFirstInitialIcon.background(self.userColor.opacity(1)).clipShape(Circle())
+    }
 }

@@ -6,29 +6,295 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct UserPickerView: View {
+    @Environment(\.modelContext) private var modelContext
     @Binding var selectedUser: User?
     
-    var tripForFiltering: Trip? = nil
+    @Query(sort: \User.created) private var users: [User]
     
-    var showLabel: Bool = true
-    var showIcon: Bool = true
-    var allowAll: Bool = true
+    let trip: Trip?
+    let style: Style
+    let allowAll: Bool
+    
+    enum Style {
+        case menu       // Compact menu for toolbars/navigation
+        case inline     // For forms and lists
+        case sheet      // Full sheet with grid layout
+    }
+    
+    init(
+        selectedUser: Binding<User?>,
+        trip: Trip? = nil,
+        style: Style = .inline,
+        allowAll: Bool = true
+    ) {
+        self._selectedUser = selectedUser
+        self.trip = trip
+        self.style = style
+        self.allowAll = allowAll
+    }
+    
+    private var filteredUsers: [User] {
+        if let trip {
+            return users.filter { user in
+                trip.lists?.contains { list in
+                    list.user == user
+                } ?? false
+            }
+        }
+        return users
+    }
     
     var body: some View {
-        HStack {
-            if showLabel {
-                Label("Showing Lists For", systemImage: "person.circle")
-                Spacer()
+        Group {
+            switch style {
+            case .menu:
+                menuPicker
+            case .inline:
+                inlinePicker
+            case .sheet:
+                sheetPicker
             }
-            UserPickerBaseView(selectedUser: $selectedUser.animation(.snappy), showIcon: showIcon, allowAll: allowAll)
-            .background(.thickMaterial)
-            .rounded()
+        }
+    }
+    
+    // MARK: - Picker Styles
+    
+    private var menuPicker: some View {
+        Menu {
+            if allowAll {
+                Button {
+                    withAnimation(.snappy) {
+                        selectedUser = nil
+                    }
+                } label: {
+                    if selectedUser == nil {
+                        Label("All Users", systemImage: "checkmark")
+                    } else {
+                        Text("All Users")
+                    }
+                }
+            }
+            
+            ForEach(filteredUsers) { user in
+                Button {
+                    withAnimation(.snappy) {
+                        selectedUser = user
+                    }
+                } label: {
+                    if selectedUser == user {
+                        Label(user.name, systemImage: "checkmark")
+                    } else {
+                        Text(user.name)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 8) {
+                if let user = selectedUser {
+                    user.pillIcon
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                
+                Text(selectedUser?.name ?? "All Users")
+                    .foregroundStyle(.primary)
+                
+                Image(systemName: "chevron.up.chevron.down")
+                    .fontWeight(.semibold)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.thinMaterial)
+            .clipShape(Capsule())
+        }
+    }
+    
+    private var inlinePicker: some View {
+        HStack {
+            Label("Packer", systemImage: "person.circle")
+                .foregroundStyle(.secondary)
+            
+            Spacer()
+            
+            Menu {
+                if allowAll {
+                    Button {
+                        withAnimation(.snappy) {
+                            selectedUser = nil
+                        }
+                    } label: {
+                        if selectedUser == nil {
+                            Label("All Users", systemImage: "checkmark")
+                        } else {
+                            Text("All Users")
+                        }
+                    }
+                    
+                    Divider()
+                }
+                
+                ForEach(filteredUsers) { user in
+                    Button {
+                        withAnimation(.snappy) {
+                            selectedUser = user
+                        }
+                    } label: {
+                        if selectedUser == user {
+                            Label(user.name, systemImage: "checkmark")
+                        } else {
+                            Text(user.name)
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    if let user = selectedUser {
+                        user.pillIcon
+                    } else {
+                        Text("All Users")
+                            .foregroundStyle(.primary)
+                    }
+                    
+                    Image(systemName: "chevron.up.chevron.down")
+                        .fontWeight(.semibold)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+    
+    private var sheetPicker: some View {
+        ScrollView {
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 150), spacing: 12)
+                ],
+                spacing: 12
+            ) {
+                if allowAll {
+                    UserCard(
+                        name: "All Users",
+                        icon: "person.2.circle.fill",
+                        isSelected: selectedUser == nil
+                    ) {
+                        withAnimation(.snappy) {
+                            selectedUser = nil
+                        }
+                    }
+                }
+                
+                ForEach(filteredUsers) { user in
+                    UserCard(
+                        name: user.name,
+                        icon: "person.circle.fill",
+                        isSelected: selectedUser == user
+                    ) {
+                        withAnimation(.snappy) {
+                            selectedUser = user
+                        }
+                    }
+                }
+            }
+            .padding()
         }
     }
 }
 
-//#Preview {
-//    UserPickerView()
+// MARK: - Supporting Views
+
+private struct UserCard: View {
+    let name: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 32))
+                    .foregroundStyle(isSelected ? .white : .accentColor)
+                
+                Text(name)
+                    .font(.headline)
+                    .foregroundStyle(isSelected ? .white : .primary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Usage Examples
+
+//struct ContentView: View {
+//    @State private var selectedUser: User?
+//    @State private var showingSheet = false
+//
+//    var body: some View {
+//        NavigationStack {
+//            List {
+//                // Inline picker in a form
+//                Section("Inline Picker") {
+//                    UserPickerView(
+//                        selectedUser: $selectedUser,
+//                        style: .inline
+//                    )
+//                }
+//
+//                // Menu picker in a form
+//                Section("Menu Picker") {
+//                    UserPickerView(
+//                        selectedUser: $selectedUser,
+//                        style: .menu
+//                    )
+//                }
+//            }
+//            .toolbar {
+//                // Menu picker in toolbar
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    UserPickerView(
+//                        selectedUser: $selectedUser,
+//                        style: .menu
+//                    )
+//                }
+//
+//                // Button to show sheet picker
+//                ToolbarItem(placement: .topBarLeading) {
+//                    Button("Sheet Picker") {
+//                        showingSheet.toggle()
+//                    }
+//                }
+//            }
+//            .sheet(isPresented: $showingSheet) {
+//                NavigationStack {
+//                    UserPickerView(
+//                        selectedUser: $selectedUser,
+//                        style: .sheet
+//                    )
+//                    .navigationTitle("Select User")
+//                    .navigationBarTitleDisplayMode(.inline)
+//                    .toolbar {
+//                        ToolbarItem(placement: .confirmationAction) {
+//                            Button("Done") {
+//                                showingSheet = false
+//                            }
+//                        }
+//                    }
+//                }
+//                .presentationDetents([.medium])
+//            }
+//        }
+//    }
 //}

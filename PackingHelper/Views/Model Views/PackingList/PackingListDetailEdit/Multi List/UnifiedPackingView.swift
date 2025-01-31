@@ -1,13 +1,32 @@
 import SwiftUI
 import SwiftData
 
+enum SortOrder {
+    case packingList(PackingListSortOrder)
+    case item(ItemSortOrder)
+    
+    var packingListOrder: PackingListSortOrder? {
+        if case let .packingList(order) = self {
+            return order
+        }
+        return nil
+    }
+    
+    var itemOrder: ItemSortOrder? {
+        if case let .item(order) = self {
+            return order
+        }
+        return nil
+    }
+}
+
 struct UnifiedPackingView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var trip: Trip
     let listType: ListType
     
     @Binding var selectedUser: User?
-    @State private var sortOrder: PackingListSortOrder = .byDate
+    @State private var sortOrder: SortOrder = SortOrder.item(.byDate)
     @State private var showingPackedItems = false
     @State private var viewStyle: ViewStyle = .unified
     @State private var showingAddItem = false
@@ -48,6 +67,17 @@ struct UnifiedPackingView: View {
                 preselectedList: $preselectedList,
                 showingAddItem: $showingAddItem
             )
+            
+            Button(action: { showingAddItem = true }) {
+                Label("Add item", systemImage: "plus.circle.fill")
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(.blue)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+            }
+            .padding()
         }
         .navigationTitle(listType.rawValue)
         .navigationBarTitleDisplayMode(.inline)
@@ -78,18 +108,6 @@ struct UnifiedPackingView: View {
                 )
             }
         }
-        .overlay(alignment: .bottom) {
-            Button(action: { showingAddItem = true }) {
-                Label("Add item", systemImage: "plus.circle.fill")
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.blue)
-                    .foregroundColor(.white)
-                    .clipShape(Capsule())
-            }
-            .padding()
-        }
         .sheet(isPresented: $showingAddItem) {
             AddItemView(
                 trip: trip,
@@ -111,7 +129,7 @@ private struct PackingListContent: View {
     let selectedUser: User?
     let showingPackedItems: Bool
     let viewStyle: UnifiedPackingView.ViewStyle
-    let sortOrder: PackingListSortOrder
+    let sortOrder: SortOrder
     let showUserPill: Bool
     @Binding var preselectedList: PackingList?
     @Binding var showingAddItem: Bool
@@ -124,6 +142,7 @@ private struct PackingListContent: View {
                     listType: listType,
                     selectedUser: selectedUser,
                     showingPackedItems: showingPackedItems,
+                    sortOrder: sortOrder,
                     showUserPill: showUserPill
                 )
             } else {
@@ -148,10 +167,11 @@ private struct UnifiedListContentView: View {
     let listType: ListType
     let selectedUser: User?
     let showingPackedItems: Bool
+    let sortOrder: SortOrder
     let showUserPill: Bool
     
     func getFilteredItems() -> [Item] {
-        let lists = trip.getLists(for: selectedUser, ofType: listType)
+        let lists = PackingList.sorted(trip.getLists(for: selectedUser, ofType: listType), sortOrder: sortOrder.packingListOrder ?? .byDate)
         var allItems: [Item] = []
         for list in lists {
             if let items = list.items {
@@ -161,7 +181,7 @@ private struct UnifiedListContentView: View {
         let filteredItems = allItems.filter { item in
             showingPackedItems ? item.isPacked : !item.isPacked
         }
-        return filteredItems.sorted { $0.name < $1.name }
+        return Item.sorted(filteredItems, sortOrder: sortOrder.itemOrder ?? .byDate)
     }
     
     var body: some View {
@@ -207,14 +227,14 @@ private struct SeparatedListContentView: View {
     let listType: ListType
     let selectedUser: User?
     let showingPackedItems: Bool
-    let sortOrder: PackingListSortOrder
+    let sortOrder: SortOrder
     let showUserPill: Bool
     @Binding var preselectedList: PackingList?
     @Binding var showingAddItem: Bool
     
     var body: some View {
         List {
-            let lists = PackingList.sorted(trip.getLists(for: selectedUser, ofType: listType), sortOrder: sortOrder)
+            let lists = PackingList.sorted(trip.getLists(for: selectedUser, ofType: listType), sortOrder: sortOrder.packingListOrder ?? .byDate)
             ForEach(lists) { list in
                 PackingListSection(
                     list: list,
@@ -281,7 +301,10 @@ private struct PackingListSection: View {
 private struct MainMenuButton: View {
     @Binding var viewStyle: UnifiedPackingView.ViewStyle
     @Binding var selectedUser: User?
-    @Binding var sortOrder: PackingListSortOrder
+    // Technically this is not good because we also have ItemSortOrder which
+    // has the same values, but the ItemSortOrder has additional options so
+    // I chose the one that is a subset
+    @Binding var sortOrder: SortOrder
     let trip: Trip
     
     var body: some View {
@@ -313,14 +336,31 @@ private struct MainMenuButton: View {
                 }
             }
             
-            Picker("Sort", selection: $sortOrder) {
-                ForEach(PackingListSortOrder.allCases, id: \.self) { order in
-                    Text(order.name).tag(order)
+            if (viewStyle == .unified) {
+                if case let .item(order) = sortOrder {
+                    SortOrderPicker(selection: Binding(
+                        get: { order },
+                        set: { sortOrder = .item($0) }
+                    ))
+                }
+            } else {
+                if case let .packingList(order) = sortOrder {
+                    SortOrderPicker(selection: Binding(
+                        get: { order },
+                        set: { sortOrder = .packingList($0) }
+                    ))
                 }
             }
         } label: {
             Image(systemName: "line.3.horizontal.decrease.circle")
                 .font(.title2)
+        }
+        .onChange(of: viewStyle) {
+            if viewStyle == .unified {
+                sortOrder = SortOrder.item(.byDate)
+            } else {
+                sortOrder = SortOrder.packingList(.byDate)
+            }
         }
     }
 }

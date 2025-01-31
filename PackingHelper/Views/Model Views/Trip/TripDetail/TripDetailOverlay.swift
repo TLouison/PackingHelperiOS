@@ -51,7 +51,7 @@ struct TripDetailOverlay: View {
     }
     
     var body: some View {
-        VStack {
+        VStack{
             VStack(alignment: .leading) {
                 HStack {
                     Button {
@@ -80,6 +80,11 @@ struct TripDetailOverlay: View {
                 .padding()
                 
                 Spacer()
+                
+                if showSubtitle {
+                    UserIndicators(users: trip.packers)
+                        .padding(8)
+                }
                 
                 if showTitle {
                     VStack {
@@ -120,10 +125,10 @@ struct TripDetailOverlay: View {
                     .shaded()
                 }
             }
-        }
-        .onAppear {
-            withAnimation(.easeIn(duration: 0.5)) {
-                showTitle = true
+            .onAppear {
+                withAnimation(.easeIn(duration: 0.5)) {
+                    showTitle = true
+                }
             }
         }
     }

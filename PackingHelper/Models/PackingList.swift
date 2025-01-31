@@ -42,16 +42,18 @@ enum ListType: String, Codable, CaseIterable, Comparable {
     }
 }
 
-enum PackingListSortOrder: String, CaseIterable {
+// PackingList sort order
+enum PackingListSortOrder: String, SortOrderOption {
     case byDate, byUser, byNameAsc, byNameDesc
-
+    
     var name: String {
-        switch self {
-        case .byDate: "By Created Date"
-        case .byNameAsc: "By Name (A-Z)"
-        case .byNameDesc: "By Name (Z-A)"
-        case .byUser: "By User (A-Z)"
-        }
+        BaseSortOrder(rawValue: rawValue)?.name ?? ""
+    }
+    
+    var id: String { rawValue }
+    
+    var `default`: String {
+        BaseSortOrder.byDate.name
     }
 }
 

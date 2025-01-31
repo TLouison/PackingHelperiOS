@@ -58,4 +58,37 @@ class Item {
         list.addItem(newItem)
         context.insert(newItem)
     }
+    
+    static func sorted(_ items: [Item], sortOrder: ItemSortOrder = .byDate) -> [Item] {
+        switch sortOrder {
+            case .byNameAsc:
+                return items.sorted { $0.name < $1.name }
+            case .byNameDesc:
+                return items.sorted { $0.name > $1.name}
+            case .byUser:
+                return items.sorted { $0.list?.user ?? User(name: "aaa") < $1.list?.user ?? User(name: "ZZZ") }
+            case .byList:
+                return items.sorted { $0.list?.name ?? "aaa" < $1.list?.name ?? "ZZZ" }
+            case .byDate:
+                return items.sorted { $0.created < $1.created }
+            }
+    }
+}
+
+// Item sort order with additional case
+enum ItemSortOrder: String, SortOrderOption {
+    case byDate, byUser, byNameAsc, byNameDesc, byList
+    
+    var name: String {
+        if case .byList = self {
+            return "By List (A-Z)"
+        }
+        return BaseSortOrder(rawValue: rawValue)?.name ?? ""
+    }
+    
+    var id: String { rawValue }
+    
+    var `default`: String {
+        BaseSortOrder.byDate.rawValue
+    }
 }

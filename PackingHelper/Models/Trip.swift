@@ -217,7 +217,11 @@ extension Trip {
 extension Trip {
     // MARK: List metadata
     var hasMultiplePackers: Bool {
-        return self.lists?.compactMap( { $0.user } ).count ?? 0 > 1
+        return self.packers.count > 1
+    }
+    
+    var packers: [User] {
+        return Array(Set(self.lists?.compactMap( { $0.user } ) ?? []))
     }
 
     var containsListTypes: [ListType] {
