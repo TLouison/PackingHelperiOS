@@ -76,10 +76,7 @@ struct DefaultPackingListView: View {
                     )
                     .frame(maxHeight: .infinity)
                 } else {
-                    ScrollView {
-                        packingListsGrid
-                            .padding(.top)
-                    }
+                    packingListsGrid
                 }
             }
             .background(Color(.systemGroupedBackground))
@@ -115,12 +112,15 @@ struct DefaultPackingListView: View {
     }
     
     private var packingListsGrid: some View {
-        LazyVStack(spacing: 8) {
-            ForEach(filteredLists) { list in
-                PackingListCard(list: list, showUserPill: showUserPill)
+        ScrollView {
+            LazyVStack(spacing: 20) {
+                ForEach(users.sorted(by: { $0.created < $1.created}), id: \.id) { user in
+                    PackingListListSection(user: user, lists: filteredLists, showHeader: showUserPill)
+                }
             }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
+        .padding(.top)
     }
     
     private func clearFilters() {
@@ -156,10 +156,37 @@ struct FilterChip: View {
     }
 }
 
+struct PackingListListSection: View {
+    let user: User
+    let lists: [PackingList]
+    let showHeader: Bool
+    
+    init(user: User, lists: [PackingList], showHeader: Bool) {
+        self.user = user
+        self.lists = lists.filter { $0.user == user }
+        self.showHeader = showHeader
+    }
+    
+    var body: some View {
+        if !lists.isEmpty {
+            VStack(alignment: .leading) {
+                if showHeader {
+                    HStack {
+                        user.pillFirstInitialIcon
+                        Text(user.name).font(.title)
+                    }
+                }
+                ForEach(lists) { list in
+                    PackingListCard(list: list)
+                }
+            }
+        }
+    }
+}
+
 struct PackingListCard: View {
     let list: PackingList
-    let showUserPill: Bool
-    
+
     var body: some View {
         NavigationLink(destination: PackingListDetailView(packingList: list)) {
             HStack(spacing: 12) {
@@ -169,10 +196,6 @@ struct PackingListCard: View {
                         .font(.title3)
                         .fontWeight(.semibold)
                         .lineLimit(1)
-                    
-                    if let user = list.user, showUserPill {
-                        user.pillFirstInitialIcon
-                    }
                 }
                 
                 Spacer()

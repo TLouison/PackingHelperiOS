@@ -32,16 +32,16 @@ struct UnifiedPackingView: View {
     @State private var showingAddItem = false
     @State private var showingNewList = false
     @State private var preselectedList: PackingList? = nil
-    
+
     enum ViewStyle {
         case unified, byList
     }
     
     var showUserPill: Bool {
-            // Only show when we have multiple packers AND no user filter
-            let packersWithLists = Set(trip.getLists(for: nil, ofType: listType).compactMap { $0.user })
-            return selectedUser == nil && packersWithLists.count > 1
-        }
+        // Only show when we have multiple packers AND no user filter
+        let packersWithLists = Set(trip.getLists(for: nil, ofType: listType).compactMap { $0.user })
+        return selectedUser == nil && packersWithLists.count > 1
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -67,16 +67,13 @@ struct UnifiedPackingView: View {
                 preselectedList: $preselectedList,
                 showingAddItem: $showingAddItem
             )
-            
-            Button(action: { showingAddItem = true }) {
-                Label("Add item", systemImage: "plus.circle.fill")
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.blue)
-                    .foregroundColor(.white)
-                    .clipShape(Capsule())
-            }
+                
+            QuickAddItemView(
+                trip: trip,
+                listType: listType,
+                selectedUser: selectedUser,
+                preselectedList: preselectedList
+            )
             .padding()
         }
         .navigationTitle(listType.rawValue)
@@ -107,14 +104,6 @@ struct UnifiedPackingView: View {
                     trip: trip
                 )
             }
-        }
-        .sheet(isPresented: $showingAddItem) {
-            AddItemView(
-                trip: trip,
-                listType: listType,
-                selectedUser: selectedUser,
-                preselectedList: preselectedList
-            )
         }
         .sheet(isPresented: $showingNewList) {
             NewListView(trip: trip, listType: listType, user: selectedUser)
@@ -263,16 +252,13 @@ private struct PackingListSection: View {
     var body: some View {
         Section(
             header: ListHeader(list: list, showUserPill: showUserPill),
-            footer: Button(action: {
-                preselectedList = list
-                showingAddItem = true
-            }) {
-                Label("Add item", systemImage: "plus")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .buttonStyle(.plain)
+            footer: QuickAddItemView(
+                trip: list.trip!,
+                listType: list.type,
+                selectedUser: list.user,
+                preselectedList: list
+            )
+            .listRowInsets(EdgeInsets())
         ) {
             if listItems.isEmpty {
                 Text("No items")
@@ -502,172 +488,6 @@ struct ListHeader: View {
     }
 }
 
-struct AddItemView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    
-    let trip: Trip
-    let listType: ListType
-    let selectedUser: User?
-    let preselectedList: PackingList?
-    
-    @State private var itemName = ""
-    @State private var quantity = 1
-    @State private var selectedList: PackingList?
-    @FocusState private var isItemNameFocused: Bool
-    
-    var availableLists: [PackingList] {
-        trip.getLists(for: selectedUser, ofType: listType)
-    }
-    
-    init(trip: Trip, listType: ListType, selectedUser: User?, preselectedList: PackingList? = nil) {
-        self.trip = trip
-        self.listType = listType
-        self.selectedUser = selectedUser
-        self.preselectedList = preselectedList
-        self._selectedList = State(initialValue: preselectedList)
-    }
-    
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                HStack(spacing: 8) {
-                    // Item Name Input
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Item name")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .padding(.leading, 8)
-                        
-                        TextField("Item name", text: $itemName)
-                            .textFieldStyle(.plain)
-                            .padding()
-                            .frame(height: 52)
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-                            .focused($isItemNameFocused)
-                    }
-                    
-                    if listType != .task {
-                        // Compact Quantity Selector
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Quantity")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .padding(.leading, 8)
-                            
-                            HStack {
-                                Button {
-                                    if quantity > 1 {
-                                        quantity -= 1
-                                    }
-                                } label: {
-                                    Image(systemName: "minus.circle.fill")
-                                        .imageScale(.large)
-                                }
-                                .foregroundStyle(quantity > 1 ? .blue : .gray)
-                                
-                                Text("\(quantity)")
-                                    .font(.headline)
-                                    .frame(minWidth: 32)
-                                    .multilineTextAlignment(.center)
-                                
-                                Button {
-                                    if quantity < 99 {
-                                        quantity += 1
-                                    }
-                                } label: {
-                                    Image(systemName: "plus.circle.fill")
-                                        .imageScale(.large)
-                                }
-                                .foregroundStyle(.blue)
-                            }
-                            .padding()
-                            .frame(height: 52)
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-                        }
-                    }
-                }
-                
-                // List Selector (only if no preselected list)
-                if preselectedList == nil {
-                    HStack {
-                        Picker(selection: $selectedList) {
-                            Group {
-                                if selectedList == nil {
-                                    Text("No list selected").tag(nil as PackingList?)
-                                }
-                                ForEach(availableLists) { list in
-                                    HStack {
-                                        Text(list.name)
-                                        if let user = list.user {
-                                            user.pillIcon
-                                        }
-                                    }
-                                    .tag(Optional(list))
-                                }
-                            }
-                        } label: {
-                            Text("Add to list")
-                        }
-                        .pickerStyle(.navigationLink)
-                        .padding()
-                        .frame(height: 52)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-                    }
-                }
-                
-                Spacer()
-                
-                // Add Button
-                Button {
-                    let targetList = preselectedList ?? selectedList
-                    if let list = targetList {
-                        Item.create(
-                            for: list,
-                            in: modelContext,
-                            category: nil,
-                            name: itemName,
-                            count: quantity,
-                            isPacked: false
-                        )
-                        dismiss()
-                    }
-                } label: {
-                    Text("Add item")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(!itemName.isEmpty && (preselectedList != nil || selectedList != nil) ? .blue : .gray)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .disabled(itemName.isEmpty || (preselectedList == nil && selectedList == nil))
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .navigationTitle("Add item")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: dismiss.callAsFunction)
-                }
-            }
-        }
-        .presentationDetents([.height(preselectedList == nil ? 300 : 220)])
-        .onAppear {
-            isItemNameFocused = true
-            if selectedList == nil && availableLists.count == 1 {
-                selectedList = availableLists.first
-            }
-        }
-    }
-}
 
 struct CheckmarkToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -731,3 +551,194 @@ struct NewListView: View {
         .presentationDetents([.medium])
     }
 }
+
+struct QuickAddItemView: View {
+    @Environment(\.modelContext) private var modelContext
+    
+    let trip: Trip
+    let listType: ListType
+    let selectedUser: User?
+    let preselectedList: PackingList?
+    
+    @State private var itemName = ""
+    @State private var quantity = 1
+    @State private var selectedList: PackingList?
+    @State private var showingListPicker = false
+    @FocusState private var isItemNameFocused: Bool
+    
+    @Query private var availableLists: [PackingList]
+    
+    init(trip: Trip, listType: ListType, selectedUser: User?, preselectedList: PackingList?) {
+        self.trip = trip
+        self.listType = listType
+        self.selectedUser = selectedUser
+        self.preselectedList = preselectedList
+        
+        let tripUUID = trip.uuid
+        let listFilter = #Predicate<PackingList> { list in
+            list.template == false && list.trip?.uuid == tripUUID
+        }
+        
+        _availableLists = Query(
+            filter: listFilter,
+            sort: [SortDescriptor(\PackingList.name, order: .forward)],
+            animation: .snappy
+        )
+    }
+    
+    var filteredLists: [PackingList] {
+        let lists = availableLists.filter { $0.type == listType }
+        if let selectedUser = selectedUser {
+            return lists.filter { $0.user == selectedUser }
+        }
+        return lists
+    }
+    
+    var targetList: PackingList? {
+        preselectedList ?? selectedList ?? (filteredLists.count == 1 ? filteredLists.first : nil)
+    }
+    
+    var needsListSelection: Bool {
+        preselectedList == nil && filteredLists.count > 1 && selectedList == nil
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            if needsListSelection {
+                HStack {
+                    Button(action: { showingListPicker = true }) {
+                        HStack {
+                            Text(selectedList?.name ?? "Select list")
+                                .foregroundStyle(selectedList == nil ? .secondary : .primary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color(.tertiarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    
+                    if listType != .task {
+                        HStack(spacing: 2) {
+                            Button {
+                                if quantity > 1 { quantity -= 1 }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(quantity > 1 ? .blue : .gray)
+                            }
+                            .disabled(quantity <= 1)
+                            
+                            Text("\(quantity)")
+                                .font(.subheadline.weight(.medium))
+                                .frame(minWidth: 20)
+                            
+                            Button {
+                                if quantity < 99 { quantity += 1 }
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(.blue)
+                            }
+                            .disabled(quantity >= 99)
+                        }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 8)
+                        .background(Color(.tertiarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                }
+            }
+            
+            HStack(spacing: 8) {
+                TextField("Add item...", text: $itemName)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(Color(.tertiarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .focused($isItemNameFocused)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        addItem()
+                    }
+                
+                
+                
+                Button(action: addItem) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(canAddItem ? .blue : .gray)
+                }
+                .disabled(!canAddItem)
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 12).fill(Color(.tertiarySystemBackground)))
+            }
+        }
+        .onAppear {
+            if filteredLists.count == 1 {
+                selectedList = filteredLists.first
+            }
+        }
+        .sheet(isPresented: $showingListPicker) {
+            NavigationStack {
+                List(filteredLists, id: \.id) { list in
+                    Button(action: {
+                        selectedList = list
+                        showingListPicker = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            isItemNameFocused = true
+                        }
+                    }) {
+                        HStack {
+                            Text(list.name)
+                            Spacer()
+                            if selectedList == list {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                .navigationTitle("Select List")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            showingListPicker = false
+                        }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
+    }
+    
+    var canAddItem: Bool {
+        !itemName.isEmpty
+    }
+    
+    func addItem() {
+        guard let list = targetList, !itemName.isEmpty else { return }
+        
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            Item.create(
+                for: list,
+                in: modelContext,
+                category: nil,
+                name: itemName,
+                count: quantity,
+                isPacked: false
+            )
+            
+            itemName = ""
+            quantity = 1
+            isItemNameFocused = true
+        }
+    }
+}
+

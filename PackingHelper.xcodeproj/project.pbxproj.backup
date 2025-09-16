@@ -203,19 +203,11 @@
 			);
 			target = 51289F152AD3B6CD00545115 /* PackingHelper */;
 		};
-		51EBC7822E7899B900E0E5BF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				LocationSearchView.swift,
-			);
-			target = 51289F152AD3B6CD00545115 /* PackingHelper */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		51AC5FCE2C48ACB300DF83F6 /* Shop */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51AC5FD22C48ACB300DF83F6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Shop; sourceTree = "<group>"; };
 		51C8BB782C287F68005D2B71 /* Settings */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51C8BB792C287F68005D2B71 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Settings; sourceTree = "<group>"; };
-		51EBC77F2E7896CF00E0E5BF /* Location */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (51EBC7822E7899B900E0E5BF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Location; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -338,7 +330,6 @@
 		51289F292AD4E16D00545115 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				51EBC77F2E7896CF00E0E5BF /* Location */,
 				51289F1B2AD3B6CD00545115 /* ContentView.swift */,
 				51C8BBB52C30DBB6005D2B71 /* Model Views */,
 				51C8BBA42C2BA360005D2B71 /* General */,

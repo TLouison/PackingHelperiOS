@@ -51,7 +51,7 @@ struct TripDetailOverlay: View {
     }
     
     var body: some View {
-        VStack{
+        VStack {
             VStack(alignment: .leading) {
                 HStack {
                     Button {

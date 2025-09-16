@@ -43,9 +43,14 @@ struct PackingListDetailView: View {
             if currentView == .unpacked {
                 Spacer()
                 
-                PackingAddItemView(packingList: packingList)
-                    .padding(.bottom)
-                    .transition(.pushAndPull(.bottom))
+//                QuickAddItemView(
+//                    trip: packingList.trip!,
+//                    listType: packingList.type,
+//                    selectedUser: packingList.user,
+//                    preselectedList: packingList
+//                )
+//                .padding(.bottom)
+//                .transition(.pushAndPull(.bottom))
             }
         }
         .navigationTitle(packingList.name)

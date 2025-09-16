@@ -12,14 +12,19 @@ struct PackingListRowView: View {
     let packingList: PackingList
     
     var showUserPill: Bool = false
+    var isSelected: Bool = false
     
     var body: some View {
         HStack {
-                Text(packingList.name)
-                
-                if showUserPill {
-                    packingList.user?.pillIcon
-                }
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+            }
+            
+            Text(packingList.name)
+            
+            if showUserPill {
+                packingList.user?.pillIcon
+            }
         }
     }
 }

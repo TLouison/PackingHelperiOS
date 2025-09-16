@@ -143,6 +143,7 @@ extension User {
             .background(self.userColor.opacity(0.6))
             .clipShape(.capsule)
             .shaded()
+            .glassEffectIfAvailable()
     }
     
     var pillFirstInitialIcon: some View {
@@ -153,9 +154,13 @@ extension User {
             .frame(width: 24, height: 24)
             .background(self.userColor.opacity(0.6))
             .clipShape(Circle())
+            .glassEffectIfAvailable()
     }
     
     var pillFirstInitialIconSolid: some View {
-        pillFirstInitialIcon.background(self.userColor.opacity(1)).clipShape(Circle())
+        pillFirstInitialIcon
+            .background(self.userColor.opacity(1))
+            .clipShape(Circle())
+            .glassEffectIfAvailable()
     }
 }

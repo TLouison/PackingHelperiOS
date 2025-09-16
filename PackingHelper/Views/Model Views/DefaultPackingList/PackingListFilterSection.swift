@@ -73,18 +73,7 @@ struct PackingListFilterSection: View {
                 .foregroundColor(.secondary)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    FilterChip(
-                        isSelected: selectedUser == nil,
-                        label: "All Users",
-                        icon: Image(systemName: "person.2"),
-                        action: {
-                            withAnimation {
-                                selectedUser = nil
-                            }
-                        }
-                    )
-                    
+                HStack(spacing: 8) {                    
                     ForEach(users) { user in
                         FilterChip(
                             isSelected: selectedUser == user,
@@ -110,17 +99,6 @@ struct PackingListFilterSection: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    FilterChip(
-                        isSelected: selectedListType == nil,
-                        label: "All Types",
-                        icon: Image(systemName: "square.grid.2x2"),
-                        action: {
-                            withAnimation {
-                                selectedListType = nil
-                            }
-                        }
-                    )
-                    
                     ForEach(ListType.allCases, id: \.self) { type in
                         FilterChip(
                             isSelected: selectedListType == type,

@@ -11,9 +11,15 @@ struct Box: ViewModifier {
     let background: Material
     
     func body(content: Content) -> some View {
-        content
-            .padding()
-            .background(background)
+        if #available(iOS 26.0, *) {
+            content
+                .padding()
+                .glassEffect(in: .rect(cornerRadius: defaultCornerRadius))
+        } else {
+            content
+                .padding()
+                .background(background)
+        }
     }
 }
 
@@ -45,6 +51,18 @@ struct BorderGradient: ViewModifier {
     }
 }
 
+// MARK: - GlassEffectIfAvailable
+
+struct GlassEffectIfAvailable: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffect()
+        } else {
+            content
+        }
+    }
+}
+
 extension View {
     func rounded()
         -> some View {
@@ -65,5 +83,9 @@ extension View {
     
     func borderGradient(width: CGFloat = 1) -> some View {
         modifier(BorderGradient(width: width))
+    }
+
+    func glassEffectIfAvailable() -> some View {
+        modifier(GlassEffectIfAvailable())
     }
 }

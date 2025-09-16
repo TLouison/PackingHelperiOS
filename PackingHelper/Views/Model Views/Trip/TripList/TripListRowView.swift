@@ -136,9 +136,9 @@ struct UserIndicators: View {
         HStack {
             ForEach(users) { user in
                 user.pillFirstInitialIconSolid
-                    
             }
         }
+        .scaleEffect(1.4, anchor: .topLeading)
     }
 }
 
