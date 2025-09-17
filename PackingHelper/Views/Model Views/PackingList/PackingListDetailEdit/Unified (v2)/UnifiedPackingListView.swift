@@ -52,10 +52,12 @@ struct UnifiedPackingListView: View {
             
             VStack(spacing: 0) {
                 // List selector
-                UserSelector(
-                    trip: trip,
-                    selectedUser: $selectedUser,
-                )
+                if trip.packers.count > 1 {
+                    UserSelector(
+                        trip: trip,
+                        selectedUser: $selectedUser,
+                    )
+                }
                 
                 ScrollView {
                     VStack(spacing: 16) {
@@ -114,10 +116,20 @@ struct UnifiedPackingListView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: startAddingNewItem) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.blue)
+                if (isAddingNewItem) {
+                    Button(action: cancelAddingNewItem) {
+                        Image(systemName: "x.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                    }
+                    .glassEffectIfAvailable()
+                } else {
+                    Button(action: startAddingNewItem) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                    .glassEffectIfAvailable()
                 }
             }
         }
