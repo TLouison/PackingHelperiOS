@@ -153,9 +153,9 @@ struct UnifiedPackingListView: View {
         
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
-            newItem.list = list
-            
             modelContext.insert(newItem)
+            
+            list.addItem(newItem)
             
             // Reset fields
             newItemName = ""
@@ -256,62 +256,6 @@ struct ListTab: View {
             .foregroundColor(isSelected ? .white : .primary)
             .cornerRadius(20)
         }
-    }
-}
-
-struct NewItemRow: View {
-    @Binding var itemName: String
-    @Binding var itemCount: Int
-    @Binding var itemUser: User?
-    @Binding var itemList: PackingList?
-    
-    let listOptions: [PackingList]
-    
-    @FocusState var isFocused: Bool
-    let onCommit: () -> Void
-    let onCancel: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 12) {
-                Image(systemName: "square")
-                    .font(.title3)
-                    .foregroundColor(.blue.opacity(0.3))
-                
-                TextField("Item name", text: $itemName)
-                    .focused($isFocused)
-                    .onSubmit(onCommit)
-                
-                Stepper(value: $itemCount, in: 1...99) {
-                    Text("\(itemCount)")
-                        .foregroundColor(.secondary)
-                        .frame(minWidth: 30)
-                }
-                
-                Button(action: onCommit) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.title3)
-                }
-                .opacity(itemName.isEmpty ? 0.3 : 1.0)
-                .disabled(itemName.isEmpty)
-            }
-            
-            HStack {
-                Picker("Packing List", selection: $itemList) {
-                    ForEach(listOptions.filter{ $0.user == itemUser }, id: \.self) { list in
-                        Text(list.name)
-                            .tag(list)
-                    }
-                }
-                Spacer()
-                UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
-            }
-        }
-        .padding()
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 3, y: 2)
     }
 }
 
@@ -459,105 +403,6 @@ struct NoListSelectedView: View {
     }
 }
 
-private struct UnifiedItemRow: View {
-    let item: Item
-    let onTogglePacked: () -> Void
-    let onEdit: () -> Void
-    let onDelete: () -> Void
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-                .onTapGesture(perform: onTogglePacked)
-            
-            Text(item.name)
-                .strikethrough(item.isPacked)
-                .foregroundColor(item.isPacked ? .gray : .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onEdit)
-            
-            if item.count > 1 {
-                Text("\(item.count)")
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.blue)
-                    .cornerRadius(10)
-            }
-        }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(10)
-        .contextMenu {
-            Button(action: onEdit) {
-                Label("Edit", systemImage: "pencil")
-            }
-            Button(role: .destructive, action: onDelete) {
-                Label("Delete", systemImage: "trash")
-            }
-        }
-    }
-}
-
-private struct EditableItemRow: View {
-    let item: Item
-    let onCommit: (String, Int) -> Void
-    let onCancel: () -> Void
-    
-    @State private var editName: String
-    @State private var editCount: Int
-    @FocusState private var isFocused: Bool
-    
-    init(item: Item, onCommit: @escaping (String, Int) -> Void, onCancel: @escaping () -> Void) {
-        self.item = item
-        self.onCommit = onCommit
-        self.onCancel = onCancel
-        self._editName = State(initialValue: item.name)
-        self._editCount = State(initialValue: item.count)
-    }
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-            
-            TextField("Item name", text: $editName)
-                .focused($isFocused)
-                .onSubmit {
-                    onCommit(editName, editCount)
-                }
-            
-            Stepper(value: $editCount, in: 1...99) {
-                Text("\(editCount)")
-                    .foregroundColor(.secondary)
-                    .frame(minWidth: 30)
-            }
-            
-            Button(action: {
-                onCommit(editName, editCount)
-            }) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.blue)
-                    .font(.title3)
-            }
-        }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.1), radius: 3, y: 1)
-        .onAppear {
-            isFocused = true
-        }
-    }
-}
-
 private struct PackedItemsSection: View {
     let items: [Item]
     let onTogglePacked: (Item) -> Void
@@ -626,56 +471,3 @@ private struct CategoryChip: View {
         }
     }
 }
-
-private struct PackingSummaryBar: View {
-    let packingList: PackingList
-    
-    var totalItems: Int {
-        packingList.items?.count ?? 0
-    }
-    
-    var packedItems: Int {
-        packingList.items?.filter { $0.isPacked }.count ?? 0
-    }
-    
-    var progress: Double {
-        totalItems > 0 ? Double(packedItems) / Double(totalItems) : 0
-    }
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 4)
-                    
-                    Rectangle()
-                        .fill(Color.blue)
-                        .frame(width: geometry.size.width * progress, height: 4)
-                }
-            }
-            .frame(height: 4)
-            
-            // Summary info
-            HStack {
-                Label("\(packedItems)/\(totalItems) packed", systemImage: "checkmark.square.fill")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                if progress == 1.0 {
-                    Label("Ready to go!", systemImage: "sparkles")
-                        .font(.subheadline)
-                        .foregroundColor(.green)
-                }
-            }
-            .padding()
-            .background(Color(UIColor.systemBackground))
-        }
-        .shadow(color: .black.opacity(0.1), radius: 5, y: -2)
-    }
-}
-
