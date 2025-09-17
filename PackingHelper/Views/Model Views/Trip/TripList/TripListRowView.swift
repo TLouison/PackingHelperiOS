@@ -9,8 +9,6 @@ import SwiftUI
 import MapKit
 
 struct TripListRowView: View {
-    @Binding var path: NavigationPath
-    
     @State private var mapPosition: MapCameraPosition = .automatic
     
     @Bindable var trip: Trip
@@ -40,6 +38,7 @@ struct TripListRowView: View {
             VStack {
                 HStack(alignment: .top) {
                     UserIndicators(users: trip.packers)
+                        .padding(.leading)
                     Spacer()
                     Text(trip.name)
                         .font(.title)
@@ -77,44 +76,39 @@ struct TripListRowView: View {
     }
     
     var body: some View {
-        Map(
-            position: $mapPosition,
-            interactionModes: []
-        )
-        .overlay {
-            ZStack {
-                tripRowOverlay(trip)
-                    .frame(maxWidth: .infinity)
-                    .padding()
+        ZStack {
+            Map(
+                position: $mapPosition,
+                interactionModes: []
+            )
+            .overlay(Color.clear.allowsHitTesting(true))
+
+            tripRowOverlay(trip)
+                .frame(maxWidth: .infinity)
+                .padding()
+            
+            
+            // Block the trip from being accessed if the user has more than the free amount
+            if disabled {
+                Color.black.opacity(0.8).frame(maxWidth: .infinity, maxHeight: .infinity)
                 
-                
-                // Block the trip from being accessed if the user has more than the free amount
-                if disabled {
-                    Color.black.opacity(0.8).frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 32) {
+                    VStack {
+                        Text("This Trip is Disabled").font(.title)
+                        Text("You may only plan up to \(Trip.maxFreeTrips) trips.").font(.subheadline)
+                    }
                     
-                    VStack(spacing: 32) {
+                    VStack {
+                        Text("To regain access, please:")
+                            .font(.headline)
                         VStack {
-                            Text("This Trip is Disabled").font(.title)
-                            Text("You may only plan up to \(Trip.maxFreeTrips) trips.").font(.subheadline)
+                            Text("- Complete your other trips.")
+                            Text("- Remove other upcoming trips.")
+                            plusSubscriptionWithText(before: "- Subscribe to")
                         }
-                        
-                        VStack {
-                            Text("To regain access, please:")
-                                .font(.headline)
-                            VStack {
-                                Text("- Complete your other trips.")
-                                Text("- Remove other upcoming trips.")
-                                plusSubscriptionWithText(before: "- Subscribe to")
-                            }
-                            .font(.subheadline)
-                        }
+                        .font(.subheadline)
                     }
                 }
-            }
-        }
-        .onTapGesture {
-            if !disabled {
-                path.append(trip)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -134,14 +128,15 @@ struct UserIndicators: View {
     
     var body: some View {
         HStack {
-            ForEach(users) { user in
+            ForEach(users.sorted()) { user in
                 user.pillFirstInitialIconSolid
             }
         }
-        .scaleEffect(1.4, anchor: .topLeading)
+        .scaleEffect(1.4, anchor: .top)
     }
 }
 
 //#Preview {
 //    TripListRowView()
 //}
+

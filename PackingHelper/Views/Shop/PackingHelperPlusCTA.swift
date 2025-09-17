@@ -12,7 +12,7 @@ struct PackingHelperPlusCTA: View {
         case small, tall, new
     }
     
-    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
+//    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
     
     @State private var showingStoreSheet: Bool = false
     
@@ -21,104 +21,105 @@ struct PackingHelperPlusCTA: View {
     var version: CTAVersion = .small
     var showAfterPurchase: Bool = false
     
-    var smallCTA: some View {
-        Group {
-            if purchaseManager.hasUnlockedPlus {
-                if showAfterPurchase {
-                    // We want to show a "Thank You" after purchase
-                    HStack {
-                        plusLogoImage(size: 32)
-                        
-                        VStack {
-                            Text("Thanks for subscribing to")
-                            plusSubscriptionName()
-                            
-                            Button("View Your Subscription") {
-                                showingStoreSheet.toggle()
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 5)
-                            .background(.thickMaterial)
-                            .rounded()
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
-            } else {
-                // The user is not subscribed
-                HStack {
-                    plusLogoImage(size: 32)
-                    
-                    VStack {
-                        plusSubscriptionHeader(header: headerText)
-                        
-                        Button("Learn More") {
-                            showingStoreSheet.toggle()
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 5)
-                        .background(.thickMaterial)
-                        .rounded()
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            }
-        }
-    }
-    
-    var tallCTA: some View {
-        Group {
-            if purchaseManager.hasUnlockedPlus {
-                if showAfterPurchase {
-                    VStack {
-                        plusLogoImage(size: 100)
-                        
-                        Spacer()
-                        
-                        Text("Thanks for subscribing to")
-                        plusSubscriptionName()
-                        
-                        Spacer()
-                        
-                        Button("View Your Subscription") {
-                            showingStoreSheet.toggle()
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 5)
-                        .background(.thickMaterial)
-                        .rounded()
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            } else {
-                VStack {
-                    plusLogoImage(size: 100)
-
-                    Spacer()
-                    
-                    VStack(spacing: 16) {
-                        plusSubscriptionHeader(header: headerText)
-                        
-                        plusSubscriptionBenefits()
-                    }
-                    
-                    Spacer()
-                    
-                    Button("Learn More") {
-                        showingStoreSheet.toggle()
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.thickMaterial)
-                    .rounded()
-                    .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 50)
-            }
-        }
-        .frame(maxHeight: .infinity)
-    }
+    // TODO: Re-enable these if useful
+//    var smallCTA: some View {
+//        Group {
+//            if purchaseManager.hasUnlockedPlus {
+//                if showAfterPurchase {
+//                    // We want to show a "Thank You" after purchase
+//                    HStack {
+//                        plusLogoImage(size: 32)
+//                        
+//                        VStack {
+//                            Text("Thanks for subscribing to")
+//                            plusSubscriptionName()
+//                            
+//                            Button("View Your Subscription") {
+//                                showingStoreSheet.toggle()
+//                            }
+//                            .padding(.horizontal)
+//                            .padding(.vertical, 5)
+//                            .background(.thickMaterial)
+//                            .rounded()
+//                        }
+//                        .frame(maxWidth: .infinity)
+//                    }
+//                }
+//            } else {
+//                // The user is not subscribed
+//                HStack {
+//                    plusLogoImage(size: 32)
+//                    
+//                    VStack {
+//                        plusSubscriptionHeader(header: headerText)
+//                        
+//                        Button("Learn More") {
+//                            showingStoreSheet.toggle()
+//                        }
+//                        .padding(.horizontal)
+//                        .padding(.vertical, 5)
+//                        .background(.thickMaterial)
+//                        .rounded()
+//                    }
+//                    .frame(maxWidth: .infinity)
+//                }
+//            }
+//        }
+//    }
+//    
+//    var tallCTA: some View {
+//        Group {
+//            if purchaseManager.hasUnlockedPlus {
+//                if showAfterPurchase {
+//                    VStack {
+//                        plusLogoImage(size: 100)
+//                        
+//                        Spacer()
+//                        
+//                        Text("Thanks for subscribing to")
+//                        plusSubscriptionName()
+//                        
+//                        Spacer()
+//                        
+//                        Button("View Your Subscription") {
+//                            showingStoreSheet.toggle()
+//                        }
+//                        .padding(.horizontal)
+//                        .padding(.vertical, 5)
+//                        .background(.thickMaterial)
+//                        .rounded()
+//                    }
+//                    .frame(maxWidth: .infinity)
+//                }
+//            } else {
+//                VStack {
+//                    plusLogoImage(size: 100)
+//
+//                    Spacer()
+//                    
+//                    VStack(spacing: 16) {
+//                        plusSubscriptionHeader(header: headerText)
+//                        
+//                        plusSubscriptionBenefits()
+//                    }
+//                    
+//                    Spacer()
+//                    
+//                    Button("Learn More") {
+//                        showingStoreSheet.toggle()
+//                    }
+//                    .padding()
+//                    .frame(maxWidth: .infinity)
+//                    .background(.thickMaterial)
+//                    .rounded()
+//                    .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+//                }
+//                .frame(maxWidth: .infinity)
+//                .padding(.top, 50)
+//            }
+//        }
+//        .frame(maxHeight: .infinity)
+//    }
     
     var newCTA: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -154,8 +155,11 @@ struct PackingHelperPlusCTA: View {
     @ViewBuilder
     var ctaView: some View {
         switch version {
-            case .small: smallCTA
-            case .tall: tallCTA
+            // TODO: CTAs disabled until purchases figured out
+//            case .small: smallCTA
+//            case .tall: tallCTA
+            case .small: EmptyView()
+            case .tall: EmptyView()
             case .new: newCTA
         }
     }

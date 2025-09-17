@@ -15,6 +15,7 @@ struct PackingHelperPlusStoreView: View {
     var body: some View {
         SubscriptionStoreView(groupID: purchaseManager.subscriptionGroupId) {
             VStack(spacing: 16) {
+                Rectangle().fill(Color.red)
                 plusLogoImage(size: 100)
                 
                 plusSubscriptionHeader()

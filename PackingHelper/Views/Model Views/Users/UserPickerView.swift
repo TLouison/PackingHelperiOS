@@ -96,12 +96,11 @@ struct UserPickerView: View {
                 if let user = selectedUser {
                     user.pillIcon
                 } else {
-                    Image(systemName: "person.circle.fill")
-                        .foregroundStyle(.secondary)
+//                    Image(systemName: "person.circle.fill")
+//                        .foregroundStyle(.secondary)
+                    Text(selectedUser?.name ?? "All Users")
+                        .foregroundStyle(.primary)
                 }
-                
-                Text(selectedUser?.name ?? "All Users")
-                    .foregroundStyle(.primary)
                 
                 Image(systemName: "chevron.up.chevron.down")
                     .fontWeight(.semibold)

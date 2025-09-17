@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 @main
 struct PackingHelperApp: App {
@@ -15,7 +16,7 @@ struct PackingHelperApp: App {
     
     @Environment(\.scenePhase) var scenePhase
     
-    private var purchaseManager = PurchaseManager()
+//    private var purchaseManager = PurchaseManager()
     
     let modelContainer: ModelContainer
     
@@ -25,16 +26,19 @@ struct PackingHelperApp: App {
         } catch {
             fatalError("Could not initialize ModelContainer")
         }
+        
+        Purchases.logLevel = .debug
+        Purchases.configure(withAPIKey: REVENUECAT_PUBLIC_API_KEY)
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(isDarkMode ? .dark : .light)
-                .environment(purchaseManager)
-                .task {
-                    await purchaseManager.updatePurchasedProducts()
-                }
+//                .environment(purchaseManager)
+//                .task {
+//                    await purchaseManager.updatePurchasedProducts()
+//                }
         }
         .modelContainer(modelContainer)
     }

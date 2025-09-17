@@ -34,6 +34,8 @@ struct TripDetailHeroView: View {
                     cameraPosition = trip.destination?.mapCameraPosition ?? TripLocation.sampleOrigin.mapCameraPosition
                 }
                 .frame(minHeight: 400)
+                .padding(.bottom, 8)
+                .padding(.horizontal, 8)
         }
     }
 }

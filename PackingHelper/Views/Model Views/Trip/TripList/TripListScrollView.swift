@@ -8,19 +8,23 @@
 import SwiftUI
 
 struct TripListScrollView: View {
-    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
+    //    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
     
     @Binding var path: NavigationPath
     
     var trips: [Trip]
     var canShowCTA: Bool = false
     
-    var shouldShowCTA: Bool {
-        !purchaseManager.hasUnlockedPlus && canShowCTA && trips.count >= Trip.maxFreeTrips
-    }
-    
+    //    var shouldShowCTA: Bool {
+    //        !purchaseManager.hasUnlockedPlus && canShowCTA && trips.count >= Trip.maxFreeTrips
+    //    }
+    //
+    //    func shouldDisable(index: Int) -> Bool {
+    //        !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips && canShowCTA
+    //    }
+    //    Temporary force enable until purchases are figured out
     func shouldDisable(index: Int) -> Bool {
-        !purchaseManager.hasUnlockedPlus && index >= Trip.maxFreeTrips && canShowCTA
+        return false
     }
     
     var body: some View {
@@ -29,8 +33,17 @@ struct TripListScrollView: View {
                 let enumerated = Array(trips.enumerated())
                 
                 ForEach(enumerated, id: \.offset) { index, trip in
+                    // Use ZStack to guarantee a hittable layer
                     ZStack {
-                        TripListRowView(path: $path, trip: trip, disabled: shouldDisable(index: index))
+                        TripListRowView(trip: trip, disabled: shouldDisable(index: index))
+                        
+                        Color.clear
+                            .contentShape(RoundedRectangle(cornerRadius: defaultCornerRadius))
+                            .onTapGesture {
+                                if !shouldDisable(index: index) {
+                                    path.append(trip)
+                                }
+                            }
                     }
                     .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
                     .scrollTransition { content, phase in
@@ -38,22 +51,20 @@ struct TripListScrollView: View {
                             .opacity(phase.isIdentity ? 1.0 : 0.8)
                             .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
                     }
+                    
                 }
                 
-                if shouldShowCTA {
-                    PackingHelperPlusCTA(headerText: "Add unlimited trips with", version: .tall)
-                        .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
-                        .scrollTransition { content, phase in
-                            content
-                                .opacity(phase.isIdentity ? 1.0 : 0.8)
-                                .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
-                        }
-                }
+                //                if shouldShowCTA {
+                //                    PackingHelperPlusCTA(headerText: "Add unlimited trips with", version: .tall)
+                //                        .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
+                //                        .scrollTransition { content, phase in
+                //                            content
+                //                                .opacity(phase.isIdentity ? 1.0 : 0.8)
+                //                                .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
+                //                        }
+                //                }
             }
             .scrollTargetLayout()
-            
-            
-            
         }
         .contentMargins(.horizontal, 24, for: .scrollContent)
         .scrollTargetBehavior(.paging)
@@ -63,3 +74,4 @@ struct TripListScrollView: View {
 //#Preview {
 //    TripListScrollView()
 //}
+

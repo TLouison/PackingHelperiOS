@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct UserListView: View {
-    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
+//    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
     
     @Query(sort: \User.created, order: .forward, animation: .smooth) private var users: [User]
     
@@ -34,13 +34,13 @@ struct UserListView: View {
                             }
                         }
                         
-                        if !purchaseManager.hasUnlockedPlus {
-                            VStack {
-                                Spacer()
-                                PackingHelperPlusCTA(headerText: "Add unlimited packers with")
-                                    .padding(.bottom)
-                            }
-                        }
+//                        if !purchaseManager.hasUnlockedPlus {
+//                            VStack {
+//                                Spacer()
+//                                PackingHelperPlusCTA(headerText: "Add unlimited packers with")
+//                                    .padding(.bottom)
+//                            }
+//                        }
                     }
                 }
             }

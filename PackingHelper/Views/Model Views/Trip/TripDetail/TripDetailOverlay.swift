@@ -22,13 +22,6 @@ struct TripDetailOverlay: View {
     @State private var showSubtitle: Bool = false
     @State private var temperatureUnit: UnitTemperature = .fahrenheit
     
-    var temperature: String {
-        if let tripWeather {
-            return tripWeather.getCurrentTemperatureString()!
-        }
-        return "Unknown"
-    }
-    
     @ViewBuilder 
     func departureInfo() -> some View {
         let now = Date.now
@@ -64,6 +57,12 @@ struct TripDetailOverlay: View {
                     .roundedBox()
                     .shaded()
                     
+                    Spacer()
+                    
+                    if showSubtitle {
+                        UserIndicators(users: trip.packers)
+                            .padding(.horizontal)
+                    }
                     
                     Spacer()
                     
@@ -77,13 +76,14 @@ struct TripDetailOverlay: View {
                     .roundedBox()
                     .shaded()
                 }
-                .padding()
+                .padding(.top)
                 
                 Spacer()
                 
-                if showSubtitle {
-                    UserIndicators(users: trip.packers)
-                        .padding(8)
+                if showTitle {
+                    if let currentWeather = tripWeather?.currentWeather {
+                        WeatherChip(weather: currentWeather)
+                    }
                 }
                 
                 if showTitle {
@@ -100,19 +100,8 @@ struct TripDetailOverlay: View {
                             if let destination = trip.destination {
                                 Text(destination.name)
                             }
-                            
-                            if let currentWeather = tripWeather?.currentWeather {
-                                HStack {
-                                    Divider()
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Label(temperature, systemImage: currentWeather.symbolName)
-                                }
-                                .opacity(tripWeather == nil ? 0 : 1)
-                                .animation(.easeIn(duration: 0.5), value: tripWeather != nil)
-                            }
                         }
                         .font(.subheadline)
-                        .padding(.top, -15)
                         
                         if showSubtitle {
                             departureInfo()

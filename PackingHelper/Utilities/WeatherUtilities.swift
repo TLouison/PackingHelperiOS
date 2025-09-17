@@ -22,8 +22,12 @@ struct TripWeather {
     
     func getCurrentTemperatureString() -> String? {
         if let currentTemperature = self.getCurrentTemperature() {
-            return currentTemperature.formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero))))
+            return getCurrentWeatherFormattedTemperature(currentTemperature: currentTemperature)
         }
         return nil
     }
+}
+
+func getCurrentWeatherFormattedTemperature(currentTemperature: Measurement<UnitTemperature>) -> String {
+    return currentTemperature.formatted(.measurement(width: .abbreviated, numberFormatStyle: .number.precision(.fractionLength(.zero))))
 }

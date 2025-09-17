@@ -130,6 +130,7 @@ extension User {
     
     var pillIcon: some View {
         Text(self.name)
+            .foregroundStyle(Color.white)
             .font(.caption2.smallCaps())
             .fontWeight(.semibold)
             .shadow(
@@ -158,9 +159,18 @@ extension User {
     }
     
     var pillFirstInitialIconSolid: some View {
-        pillFirstInitialIcon
-            .background(self.userColor.opacity(1))
-            .clipShape(Circle())
-            .glassEffectIfAvailable()
+        if #available(iOS 26.0, *) {
+            AnyView(
+                pillFirstInitialIcon
+                    .glassEffect(.regular.tint(self.userColor).interactive())
+            )
+        } else {
+            AnyView(
+                pillFirstInitialIcon
+                    .background(self.userColor.opacity(1))
+                    .clipShape(Circle())
+            )
+        }
     }
 }
+

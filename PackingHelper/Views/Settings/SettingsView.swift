@@ -8,6 +8,9 @@
 import SwiftUI
 import SwiftData
 
+import RevenueCat
+import RevenueCatUI
+
 enum PackerType: String, CaseIterable {
     case nightBefore = "Night Before"
     case morningOf = "Morning Of"
@@ -25,22 +28,23 @@ struct SettingsView: View {
     @State private var selectedTime = Date()
     @State private var showDeveloperMenu = false
     @State private var currentLocation: TripLocation = TripLocation.sampleOrigin
+    @State private var displayPaywall: Bool = false
     
     private var defaultLocation: Binding<TripLocation> {
-            Binding(
-                get: {
-                    if let location = try? JSONDecoder().decode(TripLocation.self, from: defaultLocationData) {
-                        return location
-                    }
-                    return TripLocation.sampleDestination
-                },
-                set: { newLocation in
-                    if let encoded = try? JSONEncoder().encode(newLocation) {
-                        defaultLocationData = encoded
-                    }
+        Binding(
+            get: {
+                if let location = try? JSONDecoder().decode(TripLocation.self, from: defaultLocationData) {
+                    return location
                 }
-            )
-        }
+                return TripLocation.sampleDestination
+            },
+            set: { newLocation in
+                if let encoded = try? JSONEncoder().encode(newLocation) {
+                    defaultLocationData = encoded
+                }
+            }
+        )
+    }
     
     func setDarkMode() {
         isDarkMode = colorScheme == .dark
@@ -50,8 +54,18 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section("Premium") {
-                    NavigationLink {
-                        PackingHelperPlusStoreView()
+                    //                    NavigationLink {
+                    //                        PackingHelperPlusStoreView()
+                    //                    } label: {
+                    //                        Label {
+                    //                            Text("Upgrade to Premium")
+                    //                        } icon: {
+                    //                            Image(systemName: "plus.square.fill")
+                    //                                .foregroundStyle(defaultLinearGradient)
+                    //                        }
+                    //                    }
+                    Button {
+                        displayPaywall.toggle()
                     } label: {
                         Label {
                             Text("Upgrade to Premium")
@@ -78,12 +92,12 @@ struct SettingsView: View {
                 
                 // TODO: Come back and fix this default location implementation
                 //       It currently doesn't actually update the user default
-//                Section("Default Location") {
-//                    LocationSelectionBoxView(location: defaultLocation, title: "Default Location")
-//                        .onChange(of: defaultLocation.wrappedValue) { newLocation in
-//                            print(newLocation.name)
-//                        }
-//                }
+                //                Section("Default Location") {
+                //                    LocationSelectionBoxView(location: defaultLocation, title: "Default Location")
+                //                        .onChange(of: defaultLocation.wrappedValue) { newLocation in
+                //                            print(newLocation.name)
+                //                        }
+                //                }
                 
                 Section(header: Text("Notification Time")) {
                     DatePicker(
@@ -110,6 +124,9 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)
             .sheet(isPresented: $showDeveloperMenu) {
                 DeveloperMenuView()
+            }
+            .sheet(isPresented: $displayPaywall) {
+                PaywallView()
             }
             .navigationTitle("Settings")
             .onAppear {

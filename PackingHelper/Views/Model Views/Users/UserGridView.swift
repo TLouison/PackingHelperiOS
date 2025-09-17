@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct UserGridView: View {
-    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
     @Environment(\.modelContext) private var modelContext
     
     @Query(sort: \User.created, order: .forward, animation: .smooth) private var users: [User]

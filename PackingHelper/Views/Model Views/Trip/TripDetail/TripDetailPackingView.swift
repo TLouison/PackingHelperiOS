@@ -48,9 +48,15 @@ struct TripDetailPackingView: View {
                             .transition(.scale)
                     }
                     
+//                    NavigationLink {
+//                        UnifiedPackingListView(trip: trip)
+//                    } label: {
+//                        Text("Lists")
+//                    }
+                    
                     ForEach(trip.containsListTypes, id: \.rawValue) { listType in
                         NavigationLink {
-                            UnifiedPackingView(trip: trip, listType: listType, selectedUser: $selectedUser)
+                            UnifiedPackingListView(trip: trip, listType: listType)
                         } label: {
                             HStack {
                                 Text(listType.rawValue).font(.headline)
