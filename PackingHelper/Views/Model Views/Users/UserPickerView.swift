@@ -76,6 +76,10 @@ struct UserPickerView: View {
                         Text("All Users")
                     }
                 }
+            } else {
+                if selectedUser == nil {
+                    Text("Select User")
+                }
             }
             
             ForEach(filteredUsers) { user in
@@ -96,10 +100,12 @@ struct UserPickerView: View {
                 if let user = selectedUser {
                     user.pillIcon
                 } else {
-//                    Image(systemName: "person.circle.fill")
-//                        .foregroundStyle(.secondary)
-                    Text(selectedUser?.name ?? "All Users")
-                        .foregroundStyle(.primary)
+                    if allowAll {
+                        Text("All Users")
+                            .foregroundStyle(.primary)
+                    } else {
+                        Text("Select User")
+                    }
                 }
                 
                 Image(systemName: "chevron.up.chevron.down")
@@ -136,6 +142,10 @@ struct UserPickerView: View {
                     }
                     
                     Divider()
+                } else {
+                    if selectedUser == nil {
+                        Text("Select User")
+                    }
                 }
                 
                 ForEach(filteredUsers) { user in
@@ -156,8 +166,12 @@ struct UserPickerView: View {
                     if let user = selectedUser {
                         user.pillIcon
                     } else {
-                        Text("All Users")
-                            .foregroundStyle(.primary)
+                        if allowAll {
+                            Text("All Users")
+                                .foregroundStyle(.primary)
+                        } else {
+                            Text("Select User")
+                        }
                     }
                     
                     Image(systemName: "chevron.up.chevron.down")
@@ -186,6 +200,10 @@ struct UserPickerView: View {
                         withAnimation(.snappy) {
                             selectedUser = nil
                         }
+                    }
+                } else {
+                    if selectedUser == nil {
+                        Text("Select User")
                     }
                 }
                 

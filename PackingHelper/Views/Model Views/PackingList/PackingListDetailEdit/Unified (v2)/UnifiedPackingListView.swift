@@ -52,7 +52,7 @@ struct UnifiedPackingListView: View {
             
             VStack(spacing: 0) {
                 // List selector
-                if trip.packers.count > 1 {
+                if trip.hasMultiplePackers {
                     UserSelector(
                         trip: trip,
                         selectedUser: $selectedUser,
@@ -69,6 +69,7 @@ struct UnifiedPackingListView: View {
                                 itemUser: $newItemUser,
                                 itemList: $newItemList,
                                 listOptions: filteredLists,
+                                showUserPicker: trip.hasMultiplePackers,
                                 isFocused: _isTextFieldFocused,
                                 onCommit: { addNewItem(to: newItemList!) },
                                 onCancel: cancelAddingNewItem
@@ -116,6 +117,16 @@ struct UnifiedPackingListView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showingAddListSheet.toggle()
+                } label: {
+                    Image(systemName: "text.badge.plus")
+                        .font(.title2)
+                        .foregroundColor(.blue)
+                }
+                .glassEffectIfAvailable()
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
                 if (isAddingNewItem) {
                     Button(action: cancelAddingNewItem) {
                         Image(systemName: "x.circle.fill")
@@ -142,6 +153,7 @@ struct UnifiedPackingListView: View {
             AddPackingListSheet(trip: trip) { newList in
                 selectedList = newList
             }
+            .presentationDetents([.height(300)])
         }
         .onAppear {
             // New items get first user and first list by default
@@ -312,7 +324,7 @@ struct AddPackingListSheet: View {
     let onAdd: (PackingList) -> Void
     
     @State private var listName = ""
-    @State private var isTemplate = false
+    @State private var listUser: User?
     @FocusState private var isFocused: Bool
     
     var body: some View {
@@ -321,8 +333,7 @@ struct AddPackingListSheet: View {
                 TextField("List Name", text: $listName)
                     .focused($isFocused)
                 
-                Toggle("Save as Template", isOn: $isTemplate)
-                    .tint(.blue)
+                UserPickerView(selectedUser: $listUser, style: .inline, allowAll: false)
                 
                 Section {
                     Text("This list will be added to your \(trip.name) trip.")
@@ -344,7 +355,7 @@ struct AddPackingListSheet: View {
                         addList()
                     }
                     .fontWeight(.medium)
-                    .disabled(listName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(listName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || listUser == nil)
                 }
             }
         }
@@ -355,7 +366,8 @@ struct AddPackingListSheet: View {
     
     private func addList() {
         let newList = PackingList(type: .packing, template: false, name: listName, countAsDays: false)
-        newList.trip = trip
+        newList.user = listUser!
+        trip.addList(newList)
         
         modelContext.insert(newList)
         

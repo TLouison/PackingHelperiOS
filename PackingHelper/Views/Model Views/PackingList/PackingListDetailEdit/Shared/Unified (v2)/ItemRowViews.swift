@@ -15,6 +15,7 @@ struct NewItemRow: View {
     @Binding var itemList: PackingList?
     
     let listOptions: [PackingList]
+    let showUserPicker: Bool
     
     @FocusState var isFocused: Bool
     let onCommit: () -> Void
@@ -62,7 +63,10 @@ struct NewItemRow: View {
                 }
                 
                 Spacer()
-                UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
+                
+                if showUserPicker {
+                    UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
+                }
             }
         }
         .padding()
