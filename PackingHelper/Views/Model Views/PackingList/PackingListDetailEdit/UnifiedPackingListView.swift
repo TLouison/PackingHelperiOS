@@ -2,6 +2,13 @@
 //  UnifiedPackingListView.swift
 //  PackingHelper
 //
+//  A view that allows multiple modes of use:
+//      1. Unified packing (the default). Pass in multiple lists, optionally pass in
+//          the users of those lists, and be able to edit all the lists in a single
+//          unified interface.
+//      2. Detailed edit. Used when you want to edit just a single list. Pass in a
+//          single list, no users, and editing will work!
+//
 //  Created by Todd Louison on 9/16/25.
 //
 
@@ -10,8 +17,11 @@ import SwiftData
 
 struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
-    let trip: Trip
+    let lists: [PackingList]
+    let users: [User]?
     let listType: ListType
+    let title: String?
+    let onAddList: (() -> Void)?
     
     @State private var selectedUser: User?
     
@@ -27,8 +37,20 @@ struct UnifiedPackingListView: View {
     @State private var editingItemId: PersistentIdentifier?
     @State private var showingAddListSheet = false
     
+    var hasMultiplePackers: Bool {
+        guard let users = users else { return false }
+        return users.count > 1
+    }
+    
     var filteredLists: [PackingList] {
-        return PackingList.sorted(trip.getLists(for: selectedUser, ofType: listType), sortOrder: .byDate)
+        let filtered = lists.filter { list in
+            if let selectedUser = selectedUser {
+                return list.user == selectedUser && list.type == listType
+            } else {
+                return list.type == listType
+            }
+        }
+        return PackingList.sorted(filtered, sortOrder: .byDate)
     }
     
     func getFilteredItems(packed: Bool) -> [Item] {
@@ -51,11 +73,11 @@ struct UnifiedPackingListView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // List selector
-                if trip.hasMultiplePackers {
+                // User selector if multiple packers
+                if hasMultiplePackers {
                     UserSelector(
-                        trip: trip,
-                        selectedUser: $selectedUser,
+                        users: users ?? [],
+                        selectedUser: $selectedUser
                     )
                 }
                 
@@ -69,9 +91,13 @@ struct UnifiedPackingListView: View {
                                 itemUser: $newItemUser,
                                 itemList: $newItemList,
                                 listOptions: filteredLists,
-                                showUserPicker: trip.hasMultiplePackers,
+                                showUserPicker: hasMultiplePackers,
                                 isFocused: _isTextFieldFocused,
-                                onCommit: { addNewItem(to: newItemList!) },
+                                onCommit: { 
+                                    if let list = newItemList {
+                                        addNewItem(to: list)
+                                    }
+                                },
                                 onCancel: cancelAddingNewItem
                             )
                             .transition(.asymmetric(
@@ -113,21 +139,23 @@ struct UnifiedPackingListView: View {
                 }
             }
         }
-        .navigationTitle(trip.name)
+        .navigationTitle(title ?? "Packing List")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showingAddListSheet.toggle()
-                } label: {
-                    Image(systemName: "text.badge.plus")
-                        .font(.title2)
-                        .foregroundColor(.blue)
+                if let onAddList = onAddList {
+                    Button {
+                        showingAddListSheet.toggle()
+                    } label: {
+                        Image(systemName: "text.badge.plus")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                    .glassEffectIfAvailable()
                 }
-                .glassEffectIfAvailable()
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                if (isAddingNewItem) {
+                if isAddingNewItem {
                     Button(action: cancelAddingNewItem) {
                         Image(systemName: "x.circle.fill")
                             .font(.title2)
@@ -150,15 +178,17 @@ struct UnifiedPackingListView: View {
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
-            AddPackingListSheet(trip: trip) { newList in
-                selectedList = newList
+            if let onAddList = onAddList {
+                AddPackingListSheet(users: users, onAdd: { newList in
+                    selectedList = newList
+                })
+                .presentationDetents([.height(300)])
             }
-            .presentationDetents([.height(300)])
         }
         .onAppear {
             // New items get first user and first list by default
-            newItemUser = trip.packers.first
-            newItemList = trip.lists?.first
+            newItemUser = users?.first
+            newItemList = lists.first
         }
     }
     
@@ -220,14 +250,13 @@ struct UnifiedPackingListView: View {
 }
 
 struct UserSelector: View {
-    let trip: Trip
-    
+    let users: [User]
     @Binding var selectedUser: User?
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(trip.packers.sorted{ $0.name < $1.name}) { user in
+                ForEach(users.sorted { $0.name < $1.name }) { user in
                     user.pillIcon
                         .scaleEffect(user == selectedUser ? 1.3 : 1.0)
                         .opacity(user == selectedUser || selectedUser == nil ? 1.0 : 0.3)
@@ -254,34 +283,7 @@ struct UserSelector: View {
     }
 }
 
-struct ListTab: View {
-    let name: String
-    let isSelected: Bool
-    let itemCount: Int
-    let packedCount: Int
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                Text(name)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .semibold : .medium)
-                
-                if itemCount > 0 {
-                    Text("\(packedCount)/\(itemCount)")
-                        .font(.caption2)
-                        .foregroundColor(isSelected ? .blue : .secondary)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.blue : Color.gray.opacity(0.1))
-            .foregroundColor(isSelected ? .white : .primary)
-            .cornerRadius(20)
-        }
-    }
-}
+// MARK: - View for displaying items with edit capabilities
 
 struct UnpackedItemsSection: View {
     let items: [Item]
@@ -320,7 +322,7 @@ struct AddPackingListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    let trip: Trip
+    let users: [User]?
     let onAdd: (PackingList) -> Void
     
     @State private var listName = ""
@@ -335,10 +337,18 @@ struct AddPackingListSheet: View {
                 
                 UserPickerView(selectedUser: $listUser, style: .inline, allowAll: false)
                 
-                Section {
-                    Text("This list will be added to your \(trip.name) trip.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                if let users = users, !users.isEmpty {
+                    Section {
+                        Text("This list will be added to your trip.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } else {
+                    Section {
+                        Text("No users available. User selection disabled.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .navigationTitle("New Packing List")
@@ -360,15 +370,18 @@ struct AddPackingListSheet: View {
             }
         }
         .onAppear {
+            if listUser == nil {
+                listUser = users?.first
+            }
             isFocused = true
         }
     }
     
     private func addList() {
         let newList = PackingList(type: .packing, template: false, name: listName, countAsDays: false)
-        newList.user = listUser!
-        trip.addList(newList)
-        
+        if let user = listUser {
+            newList.user = user
+        }
         modelContext.insert(newList)
         
         onAdd(newList)

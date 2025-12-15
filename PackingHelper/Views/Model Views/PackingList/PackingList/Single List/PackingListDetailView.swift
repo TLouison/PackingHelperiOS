@@ -22,37 +22,20 @@ struct PackingListDetailView: View {
     @State private var isShowingListSettings: Bool = false
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
+
+    @State private var isAddingNewItem = false
+    @State private var newItemName = ""
+    @State private var newItemCount = 1
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
-        VStack {
-            if packingList.template == false {
-                PackingListDetailEditTabBarView(listType: packingList.type, currentView: $currentView)
-                    .padding(.top)
-            }
-            
-            if (packingList.items?.isEmpty ?? true) {
-                ContentUnavailableView {
-                    Label("No Items On List", systemImage: "bag")
-                } description: {
-                    Text("You haven't added any items to your list. Add one now to start your packing!")
-                }
-            } else {
-                PackingListDetailEditView(packingList: packingList, currentView: $currentView)
-            }
-            
-            if currentView == .unpacked {
-                Spacer()
-                
-//                QuickAddItemView(
-//                    trip: packingList.trip!,
-//                    listType: packingList.type,
-//                    selectedUser: packingList.user,
-//                    preselectedList: packingList
-//                )
-//                .padding(.bottom)
-//                .transition(.pushAndPull(.bottom))
-            }
-        }
+        UnifiedPackingListView(
+            lists: [packingList],
+            users: packingList.user != nil ? [packingList.user!] : nil,
+            listType: packingList.type,
+            title: packingList.name,
+            onAddList: nil
+        )
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -92,6 +75,31 @@ struct PackingListDetailView: View {
         modelContext.insert(newDefaultList)
         
         isShowingSaveSuccessful = true
+    }
+
+    private func addNewItem() {
+        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            cancelAddingNewItem()
+            return
+        }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
+            modelContext.insert(newItem)
+            packingList.addItem(newItem)
+            newItemName = ""
+            newItemCount = 1
+            isAddingNewItem = false
+            isTextFieldFocused = false
+        }
+    }
+    
+    private func cancelAddingNewItem() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            newItemName = ""
+            newItemCount = 1
+            isAddingNewItem = false
+            isTextFieldFocused = false
+        }
     }
 }
 

@@ -10,8 +10,9 @@ import SwiftData
 
 struct PackingListDetailEditView: View {
     @Bindable var packingList: PackingList
-    
     @Binding var currentView: PackingListDetailViewCurrentSelection
+    
+    @State private var isEditingInPlace = false
     
     var noUnpackedItemString: String {
         if packingList.items?.count ?? 0 == 0 {
@@ -23,21 +24,13 @@ struct PackingListDetailEditView: View {
     
     
     var body: some View {
-        VStack {
-            if currentView == .unpacked {
-                if packingList.incompleteItems.isEmpty {
-                    ContentUnavailableView("No Unpacked Items", systemImage: "suitcase", description: Text(noUnpackedItemString))
-                } else {
-                    PackingListDetailItemListView(packingList: packingList, items: packingList.incompleteItems)
-                }
-            } else if currentView == .packed {
-                if packingList.completeItems.isEmpty {
-                    ContentUnavailableView("No Packed Items", systemImage: suitcaseIcon, description: Text("You haven't packed any items on this list yet!"))
-                } else {
-                    PackingListDetailItemListView(packingList: packingList, items: packingList.completeItems)
-                }
-            }
-        }
+        UnifiedPackingListView(
+            lists: [packingList],
+            users: [],
+            listType: packingList.type,
+            title: packingList.name,
+            onAddList: nil,
+        )
     }
 }
 

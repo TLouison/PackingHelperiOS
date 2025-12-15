@@ -22,7 +22,3 @@ struct PackingAddItemCountPickerView: View {
         .padding(.trailing, 10)
     }
 }
-
-//#Preview {
-//    PackingAddItemCountPickerView()
-//}
