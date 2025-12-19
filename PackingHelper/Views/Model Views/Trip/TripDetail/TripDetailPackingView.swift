@@ -56,6 +56,7 @@ struct TripDetailPackingView: View {
                                 users: trip.packers,
                                 listType: listType,
                                 title: trip.name,
+                                mode: .unified,
                                 onAddList: nil
                             )
                         } label: {

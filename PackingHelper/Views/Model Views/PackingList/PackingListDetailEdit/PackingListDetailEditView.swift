@@ -29,6 +29,7 @@ struct PackingListDetailEditView: View {
             users: [],
             listType: packingList.type,
             title: packingList.name,
+            mode: .templating,
             onAddList: nil,
         )
     }

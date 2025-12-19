@@ -15,12 +15,21 @@
 import SwiftUI
 import SwiftData
 
+enum UnifiedPackingListMode: String {
+    case unified, detail, templating
+}
+
 struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
+    
     let lists: [PackingList]
     let users: [User]?
+    
     let listType: ListType
     let title: String?
+    
+    let mode: UnifiedPackingListMode
+    
     let onAddList: (() -> Void)?
     
     @State private var selectedUser: User?
@@ -53,14 +62,17 @@ struct UnifiedPackingListView: View {
         return PackingList.sorted(filtered, sortOrder: .byDate)
     }
     
-    func getFilteredItems(packed: Bool) -> [Item] {
-        let lists = filteredLists
+    var allItems: [Item] {
         var allItems: [Item] = []
         for list in lists {
             if let items = list.items {
                 allItems.append(contentsOf: items)
             }
         }
+        return allItems
+    }
+    
+    func getFilteredItems(packed: Bool) -> [Item] {
         let filteredItems = allItems.filter { item in
             packed ? item.isPacked : !item.isPacked
         }
@@ -93,7 +105,7 @@ struct UnifiedPackingListView: View {
                                 listOptions: filteredLists,
                                 showUserPicker: hasMultiplePackers,
                                 isFocused: _isTextFieldFocused,
-                                onCommit: { 
+                                onCommit: {
                                     if let list = newItemList {
                                         addNewItem(to: list)
                                     }
@@ -106,32 +118,53 @@ struct UnifiedPackingListView: View {
                             ))
                         }
                         
-                        // Unpacked items
-                        let unpackedItems = getFilteredItems(packed: false)
-                        if !unpackedItems.isEmpty {
+                        // If we are working on a template, put all items in a section
+                        // together. Otherwise, separate them by packed/unpacked
+                        if mode == .templating {
                             UnpackedItemsSection(
-                                items: unpackedItems,
+                                items: allItems,
+                                mode: mode,
                                 editingItemId: $editingItemId,
                                 onTogglePacked: togglePacked,
                                 onUpdateItem: updateItem,
                                 onDeleteItem: deleteItem
-                            )
-                        }
-                        
-                        // Packed items
-                        let packedItems = getFilteredItems(packed: true)
-                        if !packedItems.isEmpty {
-                            PackedItemsSection(
-                                items: packedItems,
-                                onTogglePacked: togglePacked,
-                                onDeleteItem: deleteItem
-                            )
-                        }
-                        
-                        // Empty state
-                        if (packedItems.isEmpty && unpackedItems.isEmpty && !isAddingNewItem) {
-                            EmptyStateView()
-                                .padding(.top, 60)
+                                )
+                            
+                            
+                            // Empty state
+                            if (allItems.isEmpty && !isAddingNewItem) {
+                                EmptyStateView()
+                                    .padding(.top, 60)
+                            }
+                        } else {
+                            // Unpacked items
+                            let unpackedItems = getFilteredItems(packed: false)
+                            if !unpackedItems.isEmpty {
+                                UnpackedItemsSection(
+                                    items: unpackedItems,
+                                    mode: mode,
+                                    editingItemId: $editingItemId,
+                                    onTogglePacked: togglePacked,
+                                    onUpdateItem: updateItem,
+                                    onDeleteItem: deleteItem
+                                )
+                            }
+                            
+                            let packedItems = getFilteredItems(packed: true)
+                            // Packed items
+                            if !packedItems.isEmpty {
+                                PackedItemsSection(
+                                    items: packedItems,
+                                    onTogglePacked: togglePacked,
+                                    onDeleteItem: deleteItem
+                                )
+                            }
+                            
+                            // Empty state
+                            if (packedItems.isEmpty && unpackedItems.isEmpty && !isAddingNewItem) {
+                                EmptyStateView()
+                                    .padding(.top, 60)
+                            }
                         }
                     }
                     .padding(.horizontal)
@@ -287,6 +320,8 @@ struct UserSelector: View {
 
 struct UnpackedItemsSection: View {
     let items: [Item]
+    var mode: UnifiedPackingListMode = .unified
+    
     @Binding var editingItemId: PersistentIdentifier?
     let onTogglePacked: (Item) -> Void
     let onUpdateItem: (Item, String, Int) -> Void
@@ -298,6 +333,7 @@ struct UnpackedItemsSection: View {
                 if editingItemId == item.persistentModelID {
                     EditableItemRow(
                         item: item,
+                        mode: mode,
                         onCommit: { name, count in
                             onUpdateItem(item, name, count)
                         },
@@ -308,6 +344,7 @@ struct UnpackedItemsSection: View {
                 } else {
                     UnifiedItemRow(
                         item: item,
+                        mode: mode,
                         onTogglePacked: { onTogglePacked(item) },
                         onEdit: { editingItemId = item.persistentModelID },
                         onDelete: { onDeleteItem(item) }
@@ -478,6 +515,7 @@ private struct PackedItemsSection: View {
                     ForEach(items) { item in
                         UnifiedItemRow(
                             item: item,
+                            mode: .unified,
                             onTogglePacked: { onTogglePacked(item) },
                             onEdit: { },
                             onDelete: { onDeleteItem(item) }

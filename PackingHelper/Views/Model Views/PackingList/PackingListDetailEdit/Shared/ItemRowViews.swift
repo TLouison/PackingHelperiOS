@@ -25,13 +25,13 @@ struct NewItemRow: View {
         listOptions.filter{ $0.user == itemUser }
     }
     
+    var showListSelector: Bool {
+        visibleLists.count > 1
+    }
+    
     var body: some View {
         VStack(spacing: 20) {
             HStack(spacing: 12) {
-                Image(systemName: "square")
-                    .font(.title3)
-                    .foregroundColor(.blue.opacity(0.3))
-                
                 TextField("Item name", text: $itemName)
                     .focused($isFocused)
                     .onSubmit(onCommit)
@@ -51,21 +51,26 @@ struct NewItemRow: View {
                 .disabled(itemName.isEmpty)
             }
             
-            HStack {
-                Picker("Packing List", selection: $itemList) {
-                    ForEach(visibleLists, id: \.id) { list in
-                        Text(list.name)
-                            .tag(list)
+            if showListSelector || showUserPicker {
+                HStack {
+                    if showListSelector {
+                        Picker("Packing List", selection: $itemList) {
+                            ForEach(visibleLists, id: \.id) { list in
+                                Text(list.name)
+                                    .tag(list)
+                            }
+                        }
+                        .onChange(of: itemUser) {
+                            itemList = visibleLists.first
+                        }
                     }
-                }
-                .onChange(of: itemUser) {
-                    itemList = visibleLists.first
-                }
-                
-                Spacer()
-                
-                if showUserPicker {
-                    UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
+                    
+                    
+                    Spacer()
+                    
+                    if showUserPicker {
+                        UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
+                    }
                 }
             }
         }
@@ -79,6 +84,7 @@ struct NewItemRow: View {
 
 struct EditableItemRow: View {
     let item: Item
+    let mode: UnifiedPackingListMode
     let onCommit: (String, Int) -> Void
     let onCancel: () -> Void
     
@@ -86,8 +92,9 @@ struct EditableItemRow: View {
     @State private var editCount: Int
     @FocusState private var isFocused: Bool
     
-    init(item: Item, onCommit: @escaping (String, Int) -> Void, onCancel: @escaping () -> Void) {
+    init(item: Item, mode: UnifiedPackingListMode, onCommit: @escaping (String, Int) -> Void, onCancel: @escaping () -> Void) {
         self.item = item
+        self.mode = mode
         self.onCommit = onCommit
         self.onCancel = onCancel
         self._editName = State(initialValue: item.name)
@@ -96,9 +103,11 @@ struct EditableItemRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+            if mode != .templating {
+                Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
+                    .font(.title3)
+                    .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+            }
             
             TextField("Item name", text: $editName)
                 .focused($isFocused)
@@ -133,16 +142,19 @@ struct EditableItemRow: View {
 
 struct UnifiedItemRow: View {
     let item: Item
+    let mode: UnifiedPackingListMode
     let onTogglePacked: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-                .onTapGesture(perform: onTogglePacked)
+            if mode != .templating {
+                Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
+                    .font(.title3)
+                    .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                    .onTapGesture(perform: onTogglePacked)
+            }
             
             Text(item.name)
                 .strikethrough(item.isPacked)

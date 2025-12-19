@@ -34,6 +34,7 @@ struct PackingListDetailView: View {
             users: packingList.user != nil ? [packingList.user!] : nil,
             listType: packingList.type,
             title: packingList.name,
+            mode: .templating,
             onAddList: nil
         )
         .navigationTitle(packingList.name)
