@@ -33,8 +33,9 @@ struct PackingListDetailView: View {
             lists: [packingList],
             users: packingList.user != nil ? [packingList.user!] : nil,
             listType: packingList.type,
+            isDayOf: packingList.isDayOf,
             title: packingList.name,
-            mode: .templating,
+            mode: .templating
         )
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)

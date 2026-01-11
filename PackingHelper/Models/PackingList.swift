@@ -11,33 +11,29 @@ import OSLog
 
 private let logger = Logger(subsystem: "PackingHelper Models", category: "PackingList")
 
-enum ListType: String, Codable, CaseIterable, Comparable {
-    case packing="Packing", task="Task", dayOf="Day-of"
+enum ListType: String, CaseIterable, Comparable {
+    case packing="Packing", task="Task"
 
     private var sortOrder: Int {
         switch self {
             case .packing:
                 return 0
-            case .dayOf:
-                return 1
             case .task:
-                return 2
+                return 1
         }
     }
 
     var icon: String {
         switch self {
             case .packing: suitcaseIcon
-            case .dayOf: "sun.horizon"
             case .task: "checklist"
         }
     }
-    
+
     var localizedDisplayName: String {
         switch self {
         case .packing: return "Packing"
         case .task: return "Task"
-        case .dayOf: return "Day-of"
         }
     }
 
@@ -47,6 +43,33 @@ enum ListType: String, Codable, CaseIterable, Comparable {
 
     static func <(lhs: ListType, rhs: ListType) -> Bool {
        return lhs.sortOrder < rhs.sortOrder
+    }
+}
+
+// Custom Codable implementation to handle legacy "Day-of" value
+extension ListType: Codable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+
+        // Handle legacy "Day-of" value by mapping to packing
+        if rawValue == "Day-of" {
+            self = .packing
+        } else if let listType = ListType(rawValue: rawValue) {
+            self = listType
+        } else {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Cannot initialize ListType from invalid String value \(rawValue)"
+                )
+            )
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
     }
 }
 
@@ -79,6 +102,7 @@ final class PackingList {
     // Default Packing List Variables
     var template: Bool = false
     var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
+    var isDayOf: Bool = false // Is this a Day-of list?
     var appliedFromTemplate: PackingList? = nil // What default list did we create this list from?
     @Relationship(deleteRule:.noAction, inverse: \PackingList.appliedFromTemplate) var appliedToLists: [PackingList]?
 
@@ -87,7 +111,7 @@ final class PackingList {
 
     @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
 
-    init(type: ListType, template: Bool, name: String, countAsDays: Bool) {
+    init(type: ListType, template: Bool, name: String, countAsDays: Bool, isDayOf: Bool = false) {
         self.created = Date.now
         self.type = type
         self.template = template
@@ -95,6 +119,7 @@ final class PackingList {
         self.appliedToLists = []
         self.name = name
         self.countAsDays = countAsDays
+        self.isDayOf = isDayOf
     }
 
     var incompleteItems: [Item] {
@@ -129,13 +154,15 @@ final class PackingList {
     }
 
     var icon: String {
-        return PackingList.icon(listType: self.type)
+        return PackingList.icon(listType: self.type, isDayOf: self.isDayOf)
     }
 
-    static func icon(listType: ListType) -> String {
+    static func icon(listType: ListType, isDayOf: Bool = false) -> String {
+        if isDayOf {
+            return "sun.horizon"
+        }
         return switch listType {
             case .packing: suitcaseIcon
-            case .dayOf: "sun.horizon"
             case .task: "checklist"
         }
     }
@@ -148,6 +175,7 @@ extension PackingList {
         type: ListType,
         template: Bool,
         countAsDays: Bool,
+        isDayOf: Bool,
         user: User,
         in context: ModelContext,
         for trip: Trip?
@@ -159,9 +187,10 @@ extension PackingList {
             packingList.type = type
             packingList.user = user
             packingList.countAsDays = countAsDays
+            packingList.isDayOf = isDayOf
         } else {
             logger.debug("Packing list does not already exist. Creating with new info.")
-            let newPackingList = PackingList(type: type, template: template, name: name, countAsDays: countAsDays)
+            let newPackingList = PackingList(type: type, template: template, name: name, countAsDays: countAsDays, isDayOf: isDayOf)
             newPackingList.user = user
 
             context.insert(newPackingList)
@@ -231,7 +260,7 @@ extension PackingList {
 
 extension PackingList {
     private static func _copy(_ packingList: PackingList, for trip: Trip? = nil, template: Bool = false) -> PackingList {
-        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays)
+        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays, isDayOf: packingList.isDayOf)
         logger.info("Copied list.")
 
         if let items = packingList.items {

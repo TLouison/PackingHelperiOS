@@ -84,7 +84,7 @@ extension PreviewTrait where T == Preview.ViewTraits {
     workTripToDoList.user = userEmma
     workTripToDoList.trip = workTrip
     
-    let workTripDayOfList = PackingList(type: .dayOf, template: false, name: "Morning Of", countAsDays: true)
+    let workTripDayOfList = PackingList(type: .packing, template: false, name: "Morning Of", countAsDays: true, isDayOf: true)
     workTripDayOfList.addItem(Item(name: "Take Out Trash", category: "Task", count: 1, isPacked: false))
     workTripDayOfList.addItem(Item(name: "Kiss Todd", category: "Task", count: 1, isPacked: true))
     workTripDayOfList.user = userEmma

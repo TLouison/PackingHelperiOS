@@ -10,21 +10,40 @@ import SwiftData
 
 struct TripDetailPackingGaugeRowView: View {
     let trip: Trip
-    
+
     var body: some View {
         HStack {
+            // Regular list type gauges (non-Day-of)
             ForEach(ListType.allCases, id: \.rawValue) { listType in
-                if trip.getTotalItems(for: listType) > 0 {
+                let total = trip.getTotalItems(for: listType, isDayOf: false)
+                if total > 0 {
                     TripDetailPackingProgressView(
-                        val: Double(trip.getCompleteItems(for: listType)),
-                        total: Double(trip.getTotalItems(for: listType)),
+                        val: Double(trip.getCompleteItems(for: listType, isDayOf: false)),
+                        total: Double(total),
                         image: PackingList.icon(listType: listType)
                     )
-                    .onChange(of: trip.getTotalItems(for: listType)) {
-                        print(trip.getCompleteItems(for: listType), trip.getTotalItems(for: listType))
+                    .onChange(of: total) {
+                        print(trip.getCompleteItems(for: listType, isDayOf: false), total)
                     }
                     .padding(.horizontal)
                 }
+            }
+
+            // Day-of gauge (combines all Day-of items)
+            let dayOfTotal = trip.getTotalItems(for: .packing, isDayOf: true) +
+                             trip.getTotalItems(for: .task, isDayOf: true)
+            if dayOfTotal > 0 {
+                TripDetailPackingProgressView(
+                    val: Double(trip.getCompleteItems(for: .packing, isDayOf: true) +
+                               trip.getCompleteItems(for: .task, isDayOf: true)),
+                    total: Double(dayOfTotal),
+                    image: "sun.horizon"
+                )
+                .onChange(of: dayOfTotal) {
+                    print("Day-of:", trip.getCompleteItems(for: .packing, isDayOf: true) +
+                                    trip.getCompleteItems(for: .task, isDayOf: true), dayOfTotal)
+                }
+                .padding(.horizontal)
             }
         }
     }

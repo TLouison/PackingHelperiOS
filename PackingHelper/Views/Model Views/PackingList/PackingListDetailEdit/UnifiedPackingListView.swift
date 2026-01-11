@@ -21,13 +21,14 @@ enum UnifiedPackingListMode: String {
 
 struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
-    
+
     @State var lists: [PackingList]
     let users: [User]?
-    
+
     let listType: ListType
+    let isDayOf: Bool
     let title: String?
-    
+
     let mode: UnifiedPackingListMode
     
     @State private var selectedUser: User?
@@ -51,10 +52,11 @@ struct UnifiedPackingListView: View {
     
     var filteredLists: [PackingList] {
         let filtered = lists.filter { list in
+            let typeMatch = list.type == listType && list.isDayOf == isDayOf
             if let selectedUser = selectedUser {
-                return list.user == selectedUser && list.type == listType
+                return list.user == selectedUser && typeMatch
             } else {
-                return list.type == listType
+                return typeMatch
             }
         }
         print("Found filtered lists: \(filtered)")
@@ -209,7 +211,7 @@ struct UnifiedPackingListView: View {
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
-            AddPackingListSheet(listType: listType, users: users, onAdd: { newList in
+            AddPackingListSheet(listType: listType, isDayOf: isDayOf, users: users, onAdd: { newList in
                 selectedList = newList
             })
             .presentationDetents([.height(300)])
@@ -354,9 +356,10 @@ struct UnpackedItemsSection: View {
 struct AddPackingListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     let listType: ListType
-    
+    let isDayOf: Bool
+
     let users: [User]?
     let onAdd: (PackingList) -> Void
     
@@ -399,12 +402,12 @@ struct AddPackingListSheet: View {
     }
     
     private func addList() {
-        let newList = PackingList(type: .packing, template: false, name: listName, countAsDays: false)
+        let newList = PackingList(type: listType, template: false, name: listName, countAsDays: false, isDayOf: isDayOf)
         if let user = listUser {
             newList.user = user
         }
         modelContext.insert(newList)
-        
+
         onAdd(newList)
         dismiss()
     }

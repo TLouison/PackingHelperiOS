@@ -24,7 +24,8 @@ struct PackingListEditView: View {
     @State private var listName = ""
     @State private var listType: ListType = .packing
     @State private var countAsDays: Bool = false
-    
+    @State private var isDayOf: Bool = false
+
     @State private var isDeleting: Bool = false
     @Binding var isDeleted: Bool
     
@@ -42,7 +43,7 @@ struct PackingListEditView: View {
                 Form {
                     Section("List Details") {
                         TextField("List Name", text: $listName)
-                        
+
                         if let forceListType {
                             HStack {
                                 Text("List Type")
@@ -56,6 +57,10 @@ struct PackingListEditView: View {
                                     Text(type.rawValue).tag(type)
                                 }
                             }
+                        }
+
+                        Toggle(isOn: $isDayOf) {
+                            Label("Day-of", systemImage: "sun.horizon")
                         }
                     }
                     
@@ -112,6 +117,7 @@ struct PackingListEditView: View {
                 listName = packingList.name
                 listType = packingList.type
                 countAsDays = packingList.countAsDays
+                isDayOf = packingList.isDayOf
             } else {
                 // If there is no list, we should get a default user
                 if users.isEmpty {
@@ -142,6 +148,7 @@ struct PackingListEditView: View {
             type: listType,
             template: isTemplate,
             countAsDays: countAsDays,
+            isDayOf: isDayOf,
             user: selectedUser!,
             in: modelContext,
             for: trip

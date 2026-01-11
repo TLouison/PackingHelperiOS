@@ -228,6 +228,14 @@ extension Trip {
         return Set(self.lists?.compactMap( { $0.type } ) ?? []).sorted()
     }
 
+    var containsDayOfPacking: Bool {
+        return self.lists?.contains { $0.type == .packing && $0.isDayOf } ?? false
+    }
+
+    var containsDayOfTask: Bool {
+        return self.lists?.contains { $0.type == .task && $0.isDayOf } ?? false
+    }
+
     var listsFromTemplates: [PackingList] {
         return self.lists?.filter { $0.appliedFromTemplate != nil } ?? []
     }
@@ -257,14 +265,32 @@ extension Trip {
         }) ?? 0
     }
 
+    func getTotalItems(for listType: ListType, isDayOf: Bool) -> Int {
+        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
+            x + (y.items?.count ?? 0)
+        }) ?? 0
+    }
+
     func getIncompleteItems(for listType: ListType) -> Int {
         return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
             x + y.incompleteItems.count
         }) ?? 0
     }
 
+    func getIncompleteItems(for listType: ListType, isDayOf: Bool) -> Int {
+        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
+            x + y.incompleteItems.count
+        }) ?? 0
+    }
+
     func getCompleteItems(for listType: ListType) -> Int {
         return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
+            x + y.completeItems.count
+        }) ?? 0
+    }
+
+    func getCompleteItems(for listType: ListType, isDayOf: Bool) -> Int {
+        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
             x + y.completeItems.count
         }) ?? 0
     }
@@ -276,6 +302,10 @@ extension Trip {
     // MARK: Get Lists
     func getLists(for listType: ListType) -> [PackingList] {
         return self.lists?.filter {$0.type == listType} ?? []
+    }
+
+    func getLists(for listType: ListType, isDayOf: Bool) -> [PackingList] {
+        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf} ?? []
     }
 
     func getLists(for user: User?) -> [PackingList] {
@@ -291,6 +321,14 @@ extension Trip {
             return self.getLists(for: user).filter {$0.type == listType }
         } else {
             return self.getLists(for: listType)
+        }
+    }
+
+    func getLists(for user: User?, ofType listType: ListType, isDayOf: Bool) -> [PackingList] {
+        if let user {
+            return self.getLists(for: user).filter {$0.type == listType && $0.isDayOf == isDayOf}
+        } else {
+            return self.getLists(for: listType, isDayOf: isDayOf)
         }
     }
 

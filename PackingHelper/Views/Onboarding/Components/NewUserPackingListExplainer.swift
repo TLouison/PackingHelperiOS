@@ -22,36 +22,36 @@ struct NewUserPackingListExplainer: View {
             VStack {
                 Text("You can also choose different types of lists:")
                     .font(.headline)
-                
+
                 Grid(alignment: .leading) {
                     Rectangle()
                         .fill(.secondary)
                         .frame(height: 1)
-                    
+
                     GridRow {
                         Label("Packing", systemImage: ListType.packing.icon)
                             .bold()
                         Text("Standard lists")
                     }
-                    
+
                     Rectangle()
                         .fill(.secondary)
                         .frame(height: 1)
-                    
+
                     GridRow {
                         Label("Task", systemImage: ListType.task.icon)
                             .bold()
                         Text("To-do Lists")
                     }
-                    
+
                     Rectangle()
                         .fill(.secondary)
                         .frame(height: 1)
-                    
+
                     GridRow {
-                        Label("Day-of", systemImage: ListType.dayOf.icon)
+                        Label("Day-of", systemImage: "sun.horizon")
                             .bold()
-                        Text("For last-minute items")
+                        Text("Mark any list for last-minute items")
                     }
                 }
             }

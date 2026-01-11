@@ -53,25 +53,106 @@ struct TripDetailPackingView: View {
                         UserPickerView(selectedUser: $selectedUser)
                             .transition(.scale)
                     }
-                    
-                    
-                    ForEach(trip.containsListTypes, id: \.rawValue) { listType in
+
+                    // Regular list sections (non-Day-of)
+                    ForEach(ListType.allCases, id: \.rawValue) { listType in
+                        let regularLists = filteredLists.filter { $0.type == listType && !$0.isDayOf }
+                        if !regularLists.isEmpty {
+                            NavigationLink {
+                                UnifiedPackingListView(
+                                    lists: regularLists,
+                                    users: trip.packers,
+                                    listType: listType,
+                                    isDayOf: false,
+                                    title: trip.name,
+                                    mode: .unified
+                                )
+                            } label: {
+                                HStack {
+                                    Text(listType.rawValue).font(.headline)
+                                    Spacer()
+                                    TripDetailPackingProgressView(
+                                        val: Double(trip.getCompleteItems(for: listType, isDayOf: false)),
+                                        total: Double(trip.getTotalItems(for: listType, isDayOf: false)),
+                                        image: PackingList.icon(listType: listType)
+                                    )
+                                    .scaleEffect(x: 0.75, y: 0.75)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: 30)
+                            .roundedBox(background: .ultraThick)
+                            .shaded()
+                        }
+                    }
+
+                    // Day-of section divider (only if Day-of lists exist)
+                    if trip.containsDayOfPacking || trip.containsDayOfTask {
+                        Divider()
+                            .padding(.vertical, 8)
+
+                        Text("Day-of")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
+                    // Day-of Packing section
+                    let dayOfPackingLists = filteredLists.filter { $0.type == .packing && $0.isDayOf }
+                    if !dayOfPackingLists.isEmpty {
                         NavigationLink {
                             UnifiedPackingListView(
-                                lists: filteredLists.filter { $0.type == listType },
+                                lists: dayOfPackingLists,
                                 users: trip.packers,
-                                listType: listType,
-                                title: trip.name,
-                                mode: .unified,
+                                listType: .packing,
+                                isDayOf: true,
+                                title: "\(trip.name) - Day-of",
+                                mode: .unified
                             )
                         } label: {
                             HStack {
-                                Text(listType.rawValue).font(.headline)
+                                HStack(spacing: 4) {
+                                    Image(systemName: "sun.horizon")
+                                        .foregroundStyle(.orange)
+                                    Text("Day-of Packing").font(.headline)
+                                }
                                 Spacer()
                                 TripDetailPackingProgressView(
-                                    val: Double(trip.getCompleteItems(for: listType)),
-                                    total: Double(trip.getTotalItems(for: listType)),
-                                    image: PackingList.icon(listType: listType)
+                                    val: Double(trip.getCompleteItems(for: .packing, isDayOf: true)),
+                                    total: Double(trip.getTotalItems(for: .packing, isDayOf: true)),
+                                    image: "sun.horizon"
+                                )
+                                .scaleEffect(x: 0.75, y: 0.75)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: 30)
+                        .roundedBox(background: .ultraThick)
+                        .shaded()
+                    }
+
+                    // Day-of Task section
+                    let dayOfTaskLists = filteredLists.filter { $0.type == .task && $0.isDayOf }
+                    if !dayOfTaskLists.isEmpty {
+                        NavigationLink {
+                            UnifiedPackingListView(
+                                lists: dayOfTaskLists,
+                                users: trip.packers,
+                                listType: .task,
+                                isDayOf: true,
+                                title: "\(trip.name) - Day-of",
+                                mode: .unified
+                            )
+                        } label: {
+                            HStack {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "sun.horizon")
+                                        .foregroundStyle(.orange)
+                                    Text("Day-of Tasks").font(.headline)
+                                }
+                                Spacer()
+                                TripDetailPackingProgressView(
+                                    val: Double(trip.getCompleteItems(for: .task, isDayOf: true)),
+                                    total: Double(trip.getTotalItems(for: .task, isDayOf: true)),
+                                    image: "sun.horizon"
                                 )
                                 .scaleEffect(x: 0.75, y: 0.75)
                             }
