@@ -32,6 +32,14 @@ enum ListType: String, Codable, CaseIterable, Comparable {
             case .task: "checklist"
         }
     }
+    
+    var localizedDisplayName: String {
+        switch self {
+        case .packing: return "Packing"
+        case .task: return "Task"
+        case .dayOf: return "Day-of"
+        }
+    }
 
     static func ==(lhs: ListType, rhs: ListType) -> Bool {
             return lhs.sortOrder == rhs.sortOrder

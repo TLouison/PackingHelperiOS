@@ -175,14 +175,16 @@ struct UnifiedPackingListView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    showingAddListSheet.toggle()
-                } label: {
-                    Image(systemName: "text.badge.plus")
-                        .font(.title2)
-                        .foregroundColor(.blue)
+                if mode != .templating {
+                    Button {
+                        showingAddListSheet.toggle()
+                    } label: {
+                        Image(systemName: "text.badge.plus")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                    .glassEffectIfAvailable()
                 }
-                .glassEffectIfAvailable()
 
                 if isAddingNewItem {
                     Button(action: cancelAddingNewItem) {
@@ -207,7 +209,7 @@ struct UnifiedPackingListView: View {
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
-            AddPackingListSheet(users: users, onAdd: { newList in
+            AddPackingListSheet(listType: listType, users: users, onAdd: { newList in
                 selectedList = newList
             })
             .presentationDetents([.height(300)])
@@ -353,6 +355,8 @@ struct AddPackingListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    let listType: ListType
+    
     let users: [User]?
     let onAdd: (PackingList) -> Void
     
@@ -368,7 +372,7 @@ struct AddPackingListSheet: View {
                 
                 UserPickerView(selectedUser: $listUser, style: .inline, allowAll: false)
             }
-            .navigationTitle("New Packing List")
+            .navigationTitle("New \(listType.localizedDisplayName) List")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
