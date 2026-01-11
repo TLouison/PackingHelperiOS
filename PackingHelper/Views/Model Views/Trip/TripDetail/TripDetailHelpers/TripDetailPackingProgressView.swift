@@ -12,14 +12,21 @@ struct TripDetailPackingProgressView: View {
     let total: Double
     let image: String
     
+    var upperVal: Double {
+        if total > 0 {
+            return total
+        }
+        return Double(Int.max)
+    }
+    
     var body: some View {
         HStack {
-            Gauge(value: val, in: 0...total) {
+            Gauge(value: val, in: 0...upperVal) {
                 Image(systemName: image)
                     .imageScale(.small)
             }
             .gaugeStyle(.accessoryCircularCapacity)
-            .tint(val == total ? .green : .accent)
+            .tint(val == total && total > 0 ? .green : .accent)
             .animation(.smooth, value: val)
         }
     }
