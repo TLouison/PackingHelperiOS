@@ -10,7 +10,8 @@ import SwiftUI
 
 struct PackingListApplyDefaultView: View {
     @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.modelContext) private var modelContext
+
     let trip: Trip
     
     @State private var selectedUser: User?
@@ -94,7 +95,7 @@ struct PackingListApplyDefaultView: View {
     }
     
     private func save() {
-        trip.applyDefaultLists(to: selectedUser, lists: selectedLists)
+        trip.applyDefaultLists(to: selectedUser, lists: selectedLists, in: modelContext)
     }
 }
 

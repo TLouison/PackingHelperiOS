@@ -76,7 +76,6 @@ final class PackingList {
 
     var user: User?
     var trip: Trip?
-    @Transient var tripID: PersistentIdentifier? = nil
 
     @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
 
@@ -164,6 +163,8 @@ extension PackingList {
                 trip.addList(newPackingList)
             }
         }
+
+        try? context.save()
         logger.info("Packing list saved!")
     }
 

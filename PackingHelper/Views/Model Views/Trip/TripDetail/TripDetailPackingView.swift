@@ -19,7 +19,7 @@ struct TripDetailPackingView: View {
     @State private var selectedUser: User?
     
     var filteredLists: [PackingList] {
-        lists.filter { $0.tripID == trip.id }
+        lists.filter { $0.trip?.id == trip.id }
     }
     
     var body: some View {

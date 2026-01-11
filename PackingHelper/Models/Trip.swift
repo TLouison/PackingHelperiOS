@@ -312,13 +312,14 @@ extension Trip {
         return false
     }
 
-    func applyDefaultLists(to user: User?, lists: [PackingList]) {
+    func applyDefaultLists(to user: User?, lists: [PackingList], in context: ModelContext) {
         if !lists.isEmpty {
             for list in lists {
                 let defaultList = PackingList.copy(list, for: self, with: user)
-                defaultList.tripID = self.id
+                context.insert(defaultList)
                 self.addList(defaultList)
             }
+            try? context.save()
         }
     }
 }
