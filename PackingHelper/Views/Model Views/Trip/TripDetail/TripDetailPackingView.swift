@@ -9,12 +9,18 @@ import SwiftUI
 import SwiftData
 
 struct TripDetailPackingView: View {
-    var trip: Trip
+    let trip: Trip
+    
+    @Query var lists: [PackingList]
     
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     
     @State private var selectedUser: User?
+    
+    var filteredLists: [PackingList] {
+        lists.filter { $0.tripID == trip.id }
+    }
     
     var body: some View {
         TripDetailCustomSectionView {
@@ -29,7 +35,7 @@ struct TripDetailPackingView: View {
                 )
             }
         } content: {
-            if trip.lists?.isEmpty ?? true {
+            if filteredLists.isEmpty {
                 ContentUnavailableView{
                     Label("No Packing Lists", systemImage: suitcaseIcon)
                 } description: {
@@ -41,7 +47,7 @@ struct TripDetailPackingView: View {
                     )
                 }
             }
-            if !(trip.lists?.isEmpty ?? true) {
+            if !filteredLists.isEmpty {
                 VStack(alignment: .center) {
                     if trip.hasMultiplePackers {
                         UserPickerView(selectedUser: $selectedUser)
@@ -52,12 +58,11 @@ struct TripDetailPackingView: View {
                     ForEach(trip.containsListTypes, id: \.rawValue) { listType in
                         NavigationLink {
                             UnifiedPackingListView(
-                                lists: trip.getLists(for: nil, ofType: listType),
+                                lists: filteredLists.filter { $0.type == listType },
                                 users: trip.packers,
                                 listType: listType,
                                 title: trip.name,
                                 mode: .unified,
-                                onAddList: nil
                             )
                         } label: {
                             HStack {

@@ -26,7 +26,7 @@ struct NewItemRow: View {
     }
     
     var showListSelector: Bool {
-        visibleLists.count > 1
+        listOptions.count > 1
     }
     
     var body: some View {

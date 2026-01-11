@@ -22,15 +22,13 @@ enum UnifiedPackingListMode: String {
 struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
     
-    let lists: [PackingList]
+    @State var lists: [PackingList]
     let users: [User]?
     
     let listType: ListType
     let title: String?
     
     let mode: UnifiedPackingListMode
-    
-    let onAddList: (() -> Void)?
     
     @State private var selectedUser: User?
     
@@ -59,6 +57,7 @@ struct UnifiedPackingListView: View {
                 return list.type == listType
             }
         }
+        print("Found filtered lists: \(filtered)")
         return PackingList.sorted(filtered, sortOrder: .byDate)
     }
     
@@ -175,19 +174,16 @@ struct UnifiedPackingListView: View {
         .navigationTitle(title ?? "Packing List")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if let onAddList = onAddList {
-                    Button {
-                        showingAddListSheet.toggle()
-                    } label: {
-                        Image(systemName: "text.badge.plus")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                    .glassEffectIfAvailable()
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    showingAddListSheet.toggle()
+                } label: {
+                    Image(systemName: "text.badge.plus")
+                        .font(.title2)
+                        .foregroundColor(.blue)
                 }
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
+                .glassEffectIfAvailable()
+
                 if isAddingNewItem {
                     Button(action: cancelAddingNewItem) {
                         Image(systemName: "x.circle.fill")
@@ -211,12 +207,10 @@ struct UnifiedPackingListView: View {
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
-            if let onAddList = onAddList {
-                AddPackingListSheet(users: users, onAdd: { newList in
-                    selectedList = newList
-                })
-                .presentationDetents([.height(300)])
-            }
+            AddPackingListSheet(users: users, onAdd: { newList in
+                selectedList = newList
+            })
+            .presentationDetents([.height(300)])
         }
         .onAppear {
             // New items get first user and first list by default
@@ -373,20 +367,6 @@ struct AddPackingListSheet: View {
                     .focused($isFocused)
                 
                 UserPickerView(selectedUser: $listUser, style: .inline, allowAll: false)
-                
-                if let users = users, !users.isEmpty {
-                    Section {
-                        Text("This list will be added to your trip.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                } else {
-                    Section {
-                        Text("No users available. User selection disabled.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
             }
             .navigationTitle("New Packing List")
             .navigationBarTitleDisplayMode(.inline)

@@ -59,8 +59,10 @@ struct PackingListEditView: View {
                         }
                     }
                     
-                    Section("Packer") {
-                        UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+                    if users.count > 1 {
+                        Section("Packer") {
+                            UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
+                        }
                     }
                     
                     if isTemplate {
