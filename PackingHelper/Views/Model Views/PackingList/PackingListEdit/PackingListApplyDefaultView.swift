@@ -24,19 +24,21 @@ struct PackingListApplyDefaultView: View {
     var body: some View {
         NavigationStack {
             List {
-                // User Selection Section
-                Section {
+                if FeatureFlags.showingMultiplePackers {
+                    // User Selection Section
+                    Section {
                     UserSelectionRow(selectedUser: $selectedUser)
                         .onChange(of: selectedUser) {
                             // Clear selection when user changes
                             selectedLists.removeAll()
                         }
-                } header: {
-                    Text("Select Packer")
-                } footer: {
-                    Text(selectedUser == nil ?
-                         "Lists will be applied to the packer who created it" :
-                         "Lists will be applied to \(selectedUser?.name ?? "")")
+                    } header: {
+                        Text("Select Packer")
+                    } footer: {
+                        Text(selectedUser == nil ?
+                             "Lists will be applied to the packer who created it" :
+                                "Lists will be applied to \(selectedUser?.name ?? "")")
+                    }
                 }
                 
                 // List Selection Section

@@ -37,8 +37,10 @@ struct TripListRowView: View {
         ViewThatFits {
             VStack {
                 HStack(alignment: .top) {
-                    UserIndicators(users: trip.packers)
+                    if FeatureFlags.showingMultiplePackers {
+                        UserIndicators(users: trip.packers)
                         .padding(.leading)
+                    }
                     Spacer()
                     Text(trip.name)
                         .font(.title)

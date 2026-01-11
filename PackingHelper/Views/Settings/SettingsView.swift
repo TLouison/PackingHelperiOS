@@ -53,25 +53,27 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Premium") {
-                    //                    NavigationLink {
-                    //                        PackingHelperPlusStoreView()
-                    //                    } label: {
-                    //                        Label {
-                    //                            Text("Upgrade to Premium")
-                    //                        } icon: {
-                    //                            Image(systemName: "plus.square.fill")
-                    //                                .foregroundStyle(defaultLinearGradient)
-                    //                        }
-                    //                    }
-                    Button {
-                        displayPaywall.toggle()
-                    } label: {
-                        Label {
-                            Text("Upgrade to Premium")
-                        } icon: {
-                            Image(systemName: "plus.square.fill")
-                                .foregroundStyle(defaultLinearGradient)
+                if FeatureFlags.showingSubscription {
+                    Section("Premium") {
+                        //                    NavigationLink {
+                        //                        PackingHelperPlusStoreView()
+                        //                    } label: {
+                        //                        Label {
+                        //                            Text("Upgrade to Premium")
+                        //                        } icon: {
+                        //                            Image(systemName: "plus.square.fill")
+                        //                                .foregroundStyle(defaultLinearGradient)
+                        //                        }
+                        //                    }
+                        Button {
+                            displayPaywall.toggle()
+                        } label: {
+                            Label {
+                                Text("Upgrade to Premium")
+                            } icon: {
+                                Image(systemName: "plus.square.fill")
+                                    .foregroundStyle(defaultLinearGradient)
+                            }
                         }
                     }
                 }

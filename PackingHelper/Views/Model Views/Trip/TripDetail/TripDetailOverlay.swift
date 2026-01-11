@@ -59,7 +59,7 @@ struct TripDetailOverlay: View {
                     
                     Spacer()
                     
-                    if showSubtitle {
+                    if FeatureFlags.showingMultiplePackers && showSubtitle{
                         UserIndicators(users: trip.packers)
                             .padding(.horizontal)
                     }

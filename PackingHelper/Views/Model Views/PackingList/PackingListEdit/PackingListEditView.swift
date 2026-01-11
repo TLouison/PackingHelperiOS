@@ -64,7 +64,7 @@ struct PackingListEditView: View {
                         }
                     }
                     
-                    if users.count > 1 {
+                    if FeatureFlags.showingMultiplePackers && users.count > 1 {
                         Section("Packer") {
                             UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
                         }

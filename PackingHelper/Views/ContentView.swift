@@ -29,11 +29,13 @@ struct ContentView: View {
                 }
                 .tag(1)
             
-            UserGridView()
-                .tabItem {
-                    Label("Packers", systemImage: "person.circle")
-                }
-                .tag(2)
+            if FeatureFlags.showingMultiplePackers {
+                UserGridView()
+                    .tabItem {
+                        Label("Packers", systemImage: "person.circle")
+                    }
+                    .tag(2)
+            }
             
             SettingsView()
                 .tabItem {
