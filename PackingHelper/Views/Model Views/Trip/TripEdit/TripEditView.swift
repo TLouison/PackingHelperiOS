@@ -47,53 +47,58 @@ struct TripEditView: View {
     
     // MARK: - Body
     var body: some View {
-        // Scrollable content
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header with image
-                headerView
-                
-                // Trip info card
-                tripInfoSection
-                
-                // Location section
-                locationSection
-                
-                // Accommodation section
-                accommodationSection
-                
-                // Save and Delete buttons
-                buttonSection
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 30)
-        }
-        .sheet(isPresented: $showImagePicker) {
-            // Image picker would go here
-            Text("Image Picker Placeholder")
-        }
-        .sheet(isPresented: $showingOriginSearch) {
-            LocationSearchView(location: $originLocation)
-        }
-        .sheet(isPresented: $showingDestinationSearch) {
-            LocationSearchView(location: $destinationLocation)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Save") {
-                    saveTrip()
+        NavigationStack {
+            // Scrollable content
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header with image
+                    headerView
+                    
+                    // Trip info card
+                    tripInfoSection
+                    
+                    // Location section
+                    locationSection
+                    
+                    // Accommodation section
+                    accommodationSection
+                    
+                    // Save and Delete buttons
+                    buttonSection
                 }
-                .disabled(originLocation == nil || destinationLocation == nil || tripName.isEmpty)
+                .padding(.horizontal)
+                .padding(.bottom, 30)
             }
-        }
-        .alert("Delete Trip", isPresented: $showDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                deleteTrip()
+            .sheet(isPresented: $showImagePicker) {
+                // Image picker would go here
+                Text("Image Picker Placeholder")
             }
-        } message: {
-            Text("Are you sure you want to delete this trip? This action cannot be undone.")
+            .sheet(isPresented: $showingOriginSearch) {
+                LocationSearchView(location: $originLocation)
+            }
+            .sheet(isPresented: $showingDestinationSearch) {
+                LocationSearchView(location: $destinationLocation)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveTrip()
+                    }
+                    .disabled(originLocation == nil || destinationLocation == nil || tripName.isEmpty)
+                }
+            }
+            .alert("Delete Trip", isPresented: $showDeleteAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    deleteTrip()
+                }
+            } message: {
+                Text("Are you sure you want to delete this trip? This action cannot be undone.")
+            }
         }
     }
     
