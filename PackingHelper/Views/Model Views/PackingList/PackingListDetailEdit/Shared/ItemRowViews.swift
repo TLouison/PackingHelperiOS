@@ -146,37 +146,106 @@ struct UnifiedItemRow: View {
     let onTogglePacked: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
-    
+
+    @State private var offset: CGFloat = 0
+    private let maxOffset: CGFloat = -52  // Room for floating button + spacing
+    private let snapThreshold: CGFloat = -30
+
+    // Only show swipe-to-delete for unpacked items
+    private var showSwipeDelete: Bool {
+        !item.isPacked && mode != .templating
+    }
+
+    // Animate button scale from 0.5 to 1.0 as user swipes
+    private var deleteButtonScale: CGFloat {
+        guard showSwipeDelete else { return 0 }
+        let progress = min(1, -offset / (-maxOffset))
+        return 0.5 + (0.5 * progress)
+    }
+
+    // Fade button in from 0 to 1 as user swipes
+    private var deleteButtonOpacity: CGFloat {
+        guard showSwipeDelete else { return 0 }
+        let progress = min(1, -offset / (-maxOffset))
+        return progress
+    }
+
     var body: some View {
-        HStack(spacing: 12) {
-            if mode != .templating {
-                Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                    .font(.title3)
-                    .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-                    .onTapGesture(perform: onTogglePacked)
+        ZStack(alignment: .trailing) {
+            // Row content (slides left when swiped)
+            HStack(spacing: 12) {
+                if mode != .templating {
+                    Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
+                        .font(.title3)
+                        .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                        .onTapGesture(perform: onTogglePacked)
+                }
+
+                Text(item.name)
+                    .strikethrough(item.isPacked)
+                    .foregroundColor(item.isPacked ? .gray : .primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                    .onTapGesture(perform: onEdit)
+
+                if item.count > 1 {
+                    Text("\(item.count)")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
             }
-            
-            Text(item.name)
-                .strikethrough(item.isPacked)
-                .foregroundColor(item.isPacked ? .gray : .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onEdit)
-            
-            if item.count > 1 {
-                Text("\(item.count)")
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(Color(UIColor.secondarySystemGroupedBackground))
+            .cornerRadius(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .offset(x: showSwipeDelete ? offset : 0)
+            .gesture(
+                showSwipeDelete ? DragGesture(minimumDistance: 20)
+                    .onChanged { value in
+                        if value.translation.width < 0 {
+                            // Follow the user's finger - no clamping during drag
+                            offset = value.translation.width
+                        } else if offset < 0 {
+                            // Allow swiping right to close
+                            offset = min(0, offset + value.translation.width)
+                        }
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            offset = offset < snapThreshold ? maxOffset : 0
+                        }
+                    } : nil
+            )
+
+            // Floating delete button (overlays on right side)
+            if showSwipeDelete && offset < 0 {
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        offset = 0
+                    }
+                    // Delay delete slightly to allow animation
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        onDelete()
+                    }
+                }) {
+                    Image(systemName: "trash.fill")
+                        .font(.body)
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.red)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                }
+                .offset(x: 8)  // Position slightly outside the row edge
+                .scaleEffect(deleteButtonScale)
+                .opacity(deleteButtonOpacity)
             }
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(10)
         .contextMenu {
             Button(action: onEdit) {
                 Label("Edit", systemImage: "pencil")
@@ -184,6 +253,16 @@ struct UnifiedItemRow: View {
             Button(role: .destructive, action: onDelete) {
                 Label("Delete", systemImage: "trash")
             }
+        }
+        .onChange(of: item.isPacked) { _, _ in
+            // Reset offset when item is packed/unpacked
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                offset = 0
+            }
+        }
+        .onChange(of: item.id) { _, _ in
+            // Reset offset when item changes (e.g., after adding)
+            offset = 0
         }
     }
 }
