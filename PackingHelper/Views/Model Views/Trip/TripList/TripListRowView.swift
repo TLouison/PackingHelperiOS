@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 import MapKit
 
 struct TripListRowView: View {
+    @Environment(\.modelContext) var modelContext
+    
     @State private var mapPosition: MapCameraPosition = .automatic
+    @State private var showDeleteTripAlert: Bool = false
     
     @Bindable var trip: Trip
     
@@ -121,7 +125,6 @@ struct TripListRowView: View {
                 mapPosition = destination.mapCameraPosition
             }
         }
-        .padding(.vertical)
     }
 }
 

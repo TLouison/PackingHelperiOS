@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TripListScrollView: View {
     //    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
+    @Environment(\.modelContext) var modelContext
     
     @Binding var path: NavigationPath
+    
+    @State private var tripToDelete: Trip? = nil
+    @State private var showTripDeleteAlert: Bool = false
     
     var trips: [Trip]
     var canShowCTA: Bool = false
@@ -25,6 +30,12 @@ struct TripListScrollView: View {
     //    Temporary force enable until purchases are figured out
     func shouldDisable(index: Int) -> Bool {
         return false
+    }
+    
+    func deleteTrip() {
+        if let trip = tripToDelete{
+            modelContext.delete(trip)
+        }
     }
     
     var body: some View {
@@ -45,13 +56,25 @@ struct TripListScrollView: View {
                                 }
                             }
                     }
+                    .padding(.vertical)
                     .containerRelativeFrame(.horizontal, count: 1, spacing: 16)
                     .scrollTransition { content, phase in
                         content
                             .opacity(phase.isIdentity ? 1.0 : 0.8)
                             .scaleEffect(y: phase.isIdentity ? 1.0 : 0.9)
                     }
-                    
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            tripToDelete = trip
+                            showTripDeleteAlert.toggle()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    } preview: {
+                        TripListRowView(trip: trip, disabled: false)
+                            .frame(width: 300, height: 440)
+                            .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 10))
+                    }
                 }
                 
                 //                if shouldShowCTA {
@@ -68,6 +91,16 @@ struct TripListScrollView: View {
         }
         .contentMargins(.horizontal, 24, for: .scrollContent)
         .scrollTargetBehavior(.paging)
+        .alert("Delete Trip", isPresented: $showTripDeleteAlert) {
+            Button("Cancel", role: .cancel) {
+                tripToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                deleteTrip()
+            }
+        } message: {
+            Text("Are you sure you want to delete this trip? This cannot be undone.")
+        }
     }
 }
 
