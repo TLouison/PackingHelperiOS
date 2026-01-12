@@ -27,9 +27,9 @@ struct SectionedPackingListView: View {
     @Binding var editingList: PackingList?
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
+    @Binding var selectedUser: User?
 
     // Local state
-    @State private var selectedUser: User?
     @State private var collapsedSections: Set<String> = []
     @State private var editingItemId: PersistentIdentifier?
 
@@ -84,85 +84,62 @@ struct SectionedPackingListView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: 8) {
+                // Add new item section (global)
+                if isAddingNewItem {
+                    NewItemRow(
+                        itemName: $newItemName,
+                        itemCount: $newItemCount,
+                        itemUser: $newItemUser,
+                        itemList: $newItemList,
+                        listOptions: filteredLists,
+                        showUserPicker: hasMultiplePackers,
+                        onCommit: {
+                            if let list = newItemList {
+                                addNewItem(to: list)
+                            }
+                        },
+                        onCancel: cancelAddingNewItem
+                    )
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+                }
 
-            VStack(spacing: 0) {
-                // User selector if multiple packers
-                if hasMultiplePackers {
-                    UserSelector(
-                        users: users ?? [],
-                        selectedUser: $selectedUser
+                // List sections
+                ForEach(filteredLists) { list in
+                    PackingListSection(
+                        packingList: list,
+                        users: users,
+                        isExpanded: isExpanded(for: list),
+                        editingItemId: $editingItemId,
+                        onTogglePacked: togglePacked,
+                        onUpdateItem: updateItem,
+                        onDeleteItem: deleteItem,
+                        onEditList: { editingList = list },
+                        onDeleteList: { deleteList(list) }
                     )
                 }
 
-                ScrollView {
-                    VStack(spacing: 8) {
-                        // Add new item section (global)
-                        if isAddingNewItem {
-                            NewItemRow(
-                                itemName: $newItemName,
-                                itemCount: $newItemCount,
-                                itemUser: $newItemUser,
-                                itemList: $newItemList,
-                                listOptions: filteredLists,
-                                showUserPicker: hasMultiplePackers,
-                                onCommit: {
-                                    if let list = newItemList {
-                                        addNewItem(to: list)
-                                    }
-                                },
-                                onCancel: cancelAddingNewItem
-                            )
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .top).combined(with: .opacity),
-                                removal: .opacity
-                            ))
-                        }
+                // Global packed items section
+                if !allPackedItems.isEmpty {
+                    PackedItemsSection(
+                        items: allPackedItems,
+                        onTogglePacked: togglePacked,
+                        onDeleteItem: deleteItem
+                    )
+                    .padding(.top, 8)
+                }
 
-                        // List sections
-                        ForEach(filteredLists) { list in
-                            PackingListSection(
-                                packingList: list,
-                                users: users,
-                                isExpanded: isExpanded(for: list),
-                                editingItemId: $editingItemId,
-                                onTogglePacked: togglePacked,
-                                onUpdateItem: updateItem,
-                                onDeleteItem: deleteItem,
-                                onEditList: { editingList = list },
-                                onDeleteList: { deleteList(list) }
-                            )
-                        }
-
-                        // Global packed items section
-                        if !allPackedItems.isEmpty {
-                            PackedItemsSection(
-                                items: allPackedItems,
-                                onTogglePacked: togglePacked,
-                                onDeleteItem: deleteItem
-                            )
-                            .padding(.top, 8)
-                        }
-
-                        // Empty state
-                        if filteredLists.allSatisfy({ ($0.items?.isEmpty ?? true) }) && !isAddingNewItem {
-                            EmptyStateView()
-                                .padding(.top, 60)
-                        }
-                    }
-                    .padding()
-                    .padding(.bottom, 80)
+                // Empty state
+                if filteredLists.allSatisfy({ ($0.items?.isEmpty ?? true) }) && !isAddingNewItem {
+                    EmptyStateView()
+                        .padding(.top, 60)
                 }
             }
-        }
-        .navigationTitle(title ?? "Packing")
-        .navigationBarTitleDisplayMode(.inline)
-        .overlay(alignment: .bottom) {
-            if let firstList = filteredLists.first {
-                PackingSummaryBar(packingList: firstList)
-            }
+            .padding()
         }
         .onAppear {
             loadCollapseState()

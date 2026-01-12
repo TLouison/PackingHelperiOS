@@ -36,9 +36,9 @@ struct UnifiedPackingListView: View {
     @Binding var editingList: PackingList?
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
+    @Binding var selectedUser: User?
 
     // Local state
-    @State private var selectedUser: User?
     @State private var selectedList: PackingList?
 
     @State private var newItemName = ""
@@ -79,7 +79,8 @@ struct UnifiedPackingListView: View {
         isAddingNewItem: Binding<Bool> = .constant(false),
         editingList: Binding<PackingList?> = .constant(nil),
         showingAddListSheet: Binding<Bool> = .constant(false),
-        isApplyingDefaultPackingList: Binding<Bool> = .constant(false)
+        isApplyingDefaultPackingList: Binding<Bool> = .constant(false),
+        selectedUser: Binding<User?> = .constant(nil)
     ) {
         self.trip = trip
         self._standaloneLists = State(initialValue: lists)
@@ -92,6 +93,7 @@ struct UnifiedPackingListView: View {
         self._editingList = editingList
         self._showingAddListSheet = showingAddListSheet
         self._isApplyingDefaultPackingList = isApplyingDefaultPackingList
+        self._selectedUser = selectedUser
     }
     
     var hasMultiplePackers: Bool {
@@ -130,103 +132,80 @@ struct UnifiedPackingListView: View {
     }
     
     var body: some View {
-        ZStack {
-            Color(UIColor.systemGroupedBackground)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // User selector if multiple packers
-                if hasMultiplePackers {
-                    UserSelector(
-                        users: users ?? [],
-                        selectedUser: $selectedUser
+        ScrollView {
+            VStack(spacing: 16) {
+                // Add new item section
+                if effectiveIsAddingNewItem {
+                    NewItemRow(
+                        itemName: $newItemName,
+                        itemCount: $newItemCount,
+                        itemUser: $newItemUser,
+                        itemList: $newItemList,
+                        listOptions: filteredLists,
+                        showUserPicker: hasMultiplePackers,
+                        onCommit: {
+                            if let list = newItemList {
+                                addNewItem(to: list)
+                            }
+                        },
+                        onCancel: cancelAddingNewItem
                     )
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .opacity
+                    ))
                 }
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Add new item section
-                        if effectiveIsAddingNewItem {
-                            NewItemRow(
-                                itemName: $newItemName,
-                                itemCount: $newItemCount,
-                                itemUser: $newItemUser,
-                                itemList: $newItemList,
-                                listOptions: filteredLists,
-                                showUserPicker: hasMultiplePackers,
-                                onCommit: {
-                                    if let list = newItemList {
-                                        addNewItem(to: list)
-                                    }
-                                },
-                                onCancel: cancelAddingNewItem
-                            )
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .top).combined(with: .opacity),
-                                removal: .opacity
-                            ))
-                        }
-                        
-                        // If we are working on a template, put all items in a section
-                        // together. Otherwise, separate them by packed/unpacked
-                        if mode == .templating {
-                            UnpackedItemsSection(
-                                items: allItems,
-                                mode: mode,
-                                editingItemId: $editingItemId,
-                                onTogglePacked: togglePacked,
-                                onUpdateItem: updateItem,
-                                onDeleteItem: deleteItem
-                                )
-                            
-                            
-                            // Empty state
-                            if (allItems.isEmpty && !effectiveIsAddingNewItem) {
-                                EmptyStateView()
-                                    .padding(.top, 60)
-                            }
-                        } else {
-                            // Unpacked items
-                            let unpackedItems = getFilteredItems(packed: false)
-                            if !unpackedItems.isEmpty {
-                                UnpackedItemsSection(
-                                    items: unpackedItems,
-                                    mode: mode,
-                                    editingItemId: $editingItemId,
-                                    onTogglePacked: togglePacked,
-                                    onUpdateItem: updateItem,
-                                    onDeleteItem: deleteItem
-                                )
-                            }
-                            
-                            let packedItems = getFilteredItems(packed: true)
-                            // Packed items
-                            if !packedItems.isEmpty {
-                                PackedItemsSection(
-                                    items: packedItems,
-                                    onTogglePacked: togglePacked,
-                                    onDeleteItem: deleteItem
-                                )
-                            }
-                            
-                            // Empty state
-                            if (packedItems.isEmpty && unpackedItems.isEmpty && !effectiveIsAddingNewItem) {
-                                Spacer()
-                                EmptyStateView()
-                            }
-                        }
+
+                // If we are working on a template, put all items in a section
+                // together. Otherwise, separate them by packed/unpacked
+                if mode == .templating {
+                    UnpackedItemsSection(
+                        items: allItems,
+                        mode: mode,
+                        editingItemId: $editingItemId,
+                        onTogglePacked: togglePacked,
+                        onUpdateItem: updateItem,
+                        onDeleteItem: deleteItem
+                        )
+
+
+                    // Empty state
+                    if (allItems.isEmpty && !effectiveIsAddingNewItem) {
+                        EmptyStateView()
+                            .padding(.top, 60)
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom, 80)
+                } else {
+                    // Unpacked items
+                    let unpackedItems = getFilteredItems(packed: false)
+                    if !unpackedItems.isEmpty {
+                        UnpackedItemsSection(
+                            items: unpackedItems,
+                            mode: mode,
+                            editingItemId: $editingItemId,
+                            onTogglePacked: togglePacked,
+                            onUpdateItem: updateItem,
+                            onDeleteItem: deleteItem
+                        )
+                    }
+
+                    let packedItems = getFilteredItems(packed: true)
+                    // Packed items
+                    if !packedItems.isEmpty {
+                        PackedItemsSection(
+                            items: packedItems,
+                            onTogglePacked: togglePacked,
+                            onDeleteItem: deleteItem
+                        )
+                    }
+
+                    // Empty state
+                    if (packedItems.isEmpty && unpackedItems.isEmpty && !effectiveIsAddingNewItem) {
+                        Spacer()
+                        EmptyStateView()
+                    }
                 }
             }
-        }
-        .navigationTitle(title ?? "Packing List")
-        .navigationBarTitleDisplayMode(.large)
-        .overlay(alignment: .bottom) {
-            if let selectedList = selectedList {
-                PackingSummaryBar(packingList: selectedList)
-            }
+            .padding(.horizontal)
         }
         .onAppear {
             // New items get first user and first list by default

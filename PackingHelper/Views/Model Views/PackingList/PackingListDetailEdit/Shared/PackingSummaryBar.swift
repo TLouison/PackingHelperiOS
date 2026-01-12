@@ -6,16 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PackingSummaryBar: View {
-    let packingList: PackingList
-    
+    let packingLists: [PackingList]
+
     var totalItems: Int {
-        packingList.items?.count ?? 0
+        packingLists.reduce(0) { $0 + ($1.items?.count ?? 0) }
     }
-    
+
     var packedItems: Int {
-        packingList.items?.filter { $0.isPacked }.count ?? 0
+        packingLists.reduce(0) { $0 + ($1.items?.filter { $0.isPacked }.count ?? 0) }
     }
     
     var progress: Double {

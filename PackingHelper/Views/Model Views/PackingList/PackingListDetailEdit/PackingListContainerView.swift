@@ -22,6 +22,7 @@ struct PackingListContainerView: View {
     @State private var showingAddListSheet: Bool = false
     @State private var isApplyingDefaultPackingList: Bool = false
     @State private var isAddingNewItem: Bool = false
+    @State private var selectedUser: User?
 
     @AppStorage("packingListViewMode") private var viewMode: PackingListViewMode = .unified
 
@@ -29,36 +30,74 @@ struct PackingListContainerView: View {
         trip.lists ?? []
     }
 
-    var body: some View {
-        Group {
-            switch viewMode {
-            case .unified:
-                UnifiedPackingListView(
-                    trip: trip,
-                    users: users,
-                    listType: listType,
-                    isDayOf: isDayOf,
-                    title: title,
-                    mode: .unified,
-                    isAddingNewItem: $isAddingNewItem,
-                    editingList: $editingList,
-                    showingAddListSheet: $showingAddListSheet,
-                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
-                )
-            case .sectioned:
-                SectionedPackingListView(
-                    users: users,
-                    listType: listType,
-                    isDayOf: isDayOf,
-                    title: title,
-                    trip: trip,
-                    isAddingNewItem: $isAddingNewItem,
-                    editingList: $editingList,
-                    showingAddListSheet: $showingAddListSheet,
-                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
-                )
+    private var hasMultiplePackers: Bool {
+        guard let users = users else { return false }
+        return users.count > 1
+    }
+
+    private var filteredLists: [PackingList] {
+        let filtered = lists.filter { list in
+            let typeMatch = list.type == listType && list.isDayOf == isDayOf
+            if let selectedUser = selectedUser {
+                return list.user == selectedUser && typeMatch
+            } else {
+                return typeMatch
             }
         }
+        return PackingList.sorted(filtered, sortOrder: .byDate)
+    }
+
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // User selector if multiple packers
+                if hasMultiplePackers {
+                    UserSelector(
+                        users: users ?? [],
+                        selectedUser: $selectedUser
+                    )
+                }
+
+                Group {
+                    switch viewMode {
+                    case .unified:
+                        UnifiedPackingListView(
+                            trip: trip,
+                            users: users,
+                            listType: listType,
+                            isDayOf: isDayOf,
+                            title: title,
+                            mode: .unified,
+                            isAddingNewItem: $isAddingNewItem,
+                            editingList: $editingList,
+                            showingAddListSheet: $showingAddListSheet,
+                            isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                            selectedUser: $selectedUser
+                        )
+                    case .sectioned:
+                        SectionedPackingListView(
+                            users: users,
+                            listType: listType,
+                            isDayOf: isDayOf,
+                            title: title,
+                            trip: trip,
+                            isAddingNewItem: $isAddingNewItem,
+                            editingList: $editingList,
+                            showingAddListSheet: $showingAddListSheet,
+                            isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                            selectedUser: $selectedUser
+                        )
+                    }
+                }
+
+                PackingSummaryBar(packingLists: filteredLists)
+            }
+        }
+        .navigationTitle(title ?? "Packing")
+        .navigationBarTitleDisplayMode(.inline)
         .overlay {
             VStack {
                 Spacer()
@@ -87,7 +126,7 @@ struct PackingListContainerView: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 20)
+                .padding(.bottom, 75)
             }
         }
         .sheet(item: $editingList) { list in
