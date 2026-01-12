@@ -32,7 +32,7 @@ struct CreateListMenu: View {
                         isAddingNewPackingList.toggle()
                     }
                 }
-                Button("Apply Default List") {
+                Button("Apply Template List") {
                     withAnimation {
                         isApplyingDefaultPackingList.toggle()
                     }

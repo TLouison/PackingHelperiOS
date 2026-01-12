@@ -70,7 +70,7 @@ struct DefaultPackingListView: View {
                             "Try adjusting your filters" :
                             "Create your first packing list to get started",
                         actionButtonTitle: hasActiveFilters ?
-                            "Clear All Filters" : "Create Packing List",
+                            "Clear All Filters" : "Create Template List",
                         onAction: hasActiveFilters ?
                             clearFilters : { showingAddSheet.toggle() }
                     )
@@ -79,10 +79,10 @@ struct DefaultPackingListView: View {
                     packingListsGrid
                 }
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Packing Lists")
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color(.systemGroupedBackground), for: .navigationBar)
+//            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Template Lists")
+//            .toolbarBackground(.visible, for: .navigationBar)
+//            .toolbarBackground(Color(.systemGroupedBackground), for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 16) {

@@ -103,7 +103,7 @@ final class PackingList {
     var template: Bool = false
     var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
     var isDayOf: Bool = false // Is this a Day-of list?
-    var appliedFromTemplate: PackingList? = nil // What default list did we create this list from?
+    var appliedFromTemplate: PackingList? = nil // What template list did we create this list from?
     @Relationship(deleteRule:.noAction, inverse: \PackingList.appliedFromTemplate) var appliedToLists: [PackingList]?
 
     var user: User?
@@ -254,7 +254,7 @@ extension PackingList {
 
 
     static func sampleDefaultList() -> PackingList {
-        return PackingList(type: .packing, template: true, name: "Default List", countAsDays: false)
+        return PackingList(type: .packing, template: true, name: "Template List", countAsDays: false)
     }
 }
 

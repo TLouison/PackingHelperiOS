@@ -133,13 +133,18 @@ struct TripListView: View {
                                 toggleVisibleTrips()
                             }
                         } label: {
-                            Image(systemName: visibleTripsSymbol.name)
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.accentColor.gradient)
-                                .contentTransition(
-                                    .symbolEffect(.replace.downUp.byLayer)
-                                )
-                                .symbolEffect(.bounce, value: visibleTripsSymbol == .completed ? upcomingTrips.count : completedTrips.count)
+                            HStack {
+                                Image(systemName: visibleTripsSymbol.name)
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(visibleTripsSymbol == .completed ? Color.green.gradient : Color.accentColor.gradient)
+                                    .contentTransition(
+                                        .symbolEffect(.replace.downUp.byLayer)
+                                    )
+                                    .symbolEffect(.bounce, value: visibleTripsSymbol == .completed ? upcomingTrips.count : completedTrips.count)
+                                    .labelStyle(.titleAndIcon)
+                                Text(isShowingCompletedTrips ? "Upcoming" : "Completed")
+                                    .font(.callout)
+                            }
                         }
                     }
                 }

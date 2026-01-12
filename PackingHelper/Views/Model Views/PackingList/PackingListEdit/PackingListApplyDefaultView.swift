@@ -76,7 +76,7 @@ struct PackingListApplyDefaultView: View {
                     }
                 }
             }
-            .navigationTitle("Apply Default Lists")
+            .navigationTitle("Apply Template Lists")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

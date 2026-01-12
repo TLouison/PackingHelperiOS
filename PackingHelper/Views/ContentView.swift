@@ -25,7 +25,7 @@ struct ContentView: View {
             
             DefaultPackingListView()
                 .tabItem {
-                    Label("Lists", systemImage: suitcaseIcon)
+                    Label("Templates", systemImage: suitcaseIcon)
                 }
                 .tag(1)
             
