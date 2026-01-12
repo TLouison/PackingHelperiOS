@@ -12,13 +12,12 @@ import SwiftUI
 import SwiftData
 
 struct PackingListContainerView: View {
-    @State var lists: [PackingList]
     let users: [User]?
     let listType: ListType
     let isDayOf: Bool
     let title: String?
     let trip: Trip
-    
+
     @State private var editingList: PackingList? = nil
     @State private var showingAddListSheet: Bool = false
     @State private var isApplyingDefaultPackingList: Bool = false
@@ -26,12 +25,16 @@ struct PackingListContainerView: View {
 
     @AppStorage("packingListViewMode") private var viewMode: PackingListViewMode = .unified
 
+    private var lists: [PackingList] {
+        trip.lists ?? []
+    }
+
     var body: some View {
         Group {
             switch viewMode {
             case .unified:
                 UnifiedPackingListView(
-                    lists: lists,
+                    trip: trip,
                     users: users,
                     listType: listType,
                     isDayOf: isDayOf,
@@ -44,7 +47,6 @@ struct PackingListContainerView: View {
                 )
             case .sectioned:
                 SectionedPackingListView(
-                    lists: lists,
                     users: users,
                     listType: listType,
                     isDayOf: isDayOf,
@@ -92,7 +94,7 @@ struct PackingListContainerView: View {
             PackingListEditView(packingList: list, trip: trip, isDeleted: .constant(false))
         }
         .sheet(isPresented: $showingAddListSheet) {
-            AddPackingListSheet(listType: listType, isDayOf: isDayOf, users: users, onAdd: { _ in })
+            AddPackingListSheet(trip: trip, listType: listType, isDayOf: isDayOf, users: users, onAdd: { _ in })
                 .presentationDetents([.height(300)])
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {

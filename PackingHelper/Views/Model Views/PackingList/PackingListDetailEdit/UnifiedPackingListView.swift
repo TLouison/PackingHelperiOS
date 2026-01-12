@@ -22,7 +22,7 @@ enum UnifiedPackingListMode: String {
 struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @State var lists: [PackingList]
+    let trip: Trip?
     let users: [User]?
 
     let listType: ListType
@@ -49,18 +49,28 @@ struct UnifiedPackingListView: View {
     @FocusState private var isTextFieldFocused: Bool
     @State private var editingItemId: PersistentIdentifier?
 
-    // For standalone mode (templating/detail)
+    // For standalone mode (templating/detail) - stores lists passed in
+    @State private var standaloneLists: [PackingList] = []
     @State private var localIsAddingNewItem = false
     @State private var localEditingList: PackingList? = nil
     @State private var localShowingAddListSheet = false
     @State private var localIsApplyingDefaultPackingList = false
+
+    private var lists: [PackingList] {
+        if let trip = trip {
+            return trip.lists ?? []
+        } else {
+            return standaloneLists
+        }
+    }
 
     private var effectiveIsAddingNewItem: Bool {
         mode == .unified ? isAddingNewItem : localIsAddingNewItem
     }
 
     init(
-        lists: [PackingList],
+        trip: Trip? = nil,
+        lists: [PackingList] = [],
         users: [User]?,
         listType: ListType,
         isDayOf: Bool,
@@ -71,7 +81,8 @@ struct UnifiedPackingListView: View {
         showingAddListSheet: Binding<Bool> = .constant(false),
         isApplyingDefaultPackingList: Binding<Bool> = .constant(false)
     ) {
-        self._lists = State(initialValue: lists)
+        self.trip = trip
+        self._standaloneLists = State(initialValue: lists)
         self.users = users
         self.listType = listType
         self.isDayOf = isDayOf
@@ -375,12 +386,13 @@ struct AddPackingListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
+    let trip: Trip
     let listType: ListType
     let isDayOf: Bool
 
     let users: [User]?
     let onAdd: (PackingList) -> Void
-    
+
     @State private var listName = ""
     @State private var listUser: User?
     @FocusState private var isFocused: Bool
@@ -425,6 +437,7 @@ struct AddPackingListSheet: View {
             newList.user = user
         }
         modelContext.insert(newList)
+        trip.addList(newList)
 
         onAdd(newList)
         dismiss()

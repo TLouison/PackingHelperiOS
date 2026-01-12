@@ -16,7 +16,6 @@ import SwiftData
 struct SectionedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @State var lists: [PackingList]
     let users: [User]?
     let listType: ListType
     let isDayOf: Bool
@@ -43,6 +42,10 @@ struct SectionedPackingListView: View {
     var hasMultiplePackers: Bool {
         guard let users = users else { return false }
         return users.count > 1
+    }
+
+    private var lists: [PackingList] {
+        trip.lists ?? []
     }
 
     var filteredLists: [PackingList] {
@@ -203,9 +206,6 @@ struct SectionedPackingListView: View {
 
     private func deleteList(_ list: PackingList) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Remove from local state array
-            lists.removeAll { $0.persistentModelID == list.persistentModelID }
-            // Delete from model context
             modelContext.delete(list)
         }
     }

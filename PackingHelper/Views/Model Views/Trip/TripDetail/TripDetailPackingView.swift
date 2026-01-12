@@ -60,7 +60,6 @@ struct TripDetailPackingView: View {
                         if !regularLists.isEmpty {
                             NavigationLink {
                                 PackingListContainerView(
-                                    lists: regularLists,
                                     users: trip.packers,
                                     listType: listType,
                                     isDayOf: false,
@@ -101,7 +100,7 @@ struct TripDetailPackingView: View {
                     if !dayOfPackingLists.isEmpty {
                         NavigationLink {
                             UnifiedPackingListView(
-                                lists: dayOfPackingLists,
+                                trip: trip,
                                 users: trip.packers,
                                 listType: .packing,
                                 isDayOf: true,
@@ -134,7 +133,7 @@ struct TripDetailPackingView: View {
                     if !dayOfTaskLists.isEmpty {
                         NavigationLink {
                             UnifiedPackingListView(
-                                lists: dayOfTaskLists,
+                                trip: trip,
                                 users: trip.packers,
                                 listType: .task,
                                 isDayOf: true,
