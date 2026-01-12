@@ -30,20 +30,58 @@ struct UnifiedPackingListView: View {
     let title: String?
 
     let mode: UnifiedPackingListMode
-    
+
+    // Bindings from container (optional - for shared toolbar)
+    @Binding var isAddingNewItem: Bool
+    @Binding var editingList: PackingList?
+    @Binding var showingAddListSheet: Bool
+    @Binding var isApplyingDefaultPackingList: Bool
+
+    // Local state
     @State private var selectedUser: User?
-    
     @State private var selectedList: PackingList?
-    @State private var isAddingNewItem = false
-    
+
     @State private var newItemName = ""
     @State private var newItemCount = 1
     @State private var newItemUser: User? = nil
     @State private var newItemList: PackingList? = nil
-    
+
     @FocusState private var isTextFieldFocused: Bool
     @State private var editingItemId: PersistentIdentifier?
-    @State private var showingAddListSheet = false
+
+    // For standalone mode (templating/detail)
+    @State private var localIsAddingNewItem = false
+    @State private var localEditingList: PackingList? = nil
+    @State private var localShowingAddListSheet = false
+    @State private var localIsApplyingDefaultPackingList = false
+
+    private var effectiveIsAddingNewItem: Bool {
+        mode == .unified ? isAddingNewItem : localIsAddingNewItem
+    }
+
+    init(
+        lists: [PackingList],
+        users: [User]?,
+        listType: ListType,
+        isDayOf: Bool,
+        title: String?,
+        mode: UnifiedPackingListMode,
+        isAddingNewItem: Binding<Bool> = .constant(false),
+        editingList: Binding<PackingList?> = .constant(nil),
+        showingAddListSheet: Binding<Bool> = .constant(false),
+        isApplyingDefaultPackingList: Binding<Bool> = .constant(false)
+    ) {
+        self._lists = State(initialValue: lists)
+        self.users = users
+        self.listType = listType
+        self.isDayOf = isDayOf
+        self.title = title
+        self.mode = mode
+        self._isAddingNewItem = isAddingNewItem
+        self._editingList = editingList
+        self._showingAddListSheet = showingAddListSheet
+        self._isApplyingDefaultPackingList = isApplyingDefaultPackingList
+    }
     
     var hasMultiplePackers: Bool {
         guard let users = users else { return false }
@@ -97,7 +135,7 @@ struct UnifiedPackingListView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // Add new item section
-                        if isAddingNewItem {
+                        if effectiveIsAddingNewItem {
                             NewItemRow(
                                 itemName: $newItemName,
                                 itemCount: $newItemCount,
@@ -105,7 +143,6 @@ struct UnifiedPackingListView: View {
                                 itemList: $newItemList,
                                 listOptions: filteredLists,
                                 showUserPicker: hasMultiplePackers,
-                                isFocused: _isTextFieldFocused,
                                 onCommit: {
                                     if let list = newItemList {
                                         addNewItem(to: list)
@@ -133,7 +170,7 @@ struct UnifiedPackingListView: View {
                             
                             
                             // Empty state
-                            if (allItems.isEmpty && !isAddingNewItem) {
+                            if (allItems.isEmpty && !effectiveIsAddingNewItem) {
                                 EmptyStateView()
                                     .padding(.top, 60)
                             }
@@ -162,9 +199,9 @@ struct UnifiedPackingListView: View {
                             }
                             
                             // Empty state
-                            if (packedItems.isEmpty && unpackedItems.isEmpty && !isAddingNewItem) {
+                            if (packedItems.isEmpty && unpackedItems.isEmpty && !effectiveIsAddingNewItem) {
+                                Spacer()
                                 EmptyStateView()
-                                    .padding(.top, 60)
                             }
                         }
                     }
@@ -175,86 +212,67 @@ struct UnifiedPackingListView: View {
         }
         .navigationTitle(title ?? "Packing List")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if mode != .templating {
-                    Button {
-                        showingAddListSheet.toggle()
-                    } label: {
-                        Image(systemName: "text.badge.plus")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                    .glassEffectIfAvailable()
-                }
-
-                if isAddingNewItem {
-                    Button(action: cancelAddingNewItem) {
-                        Image(systemName: "x.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                    }
-                    .glassEffectIfAvailable()
-                } else {
-                    Button(action: startAddingNewItem) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                    .glassEffectIfAvailable()
-                }
-            }
-        }
         .overlay(alignment: .bottom) {
             if let selectedList = selectedList {
                 PackingSummaryBar(packingList: selectedList)
             }
-        }
-        .sheet(isPresented: $showingAddListSheet) {
-            AddPackingListSheet(listType: listType, isDayOf: isDayOf, users: users, onAdd: { newList in
-                selectedList = newList
-            })
-            .presentationDetents([.height(300)])
         }
         .onAppear {
             // New items get first user and first list by default
             newItemUser = users?.first
             newItemList = lists.first
         }
+        .onChange(of: effectiveIsAddingNewItem) { _, isAdding in
+            if isAdding {
+                isTextFieldFocused = true
+            }
+        }
     }
     
     private func startAddingNewItem() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            isAddingNewItem = true
+            if mode == .unified {
+                isAddingNewItem = true
+            } else {
+                localIsAddingNewItem = true
+            }
             isTextFieldFocused = true
         }
     }
-    
+
     private func addNewItem(to list: PackingList) {
         guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             cancelAddingNewItem()
             return
         }
-        
+
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
             modelContext.insert(newItem)
-            
+
             list.addItem(newItem)
-            
+
             // Reset fields
             newItemName = ""
             newItemCount = 1
-            isAddingNewItem = false
+            if mode == .unified {
+                isAddingNewItem = false
+            } else {
+                localIsAddingNewItem = false
+            }
             isTextFieldFocused = false
         }
     }
-    
+
     private func cancelAddingNewItem() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             newItemName = ""
             newItemCount = 1
-            isAddingNewItem = false
+            if mode == .unified {
+                isAddingNewItem = false
+            } else {
+                localIsAddingNewItem = false
+            }
             isTextFieldFocused = false
         }
     }
@@ -519,7 +537,7 @@ private struct CategoryChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -533,3 +551,4 @@ private struct CategoryChip: View {
         }
     }
 }
+

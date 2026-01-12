@@ -10,12 +10,12 @@ import SwiftData
 
 struct TripDetailPackingView: View {
     let trip: Trip
-    
+
     @Query var lists: [PackingList]
-    
+
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
-    
+
     @State private var selectedUser: User?
     
     var filteredLists: [PackingList] {
@@ -31,7 +31,7 @@ struct TripDetailPackingView: View {
                 
                 CreateListMenu(
                     isAddingNewPackingList: $isAddingNewPackingList,
-                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
                 )
             }
         } content: {
@@ -43,7 +43,7 @@ struct TripDetailPackingView: View {
                 } actions: {
                     CreateListMenu(
                         isAddingNewPackingList: $isAddingNewPackingList,
-                        isApplyingDefaultPackingList: $isApplyingDefaultPackingList
+                        isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
                     )
                 }
             }
@@ -59,13 +59,13 @@ struct TripDetailPackingView: View {
                         let regularLists = filteredLists.filter { $0.type == listType && !$0.isDayOf }
                         if !regularLists.isEmpty {
                             NavigationLink {
-                                UnifiedPackingListView(
+                                PackingListContainerView(
                                     lists: regularLists,
                                     users: trip.packers,
                                     listType: listType,
                                     isDayOf: false,
                                     title: trip.name,
-                                    mode: .unified
+                                    trip: trip
                                 )
                             } label: {
                                 HStack {

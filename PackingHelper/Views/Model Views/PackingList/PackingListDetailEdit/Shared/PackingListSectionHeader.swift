@@ -1,0 +1,88 @@
+//
+//  PackingListSectionHeader.swift
+//  PackingHelper
+//
+//  Created by Claude on 1/11/26.
+//
+
+import SwiftUI
+import SwiftData
+
+struct PackingListSectionHeader: View {
+    let packingList: PackingList
+    @Binding var isExpanded: Bool
+    let onAddItem: () -> Void
+    let onEditList: () -> Void
+    let onDeleteList: () -> Void
+
+    private var isEmpty: Bool {
+        packingList.items?.isEmpty ?? true
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Collapse chevron
+            Group {
+                Image(systemName: "chevron.down")
+                    .font(.caption)
+                    .rotationEffect(isExpanded ? .degrees(0) : .degrees(-90))
+                    .contentTransition(.interpolate)
+                    .foregroundStyle(.secondary)
+                
+                // List name
+                Text(packingList.name)
+                    .font(.headline)
+                    .bold()
+                
+                Spacer()
+            }
+            .onTapGesture {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }
+
+            // Mini progress gauge
+            TripDetailPackingProgressView(
+                val: Double(packingList.completeItems.count),
+                total: Double(packingList.totalItems),
+                image: PackingList.icon(listType: packingList.type)
+            )
+            .scaleEffect(0.6)
+
+            // Add button
+            Button {
+                onAddItem()
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .imageScale(.medium)
+                    .foregroundStyle(.accent)
+            }
+            .buttonStyle(.plain)
+
+            // Edit button
+            Button {
+                onEditList()
+            } label: {
+                Image(systemName: "pencil.circle.fill")
+                    .imageScale(.medium)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+        }
+        .contentShape(Rectangle())
+        .contextMenu {
+            Button {
+                onEditList()
+            } label: {
+                Label("Edit List", systemImage: "pencil")
+            }
+
+            Button(role: .destructive) {
+                onDeleteList()
+            } label: {
+                Label("Delete List", systemImage: "trash")
+            }
+        }
+    }
+}

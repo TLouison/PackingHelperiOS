@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5101F9962F14950F000DFA0C /* PackingListSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9932F14950F000DFA0C /* PackingListSectionHeader.swift */; };
+		5101F9972F14950F000DFA0C /* SectionCollapseStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9952F14950F000DFA0C /* SectionCollapseStateManager.swift */; };
+		5101F9982F14950F000DFA0C /* PackingListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9922F14950F000DFA0C /* PackingListSection.swift */; };
+		5101F9992F14950F000DFA0C /* PackingListViewMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9942F14950F000DFA0C /* PackingListViewMode.swift */; };
+		5101F99B2F149527000DFA0C /* SectionedPackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F99A2F149527000DFA0C /* SectionedPackingListView.swift */; };
+		5101F9A52F14B69B000DFA0C /* PackingListContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9A42F14B69B000DFA0C /* PackingListContainerView.swift */; };
 		510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728102C1FD47300EBF362 /* UserPickerView.swift */; };
 		510728132C1FD5D000EBF362 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728122C1FD5D000EBF362 /* UserListView.swift */; };
 		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
@@ -86,6 +92,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5101F9922F14950F000DFA0C /* PackingListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListSection.swift; sourceTree = "<group>"; };
+		5101F9932F14950F000DFA0C /* PackingListSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListSectionHeader.swift; sourceTree = "<group>"; };
+		5101F9942F14950F000DFA0C /* PackingListViewMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListViewMode.swift; sourceTree = "<group>"; };
+		5101F9952F14950F000DFA0C /* SectionCollapseStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionCollapseStateManager.swift; sourceTree = "<group>"; };
+		5101F99A2F149527000DFA0C /* SectionedPackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedPackingListView.swift; sourceTree = "<group>"; };
+		5101F9A42F14B69B000DFA0C /* PackingListContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListContainerView.swift; sourceTree = "<group>"; };
 		510728102C1FD47300EBF362 /* UserPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerView.swift; sourceTree = "<group>"; };
 		510728122C1FD5D000EBF362 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
 		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
@@ -496,9 +508,11 @@
 		51C8BB702C25220C005D2B71 /* PackingListDetailEdit */ = {
 			isa = PBXGroup;
 			children = (
+				5101F9A42F14B69B000DFA0C /* PackingListContainerView.swift */,
+				51B8A7062E7A0B860068296E /* UnifiedPackingListView.swift */,
+				5101F99A2F149527000DFA0C /* SectionedPackingListView.swift */,
 				51C8BB992C2A7A69005D2B71 /* Shared */,
 				51C8BB972C2A7A4E005D2B71 /* Single List */,
-				51B8A7062E7A0B860068296E /* UnifiedPackingListView.swift */,
 			);
 			path = PackingListDetailEdit;
 			sourceTree = "<group>";
@@ -531,6 +545,10 @@
 		51C8BB992C2A7A69005D2B71 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5101F9922F14950F000DFA0C /* PackingListSection.swift */,
+				5101F9932F14950F000DFA0C /* PackingListSectionHeader.swift */,
+				5101F9942F14950F000DFA0C /* PackingListViewMode.swift */,
+				5101F9952F14950F000DFA0C /* SectionCollapseStateManager.swift */,
 				5192C86A2EEFA7540034D2B4 /* PackingListEditSection.swift */,
 				5192C8682EEFA7310034D2B4 /* PackingAddItemCountPickerView.swift */,
 				51AC5FB32C31B47F00DF83F6 /* CreateListMenu.swift */,
@@ -666,7 +684,12 @@
 				51AC5FB42C31B47F00DF83F6 /* CreateListMenu.swift in Sources */,
 				518AE7902D25EC6F00F8D8E9 /* DeveloperMenu.swift in Sources */,
 				51B8A7102E7A7B690068296E /* ItemRowViews.swift in Sources */,
+				5101F9962F14950F000DFA0C /* PackingListSectionHeader.swift in Sources */,
+				5101F9972F14950F000DFA0C /* SectionCollapseStateManager.swift in Sources */,
+				5101F9982F14950F000DFA0C /* PackingListSection.swift in Sources */,
+				5101F9992F14950F000DFA0C /* PackingListViewMode.swift in Sources */,
 				51C8BB732C25234F005D2B71 /* PackingListDetailItemListView.swift in Sources */,
+				5101F99B2F149527000DFA0C /* SectionedPackingListView.swift in Sources */,
 				519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */,
 				51AC5FB72C4326C400DF83F6 /* MissingUsersView.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
@@ -687,6 +710,7 @@
 				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
 				5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */,
 				5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */,
+				5101F9A52F14B69B000DFA0C /* PackingListContainerView.swift in Sources */,
 				518AE7942D25F85D00F8D8E9 /* UserView.swift in Sources */,
 				51466B342ADB3EA200258ABB /* TransitionUtilities.swift in Sources */,
 				5110C6402AFD7F45002742D0 /* PackingListEditView.swift in Sources */,

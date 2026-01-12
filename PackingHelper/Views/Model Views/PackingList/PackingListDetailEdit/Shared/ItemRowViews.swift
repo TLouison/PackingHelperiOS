@@ -9,6 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct NewItemRow: View {
+    private enum FocusedField {
+        case itemName
+    }
+    
     @Binding var itemName: String
     @Binding var itemCount: Int
     @Binding var itemUser: User?
@@ -17,7 +21,7 @@ struct NewItemRow: View {
     let listOptions: [PackingList]
     let showUserPicker: Bool
     
-    @FocusState var isFocused: Bool
+    @FocusState private var focusedField: FocusedField?
     let onCommit: () -> Void
     let onCancel: () -> Void
     
@@ -33,7 +37,7 @@ struct NewItemRow: View {
         VStack(spacing: 20) {
             HStack(spacing: 12) {
                 TextField("Item name", text: $itemName)
-                    .focused($isFocused)
+                    .focused($focusedField, equals: .itemName)
                     .onSubmit(onCommit)
                 
                 Stepper(value: $itemCount, in: 1...99) {
@@ -78,6 +82,9 @@ struct NewItemRow: View {
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 3, y: 2)
+        .onAppear {
+            focusedField = .itemName
+        }
     }
 }
 
