@@ -65,7 +65,8 @@ struct UnifiedPackingListView: View {
     }
 
     private var effectiveIsAddingNewItem: Bool {
-        mode == .unified ? isAddingNewItem : localIsAddingNewItem
+        // Use bound value for .unified and .templating modes, local value for .detail mode
+        (mode == .unified || mode == .templating) ? isAddingNewItem : localIsAddingNewItem
     }
 
     init(
@@ -221,7 +222,7 @@ struct UnifiedPackingListView: View {
     
     private func startAddingNewItem() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            if mode == .unified {
+            if mode == .unified || mode == .templating {
                 isAddingNewItem = true
             } else {
                 localIsAddingNewItem = true
@@ -245,7 +246,7 @@ struct UnifiedPackingListView: View {
             // Reset fields
             newItemName = ""
             newItemCount = 1
-            if mode == .unified {
+            if mode == .unified || mode == .templating {
                 isAddingNewItem = false
             } else {
                 localIsAddingNewItem = false
@@ -258,7 +259,7 @@ struct UnifiedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             newItemName = ""
             newItemCount = 1
-            if mode == .unified {
+            if mode == .unified || mode == .templating {
                 isAddingNewItem = false
             } else {
                 localIsAddingNewItem = false

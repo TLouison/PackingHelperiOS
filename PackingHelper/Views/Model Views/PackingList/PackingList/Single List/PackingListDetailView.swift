@@ -24,10 +24,7 @@ struct PackingListDetailView: View {
     @State private var isDeleted: Bool = false
 
     @State private var isAddingNewItem = false
-    @State private var newItemName = ""
-    @State private var newItemCount = 1
-    @FocusState private var isTextFieldFocused: Bool
-    
+
     var body: some View {
         UnifiedPackingListView(
             lists: [packingList],
@@ -35,10 +32,42 @@ struct PackingListDetailView: View {
             listType: packingList.type,
             isDayOf: packingList.isDayOf,
             title: packingList.name,
-            mode: .templating
+            mode: .templating,
+            isAddingNewItem: $isAddingNewItem
         )
         .navigationTitle(packingList.name)
         .navigationBarTitleDisplayMode(.inline)
+        .overlay {
+            VStack {
+                Spacer()
+
+                HStack {
+                    Spacer()
+
+                    Group {
+                        if isAddingNewItem {
+                            Button(action: cancelAddingNewItem) {
+                                Image(systemName: "x.circle.fill")
+                                    .resizable()
+                                    .foregroundColor(.gray)
+                            }
+                            .frame(width: 60, height: 60)
+                            .glassEffectIfAvailable()
+                        } else {
+                            Button(action: startAddingNewItem) {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .foregroundColor(.blue)
+                            }
+                            .frame(width: 60, height: 60)
+                            .glassEffectIfAvailable()
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 20)
+            }
+        }
         .toolbar {
             ToolbarItemGroup {
                 if !self.packingList.template {
@@ -52,7 +81,7 @@ struct PackingListDetailView: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
-                
+
                 Button {
                     isShowingListSettings.toggle()
                 } label: {
@@ -74,32 +103,19 @@ struct PackingListDetailView: View {
     func saveListAsDefault() {
         let newDefaultList = PackingList.copyAsTemplate(self.packingList)
         modelContext.insert(newDefaultList)
-        
+
         isShowingSaveSuccessful = true
     }
 
-    private func addNewItem() {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            cancelAddingNewItem()
-            return
-        }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
-            modelContext.insert(newItem)
-            packingList.addItem(newItem)
-            newItemName = ""
-            newItemCount = 1
-            isAddingNewItem = false
-            isTextFieldFocused = false
+    private func startAddingNewItem() {
+        withAnimation {
+            isAddingNewItem = true
         }
     }
-    
+
     private func cancelAddingNewItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            newItemName = ""
-            newItemCount = 1
+        withAnimation {
             isAddingNewItem = false
-            isTextFieldFocused = false
         }
     }
 }

@@ -158,9 +158,9 @@ struct UnifiedItemRow: View {
     private let maxOffset: CGFloat = -52  // Room for floating button + spacing
     private let snapThreshold: CGFloat = -30
 
-    // Only show swipe-to-delete for unpacked items
+    // Show swipe-to-delete for template items (always) or unpacked items (non-template)
     private var showSwipeDelete: Bool {
-        !item.isPacked && mode != .templating
+        mode == .templating || !item.isPacked
     }
 
     // Animate button scale from 0.5 to 1.0 as user swipes
