@@ -14,6 +14,7 @@ struct PackingListSectionHeader: View {
     let onAddItem: () -> Void
     let onEditList: () -> Void
     let onDeleteList: () -> Void
+    var isReorderMode: Bool = false
 
     private var isEmpty: Bool {
         packingList.items?.isEmpty ?? true
@@ -21,67 +22,79 @@ struct PackingListSectionHeader: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Collapse chevron
-            Group {
+            if isReorderMode {
+                // Drag handle
+                Image(systemName: "line.3.horizontal")
+                    .foregroundStyle(.secondary)
+            } else {
+                // Collapse chevron
                 Image(systemName: "chevron.down")
                     .font(.caption)
                     .rotationEffect(isExpanded ? .degrees(0) : .degrees(-90))
                     .contentTransition(.interpolate)
                     .foregroundStyle(.secondary)
-                
-                // List name
+            }
+
+            // List name (always shown)
+            Group {
                 Text(packingList.name)
                     .font(.headline)
                     .bold()
-                
+
                 Spacer()
             }
             .onTapGesture {
-                withAnimation {
-                    isExpanded.toggle()
+                if !isReorderMode {
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
                 }
             }
 
-            // Mini progress gauge
-            TripDetailPackingProgressView(
-                val: Double(packingList.completeItems.count),
-                total: Double(packingList.totalItems),
-                image: PackingList.icon(listType: packingList.type)
-            )
-            .scaleEffect(0.6)
+            if !isReorderMode {
+                // Mini progress gauge
+                TripDetailPackingProgressView(
+                    val: Double(packingList.completeItems.count),
+                    total: Double(packingList.totalItems),
+                    image: PackingList.icon(listType: packingList.type)
+                )
+                .scaleEffect(0.6)
 
-            // Add button
-            Button {
-                onAddItem()
-            } label: {
-                Image(systemName: "plus.circle.fill")
-                    .imageScale(.medium)
-                    .foregroundStyle(.accent)
-            }
-            .buttonStyle(.plain)
+                // Add button
+                Button {
+                    onAddItem()
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .imageScale(.medium)
+                        .foregroundStyle(.accent)
+                }
+                .buttonStyle(.plain)
 
-            // Edit button
-            Button {
-                onEditList()
-            } label: {
-                Image(systemName: "pencil.circle.fill")
-                    .imageScale(.medium)
-                    .foregroundStyle(.secondary)
+                // Edit button
+                Button {
+                    onEditList()
+                } label: {
+                    Image(systemName: "pencil.circle.fill")
+                        .imageScale(.medium)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .contentShape(Rectangle())
         .contextMenu {
-            Button {
-                onEditList()
-            } label: {
-                Label("Edit List", systemImage: "pencil")
-            }
+            if !isReorderMode {
+                Button {
+                    onEditList()
+                } label: {
+                    Label("Edit List", systemImage: "pencil")
+                }
 
-            Button(role: .destructive) {
-                onDeleteList()
-            } label: {
-                Label("Delete List", systemImage: "trash")
+                Button(role: .destructive) {
+                    onDeleteList()
+                } label: {
+                    Label("Delete List", systemImage: "trash")
+                }
             }
         }
     }

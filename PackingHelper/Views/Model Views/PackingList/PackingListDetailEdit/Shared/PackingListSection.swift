@@ -21,13 +21,16 @@ struct PackingListSection: View {
     let onDeleteItem: (Item) -> Void
     let onEditList: () -> Void
     let onDeleteList: () -> Void
+    let onItemReorder: (Item, PackingList, Int) -> Void
+    let onCrossListDrop: (Item, PackingList, Int) -> Void
+    var isReorderMode: Bool = false
 
     @State private var isAddingItem = false
     @State private var newItemName = ""
     @State private var newItemCount = 1
 
     private var unpackedItems: [Item] {
-        packingList.incompleteItems
+        Item.sorted(packingList.incompleteItems, sortOrder: .byCustomOrder)
     }
 
     private var isEmpty: Bool {
@@ -35,71 +38,62 @@ struct PackingListSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: isReorderMode ? 4 : 12) {
             // Section header
             PackingListSectionHeader(
                 packingList: packingList,
                 isExpanded: $isExpanded,
                 onAddItem: startAddingItem,
                 onEditList: onEditList,
-                onDeleteList: onDeleteList
+                onDeleteList: onDeleteList,
+                isReorderMode: isReorderMode
             )
-            
-            Divider()
 
-            if isExpanded {
-                // New item row
-                if isAddingItem {
-                    NewItemRow(
-                        itemName: $newItemName,
-                        itemCount: $newItemCount,
-                        itemUser: .constant(nil),
-                        itemList: .constant(packingList),
-                        listOptions: [packingList],
-                        showUserPicker: false,
-                        onCommit: addNewItem,
-                        onCancel: cancelAddingItem
-                    )
-                    .padding(.horizontal)
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .opacity
-                    ))
-                }
+            if !isReorderMode {
+                Divider()
 
-                // Unpacked items
-                if unpackedItems.isEmpty && !isAddingItem {
-                    Text("No items")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                if isExpanded {
+                    // New item row
+                    if isAddingItem {
+                        NewItemRow(
+                            itemName: $newItemName,
+                            itemCount: $newItemCount,
+                            itemUser: .constant(nil),
+                            itemList: .constant(packingList),
+                            listOptions: [packingList],
+                            showUserPicker: false,
+                            onCommit: addNewItem,
+                            onCancel: cancelAddingItem
+                        )
                         .padding(.horizontal)
-                        .padding(.vertical, 8)
-                } else {
-                    VStack(spacing: 4) {
-                        ForEach(unpackedItems) { item in
-                            if editingItemId == item.persistentModelID {
-                                EditableItemRow(
-                                    item: item,
-                                    mode: .unified,
-                                    onCommit: { name, count in
-                                        onUpdateItem(item, name, count)
-                                    },
-                                    onCancel: {
-                                        editingItemId = nil
-                                    }
-                                )
-                                .padding(.horizontal)
-                            } else {
-                                UnifiedItemRow(
-                                    item: item,
-                                    mode: .unified,
-                                    onTogglePacked: { onTogglePacked(item) },
-                                    onEdit: { editingItemId = item.persistentModelID },
-                                    onDelete: { onDeleteItem(item) }
-                                )
-                                .padding(.horizontal)
-                            }
-                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .top).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                    }
+
+                    // Unpacked items
+                    if unpackedItems.isEmpty && !isAddingItem {
+                        Text("No items")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                    } else {
+                        ReorderableItemsSection(
+                            items: unpackedItems,
+                            mode: .unified,
+                            targetList: packingList,
+                            editingItemId: $editingItemId,
+                            onTogglePacked: onTogglePacked,
+                            onUpdateItem: onUpdateItem,
+                            onDeleteItem: onDeleteItem,
+                            onReorder: { item, index in
+                                onItemReorder(item, packingList, index)
+                            },
+                            onCrossListMove: onCrossListDrop
+                        )
+                        .padding(.horizontal)
                     }
                 }
             }
@@ -120,7 +114,19 @@ struct PackingListSection: View {
         }
 
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
+            // Calculate next sort orders
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: packingList)
+            let allLists = packingList.trip?.lists ?? [packingList]
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: allLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
             modelContext.insert(newItem)
 
             packingList.addItem(newItem)

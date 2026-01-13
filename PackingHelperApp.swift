@@ -14,6 +14,7 @@ struct PackingHelperApp: App {
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
     @AppStorage("hasMigratedDayOfLists") private var hasMigratedDayOfLists = false
+    @AppStorage("hasMigratedSortOrders") private var hasMigratedSortOrders = false
 
     @Environment(\.scenePhase) var scenePhase
     
@@ -34,6 +35,10 @@ struct PackingHelperApp: App {
         // Perform data migration if needed
         if !hasMigratedDayOfLists {
             migrateDayOfLists()
+        }
+
+        if !hasMigratedSortOrders {
+            migrateSortOrders()
         }
     }
 
@@ -56,7 +61,61 @@ struct PackingHelperApp: App {
 
         hasMigratedDayOfLists = true
     }
-    
+
+    private func migrateSortOrders() {
+        let context = modelContainer.mainContext
+
+        // Migrate Items - set initial sort orders based on creation date
+        let itemDescriptor = FetchDescriptor<Item>(
+            sortBy: [SortDescriptor(\.created, order: .forward)]
+        )
+        if let items = try? context.fetch(itemDescriptor) {
+            // Group items by list for list-specific ordering
+            let itemsByList = Dictionary(grouping: items) { $0.list?.persistentModelID }
+
+            for (_, listItems) in itemsByList {
+                for (index, item) in listItems.enumerated() {
+                    item.sortOrder = index
+                    // Generate UUID if missing (for existing items)
+                    if item.uuid.uuidString == "00000000-0000-0000-0000-000000000000" {
+                        item.uuid = UUID()
+                    }
+                }
+            }
+
+            // Set unified sort order globally
+            for (index, item) in items.enumerated() {
+                item.unifiedSortOrder = index
+            }
+        }
+
+        // Migrate PackingLists - set initial sort orders based on creation date
+        let listDescriptor = FetchDescriptor<PackingList>(
+            sortBy: [SortDescriptor(\.created, order: .forward)]
+        )
+        if let lists = try? context.fetch(listDescriptor) {
+            // Group by trip for trip-specific ordering
+            let listsByTrip = Dictionary(grouping: lists) { $0.trip?.persistentModelID }
+
+            for (_, tripLists) in listsByTrip {
+                // Further group by type and isDayOf
+                let grouped = Dictionary(grouping: tripLists) { "\($0.type.rawValue)-\($0.isDayOf)" }
+                for (_, typeLists) in grouped {
+                    for (index, list) in typeLists.enumerated() {
+                        list.sortOrder = index
+                        // Generate UUID if missing (for existing lists)
+                        if list.uuid.uuidString == "00000000-0000-0000-0000-000000000000" {
+                            list.uuid = UUID()
+                        }
+                    }
+                }
+            }
+        }
+
+        try? context.save()
+        hasMigratedSortOrders = true
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

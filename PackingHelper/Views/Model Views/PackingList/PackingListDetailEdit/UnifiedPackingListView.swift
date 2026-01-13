@@ -129,7 +129,7 @@ struct UnifiedPackingListView: View {
         let filteredItems = allItems.filter { item in
             packed ? item.isPacked : !item.isPacked
         }
-        return Item.sorted(filteredItems, sortOrder: .byDate)
+        return Item.sorted(filteredItems, sortOrder: .byUnifiedOrder)
     }
     
     var body: some View {
@@ -160,15 +160,15 @@ struct UnifiedPackingListView: View {
                 // If we are working on a template, put all items in a section
                 // together. Otherwise, separate them by packed/unpacked
                 if mode == .templating {
-                    UnpackedItemsSection(
+                    ReorderableItemsSection(
                         items: allItems,
                         mode: mode,
                         editingItemId: $editingItemId,
                         onTogglePacked: togglePacked,
                         onUpdateItem: updateItem,
-                        onDeleteItem: deleteItem
-                        )
-
+                        onDeleteItem: deleteItem,
+                        onReorder: handleUnifiedReorder
+                    )
 
                     // Empty state
                     if (allItems.isEmpty && !effectiveIsAddingNewItem) {
@@ -179,13 +179,14 @@ struct UnifiedPackingListView: View {
                     // Unpacked items
                     let unpackedItems = getFilteredItems(packed: false)
                     if !unpackedItems.isEmpty {
-                        UnpackedItemsSection(
+                        ReorderableItemsSection(
                             items: unpackedItems,
                             mode: mode,
                             editingItemId: $editingItemId,
                             onTogglePacked: togglePacked,
                             onUpdateItem: updateItem,
-                            onDeleteItem: deleteItem
+                            onDeleteItem: deleteItem,
+                            onReorder: handleUnifiedReorder
                         )
                     }
 
@@ -238,7 +239,18 @@ struct UnifiedPackingListView: View {
         }
 
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
+            // Calculate next sort orders
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
             modelContext.insert(newItem)
 
             list.addItem(newItem)
@@ -285,6 +297,12 @@ struct UnifiedPackingListView: View {
     private func deleteItem(_ item: Item) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             modelContext.delete(item)
+        }
+    }
+
+    private func handleUnifiedReorder(item: Item, newIndex: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            SortOrderManager.reorderUnifiedItems(in: filteredLists, moving: item, to: newIndex)
         }
     }
 }

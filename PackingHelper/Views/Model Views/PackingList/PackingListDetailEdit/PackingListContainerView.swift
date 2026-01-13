@@ -23,6 +23,7 @@ struct PackingListContainerView: View {
     @State private var isApplyingDefaultPackingList: Bool = false
     @State private var isAddingNewItem: Bool = false
     @State private var selectedUser: User?
+    @State private var isReorderingSections: Bool = false
 
     @AppStorage("packingListViewMode") private var viewMode: PackingListViewMode = .unified
 
@@ -88,7 +89,8 @@ struct PackingListContainerView: View {
                             editingList: $editingList,
                             showingAddListSheet: $showingAddListSheet,
                             isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
-                            selectedUser: $selectedUser
+                            selectedUser: $selectedUser,
+                            isReorderingSections: $isReorderingSections
                         )
                     }
                 }
@@ -101,27 +103,36 @@ struct PackingListContainerView: View {
         .overlay {
             VStack {
                 Spacer()
-                
+
                 HStack {
                     Spacer()
 
-                    Group {
-                        if isAddingNewItem {
-                            Button(action: cancelAddingNewItem) {
-                                Image(systemName: "x.circle.fill")
-                                    .resizable()
-                                    .foregroundColor(.gray)
+                    if isReorderingSections {
+                        // Done button replaces FAB during reorder mode
+                        Button("Done") {
+                            isReorderingSections = false
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    } else {
+                        Group {
+                            if isAddingNewItem {
+                                Button(action: cancelAddingNewItem) {
+                                    Image(systemName: "x.circle.fill")
+                                        .resizable()
+                                        .foregroundColor(.gray)
+                                }
+                                .frame(width: 60, height: 60)
+                                .glassEffectIfAvailable()
+                            } else {
+                                Button(action: startAddingNewItem) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .resizable()
+                                        .foregroundColor(.blue)
+                                }
+                                .frame(width: 60, height: 60)
+                                .glassEffectIfAvailable()
                             }
-                            .frame(width: 60, height: 60)
-                            .glassEffectIfAvailable()
-                        } else {
-                            Button(action: startAddingNewItem) {
-                                Image(systemName: "plus.circle.fill")
-                                    .resizable()
-                                    .foregroundColor(.blue)
-                            }
-                            .frame(width: 60, height: 60)
-                            .glassEffectIfAvailable()
                         }
                     }
                 }
@@ -164,6 +175,16 @@ struct PackingListContainerView: View {
                         isApplyingDefaultPackingList.toggle()
                     } label: {
                         Label("Apply Template List", systemImage: "doc.on.doc")
+                    }
+
+                    if viewMode == .sectioned {
+                        Divider()
+
+                        Button {
+                            isReorderingSections = true
+                        } label: {
+                            Label("Reorder Sections", systemImage: "arrow.up.arrow.down")
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")

@@ -14,6 +14,9 @@
 		5101F99B2F149527000DFA0C /* SectionedPackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F99A2F149527000DFA0C /* SectionedPackingListView.swift */; };
 		5101F9A52F14B69B000DFA0C /* PackingListContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9A42F14B69B000DFA0C /* PackingListContainerView.swift */; };
 		5101F9A72F15DF45000DFA0C /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = 5101F9A62F15DF45000DFA0C /* CLAUDE.md */; };
+		5101F9AA2F15EBF7000DFA0C /* DragDropUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9A82F15EBF7000DFA0C /* DragDropUtilities.swift */; };
+		5101F9AB2F15EBF7000DFA0C /* SortOrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9A92F15EBF7000DFA0C /* SortOrderManager.swift */; };
+		5101F9AF2F15F11B000DFA0C /* ReorderableItemsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5101F9AE2F15F11B000DFA0C /* ReorderableItemsSection.swift */; };
 		510728112C1FD47300EBF362 /* UserPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728102C1FD47300EBF362 /* UserPickerView.swift */; };
 		510728132C1FD5D000EBF362 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510728122C1FD5D000EBF362 /* UserListView.swift */; };
 		5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5107281B2C1FDA1900EBF362 /* UserEditView.swift */; };
@@ -100,6 +103,9 @@
 		5101F99A2F149527000DFA0C /* SectionedPackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedPackingListView.swift; sourceTree = "<group>"; };
 		5101F9A42F14B69B000DFA0C /* PackingListContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListContainerView.swift; sourceTree = "<group>"; };
 		5101F9A62F15DF45000DFA0C /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
+		5101F9A82F15EBF7000DFA0C /* DragDropUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragDropUtilities.swift; sourceTree = "<group>"; };
+		5101F9A92F15EBF7000DFA0C /* SortOrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOrderManager.swift; sourceTree = "<group>"; };
+		5101F9AE2F15F11B000DFA0C /* ReorderableItemsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReorderableItemsSection.swift; sourceTree = "<group>"; };
 		510728102C1FD47300EBF362 /* UserPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerView.swift; sourceTree = "<group>"; };
 		510728122C1FD5D000EBF362 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
 		5107281B2C1FDA1900EBF362 /* UserEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserEditView.swift; sourceTree = "<group>"; };
@@ -396,6 +402,8 @@
 		515B85982AD76930002D614F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				5101F9A82F15EBF7000DFA0C /* DragDropUtilities.swift */,
+				5101F9A92F15EBF7000DFA0C /* SortOrderManager.swift */,
 				51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */,
 				515B85AA2AD8D395002D614F /* LocationService.swift */,
 				5110C6312AE5B028002742D0 /* CalendarUtilities.swift */,
@@ -548,6 +556,7 @@
 		51C8BB992C2A7A69005D2B71 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5101F9AE2F15F11B000DFA0C /* ReorderableItemsSection.swift */,
 				5101F9922F14950F000DFA0C /* PackingListSection.swift */,
 				5101F9932F14950F000DFA0C /* PackingListSectionHeader.swift */,
 				5101F9942F14950F000DFA0C /* PackingListViewMode.swift */,
@@ -691,6 +700,9 @@
 				5101F9962F14950F000DFA0C /* PackingListSectionHeader.swift in Sources */,
 				5101F9972F14950F000DFA0C /* SectionCollapseStateManager.swift in Sources */,
 				5101F9982F14950F000DFA0C /* PackingListSection.swift in Sources */,
+				5101F9AA2F15EBF7000DFA0C /* DragDropUtilities.swift in Sources */,
+				5101F9AF2F15F11B000DFA0C /* ReorderableItemsSection.swift in Sources */,
+				5101F9AB2F15EBF7000DFA0C /* SortOrderManager.swift in Sources */,
 				5101F9992F14950F000DFA0C /* PackingListViewMode.swift in Sources */,
 				51C8BB732C25234F005D2B71 /* PackingListDetailItemListView.swift in Sources */,
 				5101F99B2F149527000DFA0C /* SectionedPackingListView.swift in Sources */,
@@ -888,6 +900,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -924,6 +937,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

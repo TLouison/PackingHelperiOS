@@ -28,10 +28,13 @@ struct SectionedPackingListView: View {
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     @Binding var selectedUser: User?
+    @Binding var isReorderingSections: Bool
 
     // Local state
     @State private var collapsedSections: Set<String> = []
+    @State private var expandedSectionsBeforeReorder: Set<String> = []
     @State private var editingItemId: PersistentIdentifier?
+    @State private var draggedList: PackingList?
 
     @State private var newItemName = ""
     @State private var newItemCount = 1
@@ -56,8 +59,8 @@ struct SectionedPackingListView: View {
             }
             return typeMatch
         }
-        // Sort alphabetically by list name
-        return filtered.sorted { $0.name.lowercased() < $1.name.lowercased() }
+        // Sort by custom order for manual reordering
+        return PackingList.sorted(filtered, sortOrder: .byCustomOrder)
     }
 
     var allPackedItems: [Item] {
@@ -65,7 +68,7 @@ struct SectionedPackingListView: View {
         for list in filteredLists {
             packedItems.append(contentsOf: list.completeItems)
         }
-        return Item.sorted(packedItems, sortOrder: .byDate)
+        return Item.sorted(packedItems, sortOrder: .byCustomOrder)
     }
 
     func isExpanded(for list: PackingList) -> Binding<Bool> {
@@ -108,19 +111,64 @@ struct SectionedPackingListView: View {
                     ))
                 }
 
-                // List sections
-                ForEach(filteredLists) { list in
-                    PackingListSection(
-                        packingList: list,
-                        users: users,
-                        isExpanded: isExpanded(for: list),
-                        editingItemId: $editingItemId,
-                        onTogglePacked: togglePacked,
-                        onUpdateItem: updateItem,
-                        onDeleteItem: deleteItem,
-                        onEditList: { editingList = list },
-                        onDeleteList: { deleteList(list) }
-                    )
+                // List sections with drag-and-drop reordering
+                ForEach(Array(filteredLists.enumerated()), id: \.element.id) { index, list in
+                    VStack(spacing: 0) {
+                        // Drop zone before first section
+                        if isReorderingSections && index == 0 {
+                            SectionDropZone(
+                                insertionIndex: 0,
+                                isDragging: true,
+                                onDrop: { droppedList in
+                                    handleSectionReorder(list: droppedList, to: 0)
+                                }
+                            )
+                        }
+
+                        PackingListSection(
+                            packingList: list,
+                            users: users,
+                            isExpanded: isExpanded(for: list),
+                            editingItemId: $editingItemId,
+                            onTogglePacked: togglePacked,
+                            onUpdateItem: updateItem,
+                            onDeleteItem: deleteItem,
+                            onEditList: { editingList = list },
+                            onDeleteList: { deleteList(list) },
+                            onItemReorder: handleItemReorder,
+                            onCrossListDrop: handleCrossListMove,
+                            isReorderMode: isReorderingSections
+                        )
+                        .draggable(PackingListTransferData(list: list)) {
+                            // Section drag preview
+                            HStack {
+                                Image(systemName: "line.3.horizontal")
+                                    .foregroundColor(.secondary)
+                                Text(list.name)
+                                    .fontWeight(.semibold)
+                            }
+                            .padding()
+                            .background(.regularMaterial)
+                            .cornerRadius(12)
+                        }
+                        .onAppear {
+                            // Track when dragging starts
+                            if draggedList?.persistentModelID == list.persistentModelID {
+                                draggedList = list
+                            }
+                        }
+
+                        // Drop zone after each section
+                        if isReorderingSections {
+                            SectionDropZone(
+                                insertionIndex: index + 1,
+                                isDragging: true,
+                                onDrop: { droppedList in
+                                    handleSectionReorder(list: droppedList, to: index + 1)
+                                }
+                            )
+                        }
+                    }
                 }
 
                 // Global packed items section
@@ -146,6 +194,13 @@ struct SectionedPackingListView: View {
             // Initialize new item defaults
             newItemUser = users?.first
             newItemList = filteredLists.first
+        }
+        .onChange(of: isReorderingSections) { _, isReordering in
+            if isReordering {
+                enterReorderMode()
+            } else {
+                exitReorderMode()
+            }
         }
     }
 
@@ -201,7 +256,18 @@ struct SectionedPackingListView: View {
         }
 
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            let newItem = Item(name: newItemName, category: "", count: newItemCount, isPacked: false)
+            // Calculate next sort orders
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
             modelContext.insert(newItem)
             list.addItem(newItem)
 
@@ -219,6 +285,51 @@ struct SectionedPackingListView: View {
             isAddingNewItem = false
             isTextFieldFocused = false
         }
+    }
+
+    private func handleItemReorder(item: Item, in list: PackingList, to newIndex: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            print("Trying to reorder item \(item.name)")
+            SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
+        }
+    }
+
+    private func handleCrossListMove(item: Item, to targetList: PackingList, at index: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            print("Trying to reorder item into list \(targetList.name) with name \(item.name)")
+            SortOrderManager.moveItem(item, to: targetList, at: index)
+        }
+    }
+
+    private func handleSectionReorder(list: PackingList, to newIndex: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            print("Trying to reorder section with name: \(list.name)")
+            var mutableLists = filteredLists
+            SortOrderManager.reorderLists(&mutableLists, moving: list, to: newIndex)
+        }
+    }
+
+    private func enterReorderMode() {
+        // Save which sections are currently expanded
+        expandedSectionsBeforeReorder = Set(filteredLists.compactMap { list in
+            let id = String(list.persistentModelID.hashValue)
+            return collapsedSections.contains(id) ? nil : id
+        })
+        // Collapse all sections
+        withAnimation {
+            for list in filteredLists {
+                collapsedSections.insert(String(list.persistentModelID.hashValue))
+            }
+        }
+    }
+
+    private func exitReorderMode() {
+        // Restore previously expanded sections
+        withAnimation {
+            collapsedSections = collapsedSections.subtracting(expandedSectionsBeforeReorder)
+            expandedSectionsBeforeReorder = []
+        }
+        SectionCollapseStateManager.saveCollapsedSections(collapsedSections, for: trip.persistentModelID)
     }
 }
 

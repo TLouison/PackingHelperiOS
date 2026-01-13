@@ -1,0 +1,185 @@
+//
+//  ReorderableItemsSection.swift
+//  PackingHelper
+//
+//  Reusable component for drag-and-drop item reordering
+//
+
+import SwiftData
+import SwiftUI
+
+struct ReorderableItemsSection: View {
+    let items: [Item]
+    var mode: UnifiedPackingListMode = .unified
+    var targetList: PackingList? = nil  // For sectioned view cross-list drops
+
+    @Binding var editingItemId: PersistentIdentifier?
+    let onTogglePacked: (Item) -> Void
+    let onUpdateItem: (Item, String, Int) -> Void
+    let onDeleteItem: (Item) -> Void
+    let onReorder: (Item, Int) -> Void
+    var onCrossListMove: ((Item, PackingList, Int) -> Void)? = nil
+
+    @Environment(\.modelContext) private var modelContext
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Drop zone at top
+            ItemDropZone(insertionIndex: 0) { droppedItem in
+                handleDrop(at: 0, item: droppedItem)
+            }
+
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                if editingItemId == item.persistentModelID {
+                    EditableItemRow(
+                        item: item,
+                        mode: mode,
+                        onCommit: { name, count in
+                            onUpdateItem(item, name, count)
+                        },
+                        onCancel: { editingItemId = nil }
+                    )
+                } else {
+                    UnifiedItemRow(
+                        item: item,
+                        mode: mode,
+                        onTogglePacked: { onTogglePacked(item) },
+                        onEdit: { editingItemId = item.persistentModelID },
+                        onDelete: { onDeleteItem(item) }
+                    )
+                    .draggable(ItemTransferData(item: item)) {
+                        // Drag preview
+                        HStack {
+                            Image(systemName: "line.3.horizontal")
+                                .foregroundColor(.secondary)
+                            Text(item.name)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(.regularMaterial)
+                        .cornerRadius(8)
+                    }
+                }
+
+                // Drop zone after each item
+                ItemDropZone(insertionIndex: index + 1) { droppedItem in
+                    handleDrop(at: index + 1, item: droppedItem)
+                }
+            }
+        }
+    }
+
+    private func handleDrop(at index: Int, item: Item) {
+        // Check if this is a cross-list move
+        if let targetList = targetList,
+            let onCrossListMove = onCrossListMove,
+            item.list?.persistentModelID != targetList.persistentModelID
+        {
+            // Cross-list move
+            onCrossListMove(item, targetList, index)
+        } else {
+            // Same-list reorder
+            onReorder(item, index)
+        }
+    }
+}
+
+// MARK: - Drop Zone Component
+
+struct ItemDropZone: View {
+    let insertionIndex: Int
+    let onDrop: (Item) -> Void
+
+    @State private var isTargeted = false
+    @Environment(\.modelContext) private var modelContext
+
+    var body: some View {
+        Rectangle()
+            .fill(isTargeted ? Color.blue.opacity(0.3) : Color.clear)
+            .frame(height: isTargeted ? 40 : 8)
+            .cornerRadius(8)
+            .padding(.vertical, isTargeted ? 4 : 0)
+            .contentShape(Rectangle())
+            .dropDestination(for: ItemTransferData.self) { items, location in
+                guard let transferData = items.first else { return false }
+
+                // Look up the item from the model context using UUID
+                let descriptor = FetchDescriptor<Item>(
+                    predicate: #Predicate<Item> { item in
+                        item.uuid == transferData.itemUUID
+                    }
+                )
+
+                if let allItems = try? modelContext.fetch(descriptor),
+                    let item = allItems.first
+                {
+                    print("Found item! \(item.id)")
+                    onDrop(item)
+                    return true
+                }
+                print("Couldn't find item.")
+                return false
+            } isTargeted: { targeted in
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isTargeted = targeted
+                }
+            }
+    }
+}
+
+// MARK: - Section Drop Zone Component
+
+struct SectionDropZone: View {
+    let insertionIndex: Int
+    let isDragging: Bool
+    let onDrop: (PackingList) -> Void
+
+    @State private var isTargeted = false
+    @Environment(\.modelContext) private var modelContext
+
+    var height: CGFloat {
+        if !isDragging {
+            return 30
+        } else if isTargeted {
+            return 60
+        } else {
+            return 30
+        }
+    }
+
+    // TODO: Maybe make it a button in the menu bar to allow reordering sections
+    //       and items independently, so we can track when we are doing each and
+    //       show/hide the destinations?
+
+    var body: some View {
+        Rectangle()
+            .fill(isTargeted ? Color.blue.opacity(0.3) : Color.clear)
+            .frame(height: height)
+            .dropDestination(for: PackingListTransferData.self) {
+                lists,
+                location in
+                print("DROPPED! at \(location)")
+                guard let transferData = lists.first else { return false }
+
+                // Look up the list from the model context using UUID
+                let descriptor = FetchDescriptor<PackingList>(
+                    predicate: #Predicate<PackingList> { list in
+                        list.uuid == transferData.listUUID
+                    }
+                )
+                if let allLists = try? modelContext.fetch(descriptor),
+                    let list = allLists.first
+                {
+                    print("Found list \(list.id)!")
+                    onDrop(list)
+                    return true
+                }
+                print("Couldn't find list.")
+                return false
+            } isTargeted: { targeted in
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isTargeted = targeted
+                }
+            }
+    }
+}

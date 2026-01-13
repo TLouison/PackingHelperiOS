@@ -75,14 +75,17 @@ extension ListType: Codable {
 
 // PackingList sort order
 enum PackingListSortOrder: String, SortOrderOption {
-    case byDate, byUser, byNameAsc, byNameDesc
-    
+    case byDate, byUser, byNameAsc, byNameDesc, byCustomOrder
+
     var name: String {
-        BaseSortOrder(rawValue: rawValue)?.name ?? ""
+        if case .byCustomOrder = self {
+            return "Manual Order"
+        }
+        return BaseSortOrder(rawValue: rawValue)?.name ?? ""
     }
-    
+
     var id: String { rawValue }
-    
+
     var `default`: String {
         BaseSortOrder.byDate.name
     }
@@ -99,6 +102,9 @@ final class PackingList {
 
     var name: String = "List"
 
+    // Unique identifier for drag-and-drop transfers
+    var uuid: UUID = UUID()
+
     // Default Packing List Variables
     var template: Bool = false
     var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
@@ -106,12 +112,15 @@ final class PackingList {
     var appliedFromTemplate: PackingList? = nil // What template list did we create this list from?
     @Relationship(deleteRule:.noAction, inverse: \PackingList.appliedFromTemplate) var appliedToLists: [PackingList]?
 
+    // Sort order for section ordering in sectioned view
+    var sortOrder: Int = 0
+
     var user: User?
     var trip: Trip?
 
     @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
 
-    init(type: ListType, template: Bool, name: String, countAsDays: Bool, isDayOf: Bool = false) {
+    init(type: ListType, template: Bool, name: String, countAsDays: Bool, isDayOf: Bool = false, sortOrder: Int = 0) {
         self.created = Date.now
         self.type = type
         self.template = template
@@ -120,6 +129,7 @@ final class PackingList {
         self.name = name
         self.countAsDays = countAsDays
         self.isDayOf = isDayOf
+        self.sortOrder = sortOrder
     }
 
     var incompleteItems: [Item] {
@@ -239,6 +249,8 @@ extension PackingList {
                 return lists.sorted { $0.user ?? User(name: "aaa") < $1.user ?? User(name: "ZZZ") }
             case .byDate:
                 return lists.sorted { $0.created < $1.created }
+            case .byCustomOrder:
+                return lists.sorted { $0.sortOrder < $1.sortOrder }
             }
     }
 

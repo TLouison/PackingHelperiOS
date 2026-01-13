@@ -253,14 +253,6 @@ struct UnifiedItemRow: View {
                 .opacity(deleteButtonOpacity)
             }
         }
-        .contextMenu {
-            Button(action: onEdit) {
-                Label("Edit", systemImage: "pencil")
-            }
-            Button(role: .destructive, action: onDelete) {
-                Label("Delete", systemImage: "trash")
-            }
-        }
         .onChange(of: item.isPacked) { _, _ in
             // Reset offset when item is packed/unpacked
             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
