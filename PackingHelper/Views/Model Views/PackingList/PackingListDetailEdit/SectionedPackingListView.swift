@@ -141,14 +141,16 @@ struct SectionedPackingListView: View {
                         )
                         .draggable(PackingListTransferData(list: list)) {
                             // Section drag preview
-                            HStack {
-                                Image(systemName: "line.3.horizontal")
-                                    .foregroundColor(.secondary)
-                                Text(list.name)
-                                    .fontWeight(.semibold)
-                            }
-                            .padding()
-                            .background(.regularMaterial)
+                            PackingListSectionHeader(
+                                packingList: list,
+                                isExpanded: .constant(false),
+                                onAddItem: {},
+                                onEditList: {},
+                                onDeleteList: {}
+                            )
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(.ultraThickMaterial)
                             .cornerRadius(12)
                         }
                         .onAppear {

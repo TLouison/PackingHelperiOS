@@ -51,35 +51,33 @@ struct PackingListSectionHeader: View {
                 }
             }
 
-            if !isReorderMode {
-                // Mini progress gauge
-                TripDetailPackingProgressView(
-                    val: Double(packingList.completeItems.count),
-                    total: Double(packingList.totalItems),
-                    image: PackingList.icon(listType: packingList.type)
-                )
-                .scaleEffect(0.6)
+            // Mini progress gauge
+            TripDetailPackingProgressView(
+                val: Double(packingList.completeItems.count),
+                total: Double(packingList.totalItems),
+                image: PackingList.icon(listType: packingList.type)
+            )
+            .scaleEffect(0.6)
 
-                // Add button
-                Button {
-                    onAddItem()
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundStyle(.accent)
-                }
-                .buttonStyle(.plain)
-
-                // Edit button
-                Button {
-                    onEditList()
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
+            // Add button
+            Button {
+                onAddItem()
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .imageScale(.medium)
+                    .foregroundStyle(.accent)
             }
+            .buttonStyle(.plain)
+
+            // Edit button
+            Button {
+                onEditList()
+            } label: {
+                Image(systemName: "pencil.circle.fill")
+                    .imageScale(.medium)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
         }
         .contentShape(Rectangle())
         .contextMenu {

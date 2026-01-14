@@ -49,15 +49,13 @@ struct ReorderableItemsSection: View {
                     )
                     .draggable(ItemTransferData(item: item)) {
                         // Drag preview
-                        HStack {
-                            Image(systemName: "line.3.horizontal")
-                                .foregroundColor(.secondary)
-                            Text(item.name)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(.regularMaterial)
-                        .cornerRadius(8)
+                        UnifiedItemRow(
+                            item: item,
+                            mode: mode,
+                            onTogglePacked: {},
+                            onEdit: {},
+                            onDelete: {}
+                        ).rowContent
                     }
                 }
 
@@ -137,28 +135,14 @@ struct SectionDropZone: View {
     @State private var isTargeted = false
     @Environment(\.modelContext) private var modelContext
 
-    var height: CGFloat {
-        if !isDragging {
-            return 30
-        } else if isTargeted {
-            return 60
-        } else {
-            return 30
-        }
-    }
-
-    // TODO: Maybe make it a button in the menu bar to allow reordering sections
-    //       and items independently, so we can track when we are doing each and
-    //       show/hide the destinations?
-
     var body: some View {
         Rectangle()
             .fill(isTargeted ? Color.blue.opacity(0.3) : Color.clear)
-            .frame(height: height)
-            .dropDestination(for: PackingListTransferData.self) {
-                lists,
-                location in
-                print("DROPPED! at \(location)")
+            .frame(height: isTargeted ? 60 : 16)
+            .cornerRadius(8)
+            .padding(.vertical, isTargeted ? 4 : 0)
+            .contentShape(Rectangle())
+            .dropDestination(for: PackingListTransferData.self) { lists, location in
                 guard let transferData = lists.first else { return false }
 
                 // Look up the list from the model context using UUID
@@ -170,11 +154,9 @@ struct SectionDropZone: View {
                 if let allLists = try? modelContext.fetch(descriptor),
                     let list = allLists.first
                 {
-                    print("Found list \(list.id)!")
                     onDrop(list)
                     return true
                 }
-                print("Couldn't find list.")
                 return false
             } isTargeted: { targeted in
                 withAnimation(.easeInOut(duration: 0.15)) {

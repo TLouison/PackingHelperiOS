@@ -5,47 +5,47 @@
 //  Created by Todd Louison on 9/17/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct NewItemRow: View {
     private enum FocusedField {
         case itemName
     }
-    
+
     @Binding var itemName: String
     @Binding var itemCount: Int
     @Binding var itemUser: User?
     @Binding var itemList: PackingList?
-    
+
     let listOptions: [PackingList]
     let showUserPicker: Bool
-    
+
     @FocusState private var focusedField: FocusedField?
     let onCommit: () -> Void
     let onCancel: () -> Void
-    
+
     var visibleLists: [PackingList] {
-        listOptions.filter{ $0.user == itemUser }
+        listOptions.filter { $0.user == itemUser }
     }
-    
+
     var showListSelector: Bool {
         listOptions.count > 1
     }
-    
+
     var body: some View {
         VStack(spacing: 20) {
             HStack(spacing: 12) {
                 TextField("Item name", text: $itemName)
                     .focused($focusedField, equals: .itemName)
                     .onSubmit(onCommit)
-                
+
                 Stepper(value: $itemCount, in: 1...99) {
                     Text("\(itemCount)")
                         .foregroundColor(.secondary)
                         .frame(minWidth: 30)
                 }
-                
+
                 Button(action: onCommit) {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.blue)
@@ -54,7 +54,7 @@ struct NewItemRow: View {
                 .opacity(itemName.isEmpty ? 0.3 : 1.0)
                 .disabled(itemName.isEmpty)
             }
-            
+
             if showListSelector || showUserPicker {
                 HStack {
                     if showListSelector {
@@ -68,12 +68,15 @@ struct NewItemRow: View {
                             itemList = visibleLists.first
                         }
                     }
-                    
-                    
+
                     Spacer()
-                    
+
                     if showUserPicker {
-                        UserPickerView(selectedUser: $itemUser, style: .menu, allowAll: false)
+                        UserPickerView(
+                            selectedUser: $itemUser,
+                            style: .menu,
+                            allowAll: false
+                        )
                     }
                 }
             }
@@ -88,18 +91,22 @@ struct NewItemRow: View {
     }
 }
 
-
 struct EditableItemRow: View {
     let item: Item
     let mode: UnifiedPackingListMode
     let onCommit: (String, Int) -> Void
     let onCancel: () -> Void
-    
+
     @State private var editName: String
     @State private var editCount: Int
     @FocusState private var isFocused: Bool
-    
-    init(item: Item, mode: UnifiedPackingListMode, onCommit: @escaping (String, Int) -> Void, onCancel: @escaping () -> Void) {
+
+    init(
+        item: Item,
+        mode: UnifiedPackingListMode,
+        onCommit: @escaping (String, Int) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
         self.item = item
         self.mode = mode
         self.onCommit = onCommit
@@ -107,27 +114,30 @@ struct EditableItemRow: View {
         self._editName = State(initialValue: item.name)
         self._editCount = State(initialValue: item.count)
     }
-    
+
     var body: some View {
         HStack(spacing: 12) {
             if mode != .templating {
-                Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                    .font(.title3)
-                    .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                Image(
+                    systemName: item.isPacked
+                        ? "checkmark.square.fill" : "square"
+                )
+                .font(.title3)
+                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
             }
-            
+
             TextField("Item name", text: $editName)
                 .focused($isFocused)
                 .onSubmit {
                     onCommit(editName, editCount)
                 }
-            
+
             Stepper(value: $editCount, in: 1...99) {
                 Text("\(editCount)")
                     .foregroundColor(.secondary)
                     .frame(minWidth: 30)
             }
-            
+
             Button(action: {
                 onCommit(editName, editCount)
             }) {
@@ -180,59 +190,43 @@ struct UnifiedItemRow: View {
     var body: some View {
         ZStack(alignment: .trailing) {
             // Row content (slides left when swiped)
-            HStack(spacing: 12) {
-                if mode != .templating {
-                    Image(systemName: item.isPacked ? "checkmark.square.fill" : "square")
-                        .font(.title3)
-                        .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-                        .onTapGesture(perform: onTogglePacked)
-                }
-
-                Text(item.name)
-                    .strikethrough(item.isPacked)
-                    .foregroundColor(item.isPacked ? .gray : .primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                    .onTapGesture(perform: onEdit)
-
-                if item.count > 1 {
-                    Text("\(item.count)")
-                        .font(.caption)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                }
-            }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            .background(Color(UIColor.secondarySystemGroupedBackground))
-            .cornerRadius(10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .offset(x: showSwipeDelete ? offset : 0)
-            .gesture(
-                showSwipeDelete ? DragGesture(minimumDistance: 20)
-                    .onChanged { value in
-                        if value.translation.width < 0 {
-                            // Follow the user's finger - no clamping during drag
-                            offset = value.translation.width
-                        } else if offset < 0 {
-                            // Allow swiping right to close
-                            offset = min(0, offset + value.translation.width)
-                        }
-                    }
-                    .onEnded { value in
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            offset = offset < snapThreshold ? maxOffset : 0
-                        }
-                    } : nil
-            )
+            rowContent
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .background(Color(UIColor.secondarySystemGroupedBackground))
+                .cornerRadius(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .offset(x: showSwipeDelete ? offset : 0)
+                .gesture(
+                    showSwipeDelete
+                        ? DragGesture(minimumDistance: 20)
+                            .onChanged { value in
+                                if value.translation.width < 0 {
+                                    // Follow the user's finger - no clamping during drag
+                                    offset = value.translation.width
+                                } else if offset < 0 {
+                                    // Allow swiping right to close
+                                    offset = min(
+                                        0,
+                                        offset + value.translation.width
+                                    )
+                                }
+                            }
+                            .onEnded { value in
+                                withAnimation(
+                                    .spring(response: 0.3, dampingFraction: 0.8)
+                                ) {
+                                    offset =
+                                        offset < snapThreshold ? maxOffset : 0
+                                }
+                            } : nil
+                )
 
             // Floating delete button (overlays on right side)
             if showSwipeDelete && offset < 0 {
                 Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8))
+                    {
                         offset = 0
                     }
                     // Delay delete slightly to allow animation
@@ -262,6 +256,37 @@ struct UnifiedItemRow: View {
         .onChange(of: item.id) { _, _ in
             // Reset offset when item changes (e.g., after adding)
             offset = 0
+        }
+    }
+
+    var rowContent: some View {
+        HStack(spacing: 12) {
+            if mode != .templating {
+                Image(
+                    systemName: item.isPacked
+                        ? "checkmark.square.fill" : "square"
+                )
+                .font(.title3)
+                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                .onTapGesture(perform: onTogglePacked)
+            }
+
+            Text(item.name)
+                .strikethrough(item.isPacked)
+                .foregroundColor(item.isPacked ? .gray : .primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: onEdit)
+
+            if item.count > 1 {
+                Text("\(item.count)")
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
         }
     }
 }

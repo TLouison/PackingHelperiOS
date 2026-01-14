@@ -49,55 +49,54 @@ struct PackingListSection: View {
                 isReorderMode: isReorderMode
             )
 
-            if !isReorderMode {
+            if !isReorderMode && isExpanded{
                 Divider()
-
-                if isExpanded {
-                    // New item row
-                    if isAddingItem {
-                        NewItemRow(
-                            itemName: $newItemName,
-                            itemCount: $newItemCount,
-                            itemUser: .constant(nil),
-                            itemList: .constant(packingList),
-                            listOptions: [packingList],
-                            showUserPicker: false,
-                            onCommit: addNewItem,
-                            onCancel: cancelAddingItem
-                        )
+                
+                // New item row
+                if isAddingItem {
+                    NewItemRow(
+                        itemName: $newItemName,
+                        itemCount: $newItemCount,
+                        itemUser: .constant(nil),
+                        itemList: .constant(packingList),
+                        listOptions: [packingList],
+                        showUserPicker: false,
+                        onCommit: addNewItem,
+                        onCancel: cancelAddingItem
+                    )
+                    .padding(.horizontal)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+                }
+                
+                // Unpacked items
+                if unpackedItems.isEmpty && !isAddingItem {
+                    Text("No items")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                         .padding(.horizontal)
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .top).combined(with: .opacity),
-                            removal: .opacity
-                        ))
-                    }
-
-                    // Unpacked items
-                    if unpackedItems.isEmpty && !isAddingItem {
-                        Text("No items")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                    } else {
-                        ReorderableItemsSection(
-                            items: unpackedItems,
-                            mode: .unified,
-                            targetList: packingList,
-                            editingItemId: $editingItemId,
-                            onTogglePacked: onTogglePacked,
-                            onUpdateItem: onUpdateItem,
-                            onDeleteItem: onDeleteItem,
-                            onReorder: { item, index in
-                                onItemReorder(item, packingList, index)
-                            },
-                            onCrossListMove: onCrossListDrop
-                        )
-                        .padding(.horizontal)
-                    }
+                        .padding(.vertical, 8)
+                } else {
+                    ReorderableItemsSection(
+                        items: unpackedItems,
+                        mode: .unified,
+                        targetList: packingList,
+                        editingItemId: $editingItemId,
+                        onTogglePacked: onTogglePacked,
+                        onUpdateItem: onUpdateItem,
+                        onDeleteItem: onDeleteItem,
+                        onReorder: { item, index in
+                            onItemReorder(item, packingList, index)
+                        },
+                        onCrossListMove: onCrossListDrop
+                    )
+                    .padding(.horizontal)
                 }
             }
         }
+        .roundedBox()
     }
 
     private func startAddingItem() {
