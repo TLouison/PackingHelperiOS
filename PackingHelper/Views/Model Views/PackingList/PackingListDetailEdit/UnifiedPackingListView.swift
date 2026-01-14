@@ -117,7 +117,7 @@ struct UnifiedPackingListView: View {
     
     var allItems: [Item] {
         var allItems: [Item] = []
-        for list in lists {
+        for list in filteredLists {
             if let items = list.items {
                 allItems.append(contentsOf: items)
             }

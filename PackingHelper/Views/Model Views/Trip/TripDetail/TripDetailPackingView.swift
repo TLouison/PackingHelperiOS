@@ -99,13 +99,12 @@ struct TripDetailPackingView: View {
                     let dayOfPackingLists = filteredLists.filter { $0.type == .packing && $0.isDayOf }
                     if !dayOfPackingLists.isEmpty {
                         NavigationLink {
-                            UnifiedPackingListView(
-                                trip: trip,
+                            PackingListContainerView(
                                 users: trip.packers,
                                 listType: .packing,
                                 isDayOf: true,
-                                title: "\(trip.name) - Day-of",
-                                mode: .unified
+                                title: "\(trip.name) - Day-of Packing",
+                                trip: trip
                             )
                         } label: {
                             HStack {
@@ -132,13 +131,12 @@ struct TripDetailPackingView: View {
                     let dayOfTaskLists = filteredLists.filter { $0.type == .task && $0.isDayOf }
                     if !dayOfTaskLists.isEmpty {
                         NavigationLink {
-                            UnifiedPackingListView(
-                                trip: trip,
+                            PackingListContainerView(
                                 users: trip.packers,
                                 listType: .task,
                                 isDayOf: true,
-                                title: "\(trip.name) - Day-of",
-                                mode: .unified
+                                title: "\(trip.name) - Day-of Tasks",
+                                trip: trip
                             )
                         } label: {
                             HStack {
