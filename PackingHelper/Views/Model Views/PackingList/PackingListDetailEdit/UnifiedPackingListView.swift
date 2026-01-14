@@ -122,7 +122,12 @@ struct UnifiedPackingListView: View {
         }
         return allItems
     }
-    
+
+    var sortedItemsForTemplating: [Item] {
+        // For template mode, sort by sortOrder (within-list order)
+        return Item.sorted(allItems, sortOrder: .byCustomOrder)
+    }
+
     func getFilteredItems(packed: Bool) -> [Item] {
         let filteredItems = allItems.filter { item in
             packed ? item.isPacked : !item.isPacked
@@ -159,13 +164,13 @@ struct UnifiedPackingListView: View {
                 // together. Otherwise, separate them by packed/unpacked
                 if mode == .templating {
                     ReorderableItemsSection(
-                        items: allItems,
+                        items: sortedItemsForTemplating,
                         mode: mode,
                         editingItemId: $editingItemId,
                         onTogglePacked: togglePacked,
                         onUpdateItem: updateItem,
                         onDeleteItem: deleteItem,
-                        onReorder: handleUnifiedReorder
+                        onReorder: handleTemplateReorder
                     )
 
                     // Empty state
@@ -301,6 +306,15 @@ struct UnifiedPackingListView: View {
     private func handleUnifiedReorder(item: Item, newIndex: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             SortOrderManager.reorderUnifiedItems(in: filteredLists, moving: item, to: newIndex)
+        }
+    }
+
+    private func handleTemplateReorder(item: Item, newIndex: Int) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            // For template mode, use within-list reordering
+            if let list = item.list {
+                SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
+            }
         }
     }
 }
