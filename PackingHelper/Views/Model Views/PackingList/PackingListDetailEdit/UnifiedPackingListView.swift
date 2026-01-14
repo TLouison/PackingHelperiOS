@@ -39,8 +39,6 @@ struct UnifiedPackingListView: View {
     @Binding var selectedUser: User?
 
     // Local state
-    @State private var selectedList: PackingList?
-
     @State private var newItemName = ""
     @State private var newItemCount = 1
     @State private var newItemUser: User? = nil
@@ -210,9 +208,9 @@ struct UnifiedPackingListView: View {
             .padding(.horizontal)
         }
         .onAppear {
-            // New items get first user and first list by default
+            // New items get first user and first matching list by default
             newItemUser = users?.first
-            newItemList = lists.first
+            newItemList = filteredLists.first
         }
         .onChange(of: effectiveIsAddingNewItem) { _, isAdding in
             if isAdding {
