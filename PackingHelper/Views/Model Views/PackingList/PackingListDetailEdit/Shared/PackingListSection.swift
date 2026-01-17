@@ -29,6 +29,7 @@ struct PackingListSection: View {
     @State private var isAddingItem = false
     @State private var newItemName = ""
     @State private var newItemCount = 1
+    @State private var shouldRefocusNewItem = false
 
     private var unpackedItems: [Item] {
         Item.sorted(packingList.incompleteItems, sortOrder: .byCustomOrder)
@@ -61,10 +62,19 @@ struct PackingListSection: View {
                         itemCount: $newItemCount,
                         itemUser: .constant(nil),
                         itemList: .constant(packingList),
+                        shouldRefocus: $shouldRefocusNewItem,
                         listOptions: [packingList],
                         showUserPicker: false,
-                        onCommit: addNewItem,
-                        onCancel: cancelAddingItem
+                        onCommit: { action in
+                            switch action {
+                            case .saveAndContinue:
+                                addNewItemAndContinue()
+                            case .saveAndClose:
+                                addNewItemAndClose()
+                            case .cancel:
+                                cancelAddingItem()
+                            }
+                        }
                     )
                     .padding(.horizontal)
                     .transition(.asymmetric(
@@ -108,7 +118,42 @@ struct PackingListSection: View {
         }
     }
 
-    private func addNewItem() {
+    private func addNewItemAndContinue() {
+        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            // Empty text on Enter: just refocus, don't save
+            shouldRefocusNewItem = true
+            return
+        }
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            // Calculate next sort orders
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: packingList)
+            let allLists = packingList.trip?.lists ?? [packingList]
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: allLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
+            modelContext.insert(newItem)
+
+            packingList.addItem(newItem)
+
+            // Reset for next item but keep row open
+            newItemName = ""
+            newItemCount = 1
+            // Do NOT set isAddingItem = false
+        }
+
+        // Trigger refocus after animation completes
+        shouldRefocusNewItem = true
+    }
+
+    private func addNewItemAndClose() {
         guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             cancelAddingItem()
             return
@@ -132,7 +177,7 @@ struct PackingListSection: View {
 
             packingList.addItem(newItem)
 
-            // Reset fields
+            // Reset fields and close the input row
             newItemName = ""
             newItemCount = 1
             isAddingItem = false

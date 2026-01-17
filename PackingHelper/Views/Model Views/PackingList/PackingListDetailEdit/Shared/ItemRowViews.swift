@@ -8,6 +8,12 @@
 import SwiftData
 import SwiftUI
 
+enum NewItemCommitAction {
+    case saveAndContinue  // Enter key - save and start new item
+    case saveAndClose     // Checkmark button - save and close
+    case cancel           // X button - discard and close
+}
+
 struct NewItemRow: View {
     private enum FocusedField {
         case itemName
@@ -17,13 +23,13 @@ struct NewItemRow: View {
     @Binding var itemCount: Int
     @Binding var itemUser: User?
     @Binding var itemList: PackingList?
+    @Binding var shouldRefocus: Bool
 
     let listOptions: [PackingList]
     let showUserPicker: Bool
 
     @FocusState private var focusedField: FocusedField?
-    let onCommit: () -> Void
-    let onCancel: () -> Void
+    let onCommit: (NewItemCommitAction) -> Void
 
     var visibleLists: [PackingList] {
         listOptions.filter { $0.user == itemUser }
@@ -36,9 +42,18 @@ struct NewItemRow: View {
     var body: some View {
         VStack(spacing: 20) {
             HStack(spacing: 12) {
+                // X button to cancel
+                Button(action: { onCommit(.cancel) }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                        .font(.title3)
+                }
+
                 TextField("Item name", text: $itemName)
                     .focused($focusedField, equals: .itemName)
-                    .onSubmit(onCommit)
+                    .onSubmit {
+                        onCommit(.saveAndContinue)
+                    }
 
                 Stepper(value: $itemCount, in: 1...99) {
                     Text("\(itemCount)")
@@ -46,7 +61,8 @@ struct NewItemRow: View {
                         .frame(minWidth: 30)
                 }
 
-                Button(action: onCommit) {
+                // Checkmark button to save and close
+                Button(action: { onCommit(.saveAndClose) }) {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.blue)
                         .font(.title3)
@@ -87,6 +103,12 @@ struct NewItemRow: View {
         .shadow(color: .black.opacity(0.05), radius: 3, y: 2)
         .onAppear {
             focusedField = .itemName
+        }
+        .onChange(of: shouldRefocus) { _, newValue in
+            if newValue {
+                focusedField = .itemName
+                shouldRefocus = false
+            }
         }
     }
 }

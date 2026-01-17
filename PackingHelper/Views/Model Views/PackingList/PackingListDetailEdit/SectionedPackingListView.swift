@@ -40,6 +40,7 @@ struct SectionedPackingListView: View {
     @State private var newItemCount = 1
     @State private var newItemUser: User? = nil
     @State private var newItemList: PackingList? = nil
+    @State private var shouldRefocusNewItem = false
     @FocusState private var isTextFieldFocused: Bool
 
     @State private var isShowingSaveSuccessful: Bool = false
@@ -98,14 +99,23 @@ struct SectionedPackingListView: View {
                         itemCount: $newItemCount,
                         itemUser: $newItemUser,
                         itemList: $newItemList,
+                        shouldRefocus: $shouldRefocusNewItem,
                         listOptions: filteredLists,
                         showUserPicker: hasMultiplePackers,
-                        onCommit: {
-                            if let list = newItemList {
-                                addNewItem(to: list)
+                        onCommit: { action in
+                            switch action {
+                            case .saveAndContinue:
+                                if let list = newItemList {
+                                    addNewItemAndContinue(to: list)
+                                }
+                            case .saveAndClose:
+                                if let list = newItemList {
+                                    addNewItemAndClose(to: list)
+                                }
+                            case .cancel:
+                                cancelAddingNewItem()
                             }
-                        },
-                        onCancel: cancelAddingNewItem
+                        }
                     )
                     .transition(.asymmetric(
                         insertion: .move(edge: .top).combined(with: .opacity),
@@ -266,7 +276,40 @@ struct SectionedPackingListView: View {
         }
     }
 
-    private func addNewItem(to list: PackingList) {
+    private func addNewItemAndContinue(to list: PackingList) {
+        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            // Empty text on Enter: just refocus, don't save
+            shouldRefocusNewItem = true
+            return
+        }
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            // Calculate next sort orders
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
+            modelContext.insert(newItem)
+            list.addItem(newItem)
+
+            // Reset for next item but keep row open
+            newItemName = ""
+            newItemCount = 1
+            // Do NOT set isAddingNewItem = false
+        }
+
+        // Trigger refocus after animation completes
+        shouldRefocusNewItem = true
+    }
+
+    private func addNewItemAndClose(to list: PackingList) {
         guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             cancelAddingNewItem()
             return
@@ -288,6 +331,7 @@ struct SectionedPackingListView: View {
             modelContext.insert(newItem)
             list.addItem(newItem)
 
+            // Reset fields and close the input row
             newItemName = ""
             newItemCount = 1
             isAddingNewItem = false

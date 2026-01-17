@@ -8,8 +8,8 @@
 //  Created by Claude on 1/11/26.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct PackingListContainerView: View {
     @Environment(\.modelContext) private var modelContext
@@ -33,7 +33,8 @@ struct PackingListContainerView: View {
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
 
-    @AppStorage("packingListViewMode") private var viewMode: PackingListViewMode = .unified
+    @AppStorage("packingListViewMode") private var viewMode:
+        PackingListViewMode = .unified
 
     // MARK: - Initializers
 
@@ -148,7 +149,8 @@ struct PackingListContainerView: View {
                                 isAddingNewItem: $isAddingNewItem,
                                 editingList: $editingList,
                                 showingAddListSheet: $showingAddListSheet,
-                                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                                isApplyingDefaultPackingList:
+                                    $isApplyingDefaultPackingList,
                                 selectedUser: $selectedUser
                             )
                         case .sectioned:
@@ -161,14 +163,17 @@ struct PackingListContainerView: View {
                                 isAddingNewItem: $isAddingNewItem,
                                 editingList: $editingList,
                                 showingAddListSheet: $showingAddListSheet,
-                                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                                isApplyingDefaultPackingList:
+                                    $isApplyingDefaultPackingList,
                                 selectedUser: $selectedUser,
                                 isReorderingSections: $isReorderingSections
                             )
                         }
                     }
                     // For single list context, always use unified view
-                    else if context.isSingleList, let singleList = context.singleList {
+                    else if context.isSingleList,
+                        let singleList = context.singleList
+                    {
                         UnifiedPackingListView(
                             lists: [singleList],
                             users: users,
@@ -226,18 +231,28 @@ struct PackingListContainerView: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 75)
+                .padding(.bottom, context.isSingleList ? 30 : 75)
             }
         }
         .sheet(item: $editingList) { list in
             if let trip = context.trip {
-                PackingListEditView(packingList: list, trip: trip, isDeleted: .constant(false))
+                PackingListEditView(
+                    packingList: list,
+                    trip: trip,
+                    isDeleted: .constant(false)
+                )
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
             if let trip = context.trip {
-                AddPackingListSheet(trip: trip, listType: listType, isDayOf: isDayOf, users: users, onAdd: { _ in })
-                    .presentationDetents([.height(300)])
+                AddPackingListSheet(
+                    trip: trip,
+                    listType: listType,
+                    isDayOf: isDayOf,
+                    users: users,
+                    onAdd: { _ in }
+                )
+                .presentationDetents([.height(300)])
             }
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
@@ -247,7 +262,11 @@ struct PackingListContainerView: View {
         }
         .sheet(isPresented: $isShowingListSettings) {
             if let singleList = context.singleList {
-                PackingListEditView(packingList: singleList, isTemplate: singleList.template, isDeleted: $isDeleted)
+                PackingListEditView(
+                    packingList: singleList,
+                    isTemplate: singleList.template,
+                    isDeleted: $isDeleted
+                )
             }
         }
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
@@ -263,11 +282,14 @@ struct PackingListContainerView: View {
                     Menu {
                         if showViewModeToggle {
                             Button {
-                                viewMode = viewMode == .unified ? .sectioned : .unified
+                                viewMode =
+                                    viewMode == .unified ? .sectioned : .unified
                             } label: {
                                 Label(
-                                    viewMode == .unified ? "View by List" : "View Unified",
-                                    systemImage: viewMode == .unified ? "list.bullet.indent" : "list.bullet"
+                                    viewMode == .unified
+                                        ? "View by List" : "View Unified",
+                                    systemImage: viewMode == .unified
+                                        ? "list.bullet.indent" : "list.bullet"
                                 )
                             }
 
@@ -283,7 +305,10 @@ struct PackingListContainerView: View {
                         Button {
                             isApplyingDefaultPackingList.toggle()
                         } label: {
-                            Label("Apply Template List", systemImage: "doc.on.doc")
+                            Label(
+                                "Apply Template List",
+                                systemImage: "doc.on.doc"
+                            )
                         }
 
                         if viewMode == .sectioned {
@@ -292,7 +317,10 @@ struct PackingListContainerView: View {
                             Button {
                                 isReorderingSections = true
                             } label: {
-                                Label("Reorder Sections", systemImage: "arrow.up.arrow.down")
+                                Label(
+                                    "Reorder Sections",
+                                    systemImage: "arrow.up.arrow.down"
+                                )
                             }
                         }
                     } label: {
