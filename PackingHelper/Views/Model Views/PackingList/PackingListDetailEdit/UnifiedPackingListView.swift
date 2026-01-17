@@ -109,7 +109,10 @@ struct UnifiedPackingListView: View {
                 return typeMatch
             }
         }
-        print("Found filtered lists: \(filtered)")
+        print("Found filtered lists:")
+        for list in filtered {
+            print(" \(list.name)")
+        }
         return PackingList.sorted(filtered, sortOrder: .byDate)
     }
     
@@ -120,7 +123,8 @@ struct UnifiedPackingListView: View {
                 allItems.append(contentsOf: items)
             }
         }
-        return allItems
+        // Sort by unified order for proper display after reordering
+        return Item.sorted(allItems, sortOrder: .byUnifiedOrder)
     }
     
     func getFilteredItems(packed: Bool) -> [Item] {
@@ -300,7 +304,9 @@ struct UnifiedPackingListView: View {
 
     private func handleUnifiedReorder(item: Item, newIndex: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            SortOrderManager.reorderUnifiedItems(in: filteredLists, moving: item, to: newIndex)
+            // For templating/detail mode, include all items; for unified mode, only unpacked items
+            let includeAll = (mode == .templating || mode == .detail)
+            SortOrderManager.reorderUnifiedItems(in: filteredLists, moving: item, to: newIndex, includeAllItems: includeAll)
         }
     }
 }

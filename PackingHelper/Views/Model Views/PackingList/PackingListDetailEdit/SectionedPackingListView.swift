@@ -42,6 +42,8 @@ struct SectionedPackingListView: View {
     @State private var newItemList: PackingList? = nil
     @FocusState private var isTextFieldFocused: Bool
 
+    @State private var isShowingSaveSuccessful: Bool = false
+
     var hasMultiplePackers: Bool {
         guard let users = users else { return false }
         return users.count > 1
@@ -135,6 +137,7 @@ struct SectionedPackingListView: View {
                             onDeleteItem: deleteItem,
                             onEditList: { editingList = list },
                             onDeleteList: { deleteList(list) },
+                            onSaveAsDefault: { saveListAsDefault(list) },
                             onItemReorder: handleItemReorder,
                             onCrossListDrop: handleCrossListMove,
                             isReorderMode: isReorderingSections
@@ -146,7 +149,8 @@ struct SectionedPackingListView: View {
                                 isExpanded: .constant(false),
                                 onAddItem: {},
                                 onEditList: {},
-                                onDeleteList: {}
+                                onDeleteList: {},
+                                onSaveAsDefault: {}
                             )
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
@@ -204,6 +208,9 @@ struct SectionedPackingListView: View {
                 exitReorderMode()
             }
         }
+        .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
+            Button("OK", role: .cancel) {}
+        }
     }
 
     private func loadCollapseState() {
@@ -241,6 +248,14 @@ struct SectionedPackingListView: View {
     private func deleteList(_ list: PackingList) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             modelContext.delete(list)
+        }
+    }
+
+    private func saveListAsDefault(_ list: PackingList) {
+        withAnimation {
+            let newDefaultList = PackingList.copyAsTemplate(list)
+            modelContext.insert(newDefaultList)
+            isShowingSaveSuccessful = true
         }
     }
 

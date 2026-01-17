@@ -111,11 +111,9 @@ struct ItemDropZone: View {
                 if let allItems = try? modelContext.fetch(descriptor),
                     let item = allItems.first
                 {
-                    print("Found item! \(item.id)")
                     onDrop(item)
                     return true
                 }
-                print("Couldn't find item.")
                 return false
             } isTargeted: { targeted in
                 withAnimation(.easeInOut(duration: 0.15)) {

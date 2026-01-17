@@ -14,6 +14,7 @@ struct PackingListSectionHeader: View {
     let onAddItem: () -> Void
     let onEditList: () -> Void
     let onDeleteList: () -> Void
+    let onSaveAsDefault: () -> Void
     var isReorderMode: Bool = false
 
     private var isEmpty: Bool {
@@ -86,6 +87,14 @@ struct PackingListSectionHeader: View {
                     onEditList()
                 } label: {
                     Label("Edit List", systemImage: "pencil")
+                }
+
+                if !packingList.template {
+                    Button {
+                        onSaveAsDefault()
+                    } label: {
+                        Label("Save As Default", systemImage: "square.and.arrow.down")
+                    }
                 }
 
                 Button(role: .destructive) {

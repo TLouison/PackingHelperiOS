@@ -188,7 +188,7 @@ struct PackingListCard: View {
     let list: PackingList
 
     var body: some View {
-        NavigationLink(destination: PackingListDetailView(packingList: list)) {
+        NavigationLink(destination: PackingListContainerView(packingList: list)) {
             HStack(spacing: 12) {
                 // Left side: Name and user pill
                 HStack(spacing: 8) {

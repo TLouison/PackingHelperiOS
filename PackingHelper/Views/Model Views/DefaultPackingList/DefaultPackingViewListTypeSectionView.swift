@@ -31,7 +31,7 @@ struct DefaultPackingViewListTypeSectionView: View {
         } content: {
             ForEach(listsOfType, id: \.id) { packingList in
                 NavigationLink {
-                    PackingListDetailView(packingList: packingList)
+                    PackingListContainerView(packingList: packingList)
                         .padding(.vertical)
                 } label: {
                     HStack {

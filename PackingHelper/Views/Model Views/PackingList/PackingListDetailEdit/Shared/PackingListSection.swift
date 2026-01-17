@@ -21,6 +21,7 @@ struct PackingListSection: View {
     let onDeleteItem: (Item) -> Void
     let onEditList: () -> Void
     let onDeleteList: () -> Void
+    let onSaveAsDefault: () -> Void
     let onItemReorder: (Item, PackingList, Int) -> Void
     let onCrossListDrop: (Item, PackingList, Int) -> Void
     var isReorderMode: Bool = false
@@ -46,6 +47,7 @@ struct PackingListSection: View {
                 onAddItem: startAddingItem,
                 onEditList: onEditList,
                 onDeleteList: onDeleteList,
+                onSaveAsDefault: onSaveAsDefault,
                 isReorderMode: isReorderMode
             )
 

@@ -64,13 +64,23 @@ class SortOrderManager {
     }
 
     /// Reorder items in unified view (across all lists)
-    static func reorderUnifiedItems(in lists: [PackingList], moving item: Item, to newIndex: Int) {
-        var allUnpackedItems = lists
-            .flatMap { $0.incompleteItems }
-            .sorted { $0.unifiedSortOrder < $1.unifiedSortOrder }
+    static func reorderUnifiedItems(in lists: [PackingList], moving item: Item, to newIndex: Int, includeAllItems: Bool = false) {
+        var allItems: [Item]
+
+        if includeAllItems {
+            // For templates or detail mode: include all items
+            allItems = lists
+                .flatMap { $0.items ?? [] }
+                .sorted { $0.unifiedSortOrder < $1.unifiedSortOrder }
+        } else {
+            // For regular packing mode: only unpacked items
+            allItems = lists
+                .flatMap { $0.incompleteItems }
+                .sorted { $0.unifiedSortOrder < $1.unifiedSortOrder }
+        }
 
         // Find current index before removing
-        guard let currentIndex = allUnpackedItems.firstIndex(where: { $0.persistentModelID == item.persistentModelID }) else {
+        guard let currentIndex = allItems.firstIndex(where: { $0.persistentModelID == item.persistentModelID }) else {
             return
         }
 
@@ -78,12 +88,12 @@ class SortOrderManager {
         let adjustedIndex = currentIndex < newIndex ? newIndex - 1 : newIndex
 
         // Remove and reinsert
-        allUnpackedItems.removeAll { $0.persistentModelID == item.persistentModelID }
-        let clampedIndex = min(max(0, adjustedIndex), allUnpackedItems.count)
-        allUnpackedItems.insert(item, at: clampedIndex)
+        allItems.removeAll { $0.persistentModelID == item.persistentModelID }
+        let clampedIndex = min(max(0, adjustedIndex), allItems.count)
+        allItems.insert(item, at: clampedIndex)
 
         // Reassign unified sort orders
-        for (index, currentItem) in allUnpackedItems.enumerated() {
+        for (index, currentItem) in allItems.enumerated() {
             currentItem.unifiedSortOrder = index
         }
     }

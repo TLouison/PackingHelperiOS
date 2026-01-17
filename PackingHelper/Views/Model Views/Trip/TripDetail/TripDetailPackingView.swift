@@ -60,11 +60,10 @@ struct TripDetailPackingView: View {
                         if !regularLists.isEmpty {
                             NavigationLink {
                                 PackingListContainerView(
-                                    users: trip.packers,
+                                    trip: trip, users: trip.packers,
                                     listType: listType,
                                     isDayOf: false,
-                                    title: trip.name,
-                                    trip: trip
+                                    title: trip.name
                                 )
                             } label: {
                                 HStack {
@@ -100,11 +99,10 @@ struct TripDetailPackingView: View {
                     if !dayOfPackingLists.isEmpty {
                         NavigationLink {
                             PackingListContainerView(
-                                users: trip.packers,
+                                trip: trip, users: trip.packers,
                                 listType: .packing,
                                 isDayOf: true,
-                                title: "\(trip.name) - Day-of Packing",
-                                trip: trip
+                                title: "\(trip.name) - Day-of Packing"
                             )
                         } label: {
                             HStack {
@@ -132,11 +130,10 @@ struct TripDetailPackingView: View {
                     if !dayOfTaskLists.isEmpty {
                         NavigationLink {
                             PackingListContainerView(
-                                users: trip.packers,
+                                trip: trip, users: trip.packers,
                                 listType: .task,
                                 isDayOf: true,
-                                title: "\(trip.name) - Day-of Tasks",
-                                trip: trip
+                                title: "\(trip.name) - Day-of Tasks"
                             )
                         } label: {
                             HStack {
