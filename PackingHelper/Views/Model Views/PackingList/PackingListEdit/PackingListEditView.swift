@@ -69,16 +69,6 @@ struct PackingListEditView: View {
                             UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
                         }
                     }
-                    
-                    if isTemplate {
-                        Section {
-                            Toggle("Trip Duration as Item Count", isOn: $countAsDays)
-                        } header: {
-                            Text("Template List Options")
-                        } footer: {
-                            Text("If enabled, applying this list to a trip will set the amount of each item in this list to the number of days the trip will last. If disabled, 1 will be used for all items. These can be changed once the list is applied.")
-                        }
-                    }
                 }
                 
                 Spacer()
