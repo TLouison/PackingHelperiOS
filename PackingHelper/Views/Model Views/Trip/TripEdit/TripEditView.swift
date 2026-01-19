@@ -85,7 +85,7 @@ struct TripEditView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(trip == nil ? "Create" : "Save") {
                         saveTrip()
                     }
                     .disabled(originLocation == nil || destinationLocation == nil || tripName.isEmpty)
