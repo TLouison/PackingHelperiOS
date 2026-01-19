@@ -11,12 +11,13 @@ import MapKit
 
 struct TripListRowView: View {
     @Environment(\.modelContext) var modelContext
-    
+
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDeleteTripAlert: Bool = false
-    
+    @State private var isMapLoading: Bool = true
+
     @Bindable var trip: Trip
-    
+
     var disabled: Bool
  
     @ViewBuilder private func dateInfo() -> some View {
@@ -83,11 +84,31 @@ struct TripListRowView: View {
     
     var body: some View {
         ZStack {
-            Map(
-                position: $mapPosition,
-                interactionModes: []
-            )
-            .overlay(Color.clear.allowsHitTesting(true))
+            if isMapLoading {
+                // Skeleton view while map is loading
+                RoundedRectangle(cornerRadius: defaultCornerRadius)
+                    .fill(Color(.systemGray5))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: defaultCornerRadius)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.3), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isMapLoading ? 400 : -400)
+                            .animation(.linear(duration: 1.5).repeatForever(autoreverses: false), value: isMapLoading)
+                    )
+            } else {
+                Map(
+                    position: $mapPosition,
+                    interactionModes: []
+                )
+                .overlay(Color.clear.allowsHitTesting(true))
+                .transition(.opacity)
+            }
 
             tripRowOverlay(trip)
                 .frame(maxWidth: .infinity)
@@ -123,6 +144,12 @@ struct TripListRowView: View {
         .onAppear {
             if let destination = trip.destination {
                 mapPosition = destination.mapCameraPosition
+            }
+            // Simulate map loading delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    isMapLoading = false
+                }
             }
         }
     }
