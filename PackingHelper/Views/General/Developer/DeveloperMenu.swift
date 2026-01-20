@@ -17,13 +17,17 @@ struct DeveloperMenuView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Onboarding") {
+                Section {
                     Button("Reset Onboarding State") {
                         hasCompletedOnboarding = false
                         users.forEach { modelContext.delete($0) }
                         try? modelContext.save()
                         dismiss()
                     }
+                } header: {
+                    Text("Reset Onboarding")
+                } footer: {
+                    Text("Resetting onboarding state will wipe out all trips and users. Be sure you want to do this, it cannot be undone.").font(.subheadline)
                 }
                 
                 Section("Debug Info") {

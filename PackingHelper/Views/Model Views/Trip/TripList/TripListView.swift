@@ -142,8 +142,6 @@ struct TripListView: View {
                                     )
                                     .symbolEffect(.bounce, value: visibleTripsSymbol == .completed ? upcomingTrips.count : completedTrips.count)
                                     .labelStyle(.titleAndIcon)
-                                Text(isShowingCompletedTrips ? "Upcoming" : "Completed")
-                                    .font(.callout)
                             }
                         }
                     }
