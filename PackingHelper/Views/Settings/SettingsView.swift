@@ -100,21 +100,23 @@ struct SettingsView: View {
                 //                            print(newLocation.name)
                 //                        }
                 //                }
-                
-                Section(header: Text("Notification Time")) {
-                    DatePicker(
-                        "Notification Time",
-                        selection: Binding(
-                            get: {
-                                Calendar.current.date(from: DateComponents(hour: notificationMinutes / 60, minute: notificationMinutes % 60)) ?? Date()
-                            },
-                            set: { newValue in
-                                let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
-                                notificationMinutes = (components.hour ?? 0) * 60 + (components.minute ?? 0)
-                            }
-                        ),
-                        displayedComponents: .hourAndMinute
-                    )
+
+                if FeatureFlags.showingNotifications {
+                    Section(header: Text("Notification Time")) {
+                        DatePicker(
+                            "Notification Time",
+                            selection: Binding(
+                                get: {
+                                    Calendar.current.date(from: DateComponents(hour: notificationMinutes / 60, minute: notificationMinutes % 60)) ?? Date()
+                                },
+                                set: { newValue in
+                                    let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+                                    notificationMinutes = (components.hour ?? 0) * 60 + (components.minute ?? 0)
+                                }
+                            ),
+                            displayedComponents: .hourAndMinute
+                        )
+                    }
                 }
                 
                 Section("Developer") {

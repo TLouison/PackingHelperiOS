@@ -10,6 +10,8 @@ import UserNotifications
 
 struct NotificationUtilities {
     static func getNotificationPermission() {
+        guard FeatureFlags.showingNotifications else { return }
+
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if success {
                 print("All set!")
