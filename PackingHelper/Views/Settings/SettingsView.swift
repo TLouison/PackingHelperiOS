@@ -124,6 +124,7 @@ struct SettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .background(Color(.systemGroupedBackground))
             .sheet(isPresented: $showDeveloperMenu) {
                 DeveloperMenuView()
             }

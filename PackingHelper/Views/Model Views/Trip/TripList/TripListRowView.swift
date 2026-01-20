@@ -93,7 +93,7 @@ struct TripListRowView: View {
                         RoundedRectangle(cornerRadius: defaultCornerRadius)
                             .fill(
                                 LinearGradient(
-                                    colors: [Color.clear, Color.white.opacity(0.3), Color.clear],
+                                    colors: [Color.clear, Color.primary.opacity(0.15), Color.clear],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )

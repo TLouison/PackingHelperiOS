@@ -69,6 +69,7 @@ struct TripEditView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 30)
             }
+            .background(Color(.systemGroupedBackground))
             .sheet(isPresented: $showImagePicker) {
                 // Image picker would go here
                 Text("Image Picker Placeholder")
@@ -108,16 +109,16 @@ struct TripEditView: View {
         VStack(alignment: .leading) {
             TextField("Trip Name", text: $tripName)
                 .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
                 .padding(.bottom, 4)
-            
+
             if let destination = destinationLocation {
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
-                        .foregroundColor(.white.opacity(0.9))
-                    
+                        .foregroundColor(.secondary)
+
                     Text(destination.name)
-                        .foregroundColor(.white.opacity(0.9))
+                        .foregroundColor(.secondary)
                 }
             }
         }

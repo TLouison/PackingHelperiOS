@@ -79,7 +79,7 @@ struct DefaultPackingListView: View {
                     packingListsGrid
                 }
             }
-//            .background(Color(.systemGroupedBackground))
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Template Lists")
 //            .toolbarBackground(.visible, for: .navigationBar)
 //            .toolbarBackground(Color(.systemGroupedBackground), for: .navigationBar)
