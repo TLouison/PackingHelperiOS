@@ -29,8 +29,11 @@ struct PackingHelperApp: App {
             fatalError("Could not initialize ModelContainer")
         }
 
-        Purchases.logLevel = .debug
-        Purchases.configure(withAPIKey: REVENUECAT_PUBLIC_API_KEY)
+        // Only configure RevenueCat if subscription UI is enabled
+        if FeatureFlags.shared.showingSubscription {
+            Purchases.logLevel = .debug
+            Purchases.configure(withAPIKey: REVENUECAT_PUBLIC_API_KEY)
+        }
 
         // Perform data migration if needed
         if !hasMigratedDayOfLists {
