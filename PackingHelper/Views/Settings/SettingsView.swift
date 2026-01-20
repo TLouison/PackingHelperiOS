@@ -19,16 +19,17 @@ enum PackerType: String, CaseIterable {
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
-    
+
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("packerType") private var packerType = PackerType.nightBefore.rawValue
     @AppStorage("defaultLocation") private var defaultLocationData: Data = try! JSONEncoder().encode(TripLocation.sampleOrigin)
     @AppStorage("notificationTime") private var notificationMinutes = 480
-    
+
     @State private var selectedTime = Date()
     @State private var showDeveloperMenu = false
     @State private var currentLocation: TripLocation = TripLocation.sampleOrigin
     @State private var displayPaywall: Bool = false
+    @State private var featureFlags = FeatureFlags.shared
     
     private var defaultLocation: Binding<TripLocation> {
         Binding(
@@ -53,7 +54,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if FeatureFlags.showingSubscription {
+                if featureFlags.showingSubscription {
                     Section("Premium") {
                         //                    NavigationLink {
                         //                        PackingHelperPlusStoreView()
@@ -101,7 +102,7 @@ struct SettingsView: View {
                 //                        }
                 //                }
 
-                if FeatureFlags.showingNotifications {
+                if featureFlags.showingNotifications {
                     Section(header: Text("Notification Time")) {
                         DatePicker(
                             "Notification Time",

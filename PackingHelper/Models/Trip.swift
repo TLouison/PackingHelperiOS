@@ -123,7 +123,7 @@ final class Trip {
         self.origin = origin
         self.destination = destination
 
-        if FeatureFlags.showingNotifications {
+        if FeatureFlags.shared.showingNotifications {
             self.createDayOfPackingNotification()
         }
     }
@@ -394,7 +394,7 @@ extension Trip {
 /// Notification Code
 extension Trip {
     func createDayOfPackingNotification() {
-        guard FeatureFlags.showingNotifications else { return }
+        guard FeatureFlags.shared.showingNotifications else { return }
 
         NotificationUtilities.getNotificationPermission()
 

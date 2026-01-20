@@ -11,22 +11,23 @@ import SwiftData
 struct PackingListEditView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+
     var packingList: PackingList?
     var isTemplate: Bool = false
-    
+
     var trip: Trip? = nil
     var forceListType: ListType? = nil
-    
+
     @Query private var users: [User]
     @State private var selectedUser: User?
-    
+
     @State private var listName = ""
     @State private var listType: ListType = .packing
     @State private var countAsDays: Bool = false
     @State private var isDayOf: Bool = false
 
     @State private var isDeleting: Bool = false
+    @State private var featureFlags = FeatureFlags.shared
     @Binding var isDeleted: Bool
     
     var formIsValid: Bool {
@@ -64,7 +65,7 @@ struct PackingListEditView: View {
                         }
                     }
                     
-                    if FeatureFlags.showingMultiplePackers && users.count > 1 {
+                    if featureFlags.showingMultiplePackers && users.count > 1 {
                         Section("Packer") {
                             UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
                         }

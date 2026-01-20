@@ -13,10 +13,11 @@ struct PackingListApplyDefaultView: View {
     @Environment(\.modelContext) private var modelContext
 
     let trip: Trip
-    
+
     @State private var selectedUser: User?
     @State private var selectedLists: [PackingList] = []
-    
+    @State private var featureFlags = FeatureFlags.shared
+
     private var canSave: Bool {
         !selectedLists.isEmpty
     }
@@ -24,7 +25,7 @@ struct PackingListApplyDefaultView: View {
     var body: some View {
         NavigationStack {
             List {
-                if FeatureFlags.showingMultiplePackers {
+                if featureFlags.showingMultiplePackers {
                     // User Selection Section
                     Section {
                     UserSelectionRow(selectedUser: $selectedUser)

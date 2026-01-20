@@ -15,6 +15,7 @@ struct TripListRowView: View {
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDeleteTripAlert: Bool = false
     @State private var isMapLoading: Bool = true
+    @State private var featureFlags = FeatureFlags.shared
 
     @Bindable var trip: Trip
 
@@ -42,7 +43,7 @@ struct TripListRowView: View {
         ViewThatFits {
             VStack {
                 HStack(alignment: .top) {
-                    if FeatureFlags.showingMultiplePackers {
+                    if featureFlags.showingMultiplePackers {
                         UserIndicators(users: trip.packers)
                         .padding(.leading)
                     }

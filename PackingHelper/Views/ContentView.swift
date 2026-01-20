@@ -10,11 +10,12 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    
+
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
     @State private var selectedTab = 0
-    
+    @State private var featureFlags = FeatureFlags.shared
+
     var body: some View {
         TabView(selection: $selectedTab) {
             TripListView()
@@ -22,21 +23,21 @@ struct ContentView: View {
                     Label("Trips", systemImage: "airplane.departure")
                 }
                 .tag(0)
-            
+
             DefaultPackingListView()
                 .tabItem {
                     Label("Templates", systemImage: suitcaseIcon)
                 }
                 .tag(1)
-            
-            if FeatureFlags.showingMultiplePackers {
+
+            if featureFlags.showingMultiplePackers {
                 UserGridView()
                     .tabItem {
                         Label("Packers", systemImage: "person.circle")
                     }
                     .tag(2)
             }
-            
+
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")

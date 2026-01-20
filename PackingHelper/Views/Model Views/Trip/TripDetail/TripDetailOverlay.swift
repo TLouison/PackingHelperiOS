@@ -12,15 +12,16 @@ import WeatherKit
 struct TripDetailOverlay: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+
     @Bindable var trip: Trip
     @Binding var tripWeather: TripWeather?
-    
+
     @Binding var isShowingTripSettingsSheet: Bool
-    
+
     @State private var showTitle: Bool = false
     @State private var showSubtitle: Bool = false
     @State private var temperatureUnit: UnitTemperature = .fahrenheit
+    @State private var featureFlags = FeatureFlags.shared
     
     @ViewBuilder 
     func departureInfo() -> some View {
@@ -58,12 +59,12 @@ struct TripDetailOverlay: View {
                     .shaded()
                     
                     Spacer()
-                    
-                    if FeatureFlags.showingMultiplePackers && showSubtitle{
+
+                    if featureFlags.showingMultiplePackers && showSubtitle{
                         UserIndicators(users: trip.packers)
                             .padding(.horizontal)
                     }
-                    
+
                     Spacer()
                     
                     Button {
