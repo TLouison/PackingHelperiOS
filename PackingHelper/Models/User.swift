@@ -20,7 +20,7 @@ final class User: Comparable {
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
     
-    var colorHex: String = Color.teal.toHex()!
+    var colorHex: String = Color.teal.toHex() ?? "008080"
     
     init(name: String, colorHex: String? = nil) {
         self.name = name
@@ -74,7 +74,7 @@ extension User {
 
 extension User {
     func setUserColor(_ color: Color) {
-        self.colorHex = color.toHex() ?? Color.accentColor.toHex()!
+        self.colorHex = color.toHex() ?? "007AFF"
     }
     
     var userColor: Color {

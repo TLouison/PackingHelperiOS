@@ -25,6 +25,8 @@ struct DeveloperMenuView: View {
                         Toggle("Multiple Packers", isOn: $featureFlags.showingMultiplePackers)
                         Toggle("Subscription UI", isOn: $featureFlags.showingSubscription)
                         Toggle("Notifications", isOn: $featureFlags.showingNotifications)
+                        Toggle("Packing Engine", isOn: $featureFlags.showingPackingEngine)
+                        Toggle("Default Location", isOn: $featureFlags.showingDefaultLocation)
                     }
                 } footer: {
                     Text("Enable or disable experimental features for testing.").font(.subheadline)

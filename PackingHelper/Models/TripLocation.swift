@@ -139,38 +139,49 @@ extension TripLocation {
         if weatherLastFetched.distance(to: .now) < SECONDS_IN_MINUTE * MINUTES_IN_HOUR {
             return self.weather
         }
-        
-        self.weatherLastFetched = Date.now
+
         let weatherService = WeatherService()
-        
+
         let allowCurrentWeather = canGetCurrentWeather(for: trip)
         let allowForecastWeather = canGetWeatherForecast(for: trip)
-        
+
+        let newWeather: TripWeather
+
         if allowCurrentWeather && allowForecastWeather {
             print("Trying to get both weathers")
             let (startDate, endDate) = self.getForecastStartAndEnd(trip: trip)
-            
+
             do {
                 let weatherData = try await weatherService.weather(
                     for: self.location,
                     including: .daily(startDate: startDate, endDate: endDate),
                     .current
                 )
-                self.weather = TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
+                newWeather = TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
             } catch {
                 print("Failed to fetch weather")
+                await MainActor.run {
+                    self.weatherLastFetched = Date.now
+                }
                 return nil
             }
         } else if allowCurrentWeather {
             print("Getting only current weather")
-            self.weather = await TripWeather(currentWeather: self.getCurrentWeather(for: trip), dailyForecast: nil)
+            newWeather = await TripWeather(currentWeather: self.getCurrentWeather(for: trip), dailyForecast: nil)
         } else if allowForecastWeather {
             print("Getting only forecast weather")
-            self.weather = await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast(for: trip))
+            newWeather = await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast(for: trip))
         } else {
             print("Getting no weather")
-            self.weather = TripWeather(currentWeather: nil, dailyForecast: nil)
+            newWeather = TripWeather(currentWeather: nil, dailyForecast: nil)
         }
+
+        // Mutate on MainActor
+        await MainActor.run {
+            self.weatherLastFetched = Date.now
+            self.weather = newWeather
+        }
+
         return self.weather
     }
 }

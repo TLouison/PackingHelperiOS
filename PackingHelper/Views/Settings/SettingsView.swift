@@ -22,15 +22,14 @@ struct SettingsView: View {
 
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("packerType") private var packerType = PackerType.nightBefore.rawValue
-    @AppStorage("defaultLocation") private var defaultLocationData: Data = try! JSONEncoder().encode(TripLocation.sampleOrigin)
+    @AppStorage("defaultLocation") private var defaultLocationData: Data = (try? JSONEncoder().encode(TripLocation.sampleOrigin)) ?? Data()
     @AppStorage("notificationTime") private var notificationMinutes = 480
 
     @State private var selectedTime = Date()
     @State private var showDeveloperMenu = false
     @State private var currentLocation: TripLocation = TripLocation.sampleOrigin
     @State private var displayPaywall: Bool = false
-    @State private var featureFlags = FeatureFlags.shared
-    
+
     private var defaultLocation: Binding<TripLocation> {
         Binding(
             get: {
@@ -54,7 +53,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if featureFlags.showingSubscription {
+                if FeatureFlags.shared.showingSubscription {
                     Section("Premium") {
                         //                    NavigationLink {
                         //                        PackingHelperPlusStoreView()
@@ -102,7 +101,7 @@ struct SettingsView: View {
                 //                        }
                 //                }
 
-                if featureFlags.showingNotifications {
+                if FeatureFlags.shared.showingNotifications {
                     Section(header: Text("Notification Time")) {
                         DatePicker(
                             "Notification Time",

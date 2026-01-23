@@ -243,8 +243,7 @@ extension Trip {
     }
 
     var alreadyUsedTemplates: [PackingList] {
-        // We already filtered out all appliedFromTemplate == nil, so force unwrap is safe
-        return self.listsFromTemplates.map { $0.appliedFromTemplate! }
+        return self.listsFromTemplates.compactMap { $0.appliedFromTemplate }
     }
 
     // MARK: List counts
@@ -343,13 +342,15 @@ extension Trip {
     }
 
     func removeList(_ listToRemove: PackingList) -> Bool {
-        // Make sure to remove the list from the model context as well if fully deleting!
-        if var lists = self.lists {
-            logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
-            lists.remove(at: (lists.firstIndex(of: listToRemove))!)
-            return true
+        guard var lists = self.lists,
+              let index = lists.firstIndex(of: listToRemove) else {
+            logger.warning("Could not find list \(listToRemove.name) in trip \(self.name)")
+            return false
         }
-        return false
+        logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
+        lists.remove(at: index)
+        self.lists = lists
+        return true
     }
 
     func applyDefaultLists(to user: User?, lists: [PackingList], in context: ModelContext) {

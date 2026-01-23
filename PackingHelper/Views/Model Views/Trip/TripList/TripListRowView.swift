@@ -40,7 +40,6 @@ struct TripListRowView: View {
     }
     
     @ViewBuilder func tripRowOverlay(_ trip: Trip) -> some View {
-        ViewThatFits {
             VStack {
                 HStack(alignment: .top) {
                     if featureFlags.showingMultiplePackers {
@@ -64,23 +63,6 @@ struct TripListRowView: View {
                     .shaded()
                 }
             }
-            
-            HStack {
-                Text(trip.name)
-                    .font(.headline)
-                    .roundedBox()
-                    .shaded()
-                
-                Spacer()
-            
-                VStack(alignment: .trailing) {
-                    dateInfo()
-                }
-                .font(.headline)
-                .roundedBox()
-                .shaded()
-            }
-        }
     }
     
     var body: some View {

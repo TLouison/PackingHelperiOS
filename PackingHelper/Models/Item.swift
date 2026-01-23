@@ -77,7 +77,14 @@ class Item {
             case .byNameDesc:
                 return items.sorted { $0.name > $1.name}
             case .byUser:
-                return items.sorted { $0.list?.user ?? User(name: "aaa") < $1.list?.user ?? User(name: "ZZZ") }
+                return items.sorted { lhs, rhs in
+                    switch (lhs.list?.user, rhs.list?.user) {
+                    case (nil, nil): return false
+                    case (nil, _): return true
+                    case (_, nil): return false
+                    case let (l?, r?): return l.name < r.name
+                    }
+                }
             case .byList:
                 return items.sorted { $0.list?.name ?? "aaa" < $1.list?.name ?? "ZZZ" }
             case .byDate:

@@ -36,22 +36,22 @@ class PackingEngine {
 //    }
     
     static func interpretItem(itemName: String) -> PackingRecommendationCategory {
-        let modelConfiguration = MLModelConfiguration()
-        modelConfiguration.computeUnits = .all
-        modelConfiguration.modelDisplayName = "Packed Item Classifier"
-        let model = try! ProductSuggestionModel(configuration: modelConfiguration)
-        
-        guard let productCategoryOutput = try? model.prediction(text: itemName) else {
-            fatalError("Unexpected runtime error.")
-        }
-        
-        let categoryString = productCategoryOutput.label
-        
-        switch categoryString {
-            case "Electronics": return PackingRecommendationCategory.Electronics
-            case "Clothing": return PackingRecommendationCategory.Clothing
-            case "Toiletry": return PackingRecommendationCategory.Toiletries
-            default: return PackingRecommendationCategory.other
+        guard FeatureFlags.shared.showingPackingEngine else { return .other }
+
+        do {
+            let config = MLModelConfiguration()
+            config.computeUnits = .all
+            let model = try ProductSuggestionModel(configuration: config)
+            let output = try model.prediction(text: itemName)
+
+            switch output.label {
+            case "Electronics": return .Electronics
+            case "Clothing": return .Clothing
+            case "Toiletry": return .Toiletries
+            default: return .other
+            }
+        } catch {
+            return .other
         }
     }
 }

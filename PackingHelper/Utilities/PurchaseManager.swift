@@ -9,7 +9,14 @@ import SwiftUI
 import StoreKit
 import RevenueCat
 
-let REVENUECAT_PUBLIC_API_KEY = "appl_oygxfOEAnjsrYdUZxXrUbxyGblx"
+let REVENUECAT_PUBLIC_API_KEY: String = {
+    guard let key = Bundle.main.infoDictionary?["REVENUECAT_API_KEY"] as? String,
+          !key.isEmpty else {
+        assertionFailure("REVENUECAT_API_KEY not configured")
+        return ""
+    }
+    return key
+}()
 
 @MainActor
 @Observable

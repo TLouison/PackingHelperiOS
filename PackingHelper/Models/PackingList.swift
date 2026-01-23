@@ -211,8 +211,12 @@ extension PackingList {
             }
         }
 
-        try? context.save()
-        logger.info("Packing list saved!")
+        do {
+            try context.save()
+            logger.info("Packing list saved!")
+        } catch {
+            logger.error("Failed to save packing list: \(error.localizedDescription)")
+        }
     }
 
     static func delete(_ packingList: PackingList, from context: ModelContext) {
@@ -225,8 +229,12 @@ extension PackingList {
         }
 
         context.delete(packingList)
-        try! context.save()
-        logger.info("Successfully deleted \(list_name)")
+        do {
+            try context.save()
+            logger.info("Successfully deleted \(list_name)")
+        } catch {
+            logger.error("Failed to delete packing list: \(error.localizedDescription)")
+        }
     }
 }
 
@@ -246,7 +254,14 @@ extension PackingList {
             case .byNameDesc:
                 return lists.sorted { $0.name > $1.name}
             case .byUser:
-                return lists.sorted { $0.user ?? User(name: "aaa") < $1.user ?? User(name: "ZZZ") }
+                return lists.sorted { lhs, rhs in
+                    switch (lhs.user, rhs.user) {
+                    case (nil, nil): return false
+                    case (nil, _): return true
+                    case (_, nil): return false
+                    case let (l?, r?): return l.name < r.name
+                    }
+                }
             case .byDate:
                 return lists.sorted { $0.created < $1.created }
             case .byCustomOrder:

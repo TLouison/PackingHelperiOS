@@ -14,7 +14,6 @@ struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
     @State private var selectedTab = 0
-    @State private var featureFlags = FeatureFlags.shared
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -30,7 +29,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            if featureFlags.showingMultiplePackers {
+            if FeatureFlags.shared.showingMultiplePackers {
                 UserGridView()
                     .tabItem {
                         Label("Packers", systemImage: "person.circle")

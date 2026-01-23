@@ -36,11 +36,25 @@ class FeatureFlags {
         }
     }
 
+    var showingPackingEngine: Bool {
+        didSet {
+            UserDefaults.standard.set(showingPackingEngine, forKey: "featureFlag_showingPackingEngine")
+        }
+    }
+
+    var showingDefaultLocation: Bool {
+        didSet {
+            UserDefaults.standard.set(showingDefaultLocation, forKey: "featureFlag_showingDefaultLocation")
+        }
+    }
+
     private init() {
         // Initialize from UserDefaults
         self.showingRecommendations = UserDefaults.standard.bool(forKey: "featureFlag_showingRecommendations")
         self.showingMultiplePackers = UserDefaults.standard.bool(forKey: "featureFlag_showingMultiplePackers")
         self.showingSubscription = UserDefaults.standard.bool(forKey: "featureFlag_showingSubscription")
         self.showingNotifications = UserDefaults.standard.bool(forKey: "featureFlag_showingNotifications")
+        self.showingPackingEngine = UserDefaults.standard.bool(forKey: "featureFlag_showingPackingEngine")
+        self.showingDefaultLocation = UserDefaults.standard.bool(forKey: "featureFlag_showingDefaultLocation")
     }
 }
