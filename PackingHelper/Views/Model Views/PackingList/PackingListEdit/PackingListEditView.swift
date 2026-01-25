@@ -59,10 +59,16 @@ struct PackingListEditView: View {
                                 }
                             }
                         }
-
+                    }
+                    
+                    Section {
                         Toggle(isOn: $isDayOf) {
                             Label("Day-of", systemImage: "sun.horizon")
                         }
+                    } header: {
+                        Text("Day-f")
+                    } footer: {
+                        Text("Day-of lists are separate from your standard lists. They keep track of things that you only need to remember the day you leave.")
                     }
                     
                     if featureFlags.showingMultiplePackers && users.count > 1 {
@@ -82,6 +88,7 @@ struct PackingListEditView: View {
                     .shaded()
                 }
             }
+            .navigationBarTitleDisplayMode(.inline) 
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text(titleString)
