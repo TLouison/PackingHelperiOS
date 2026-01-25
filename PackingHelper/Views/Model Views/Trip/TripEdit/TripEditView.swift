@@ -176,7 +176,7 @@ struct TripEditView: View {
                 Text("Start Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 DatePicker("", selection: $startDate, displayedComponents: .date)
                     .labelsHidden()
             }
@@ -184,13 +184,13 @@ struct TripEditView: View {
             .background(Color(.tertiarySystemFill))
             .cornerRadius(15)
             .frame(maxWidth: .infinity)
-            
+
             // End date card
             VStack(alignment: .leading) {
                 Text("End Date")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 DatePicker("", selection: $endDate, displayedComponents: .date)
                     .labelsHidden()
             }
@@ -198,6 +198,13 @@ struct TripEditView: View {
             .background(Color(.tertiarySystemFill))
             .cornerRadius(15)
             .frame(maxWidth: .infinity)
+        }
+        .onChange(of: startDate) { _, newStartDate in
+            if newStartDate >= endDate {
+                if let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: newStartDate) {
+                    endDate = nextDay
+                }
+            }
         }
     }
     
