@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 struct TripDetailPackingGaugeRowView: View {
     let trip: Trip
@@ -23,7 +24,7 @@ struct TripDetailPackingGaugeRowView: View {
                         image: PackingList.icon(listType: listType)
                     )
                     .onChange(of: total) {
-                        print(trip.getCompleteItems(for: listType, isDayOf: false), total)
+                        AppLogger.trip.debug("Progress changed for \(listType.rawValue): \(trip.getCompleteItems(for: listType, isDayOf: false))/\(total)")
                     }
                     .padding(.horizontal)
                 }
@@ -40,8 +41,8 @@ struct TripDetailPackingGaugeRowView: View {
                     image: "sun.horizon"
                 )
                 .onChange(of: dayOfTotal) {
-                    print("Day-of:", trip.getCompleteItems(for: .packing, isDayOf: true) +
-                                    trip.getCompleteItems(for: .task, isDayOf: true), dayOfTotal)
+                    let completed = trip.getCompleteItems(for: .packing, isDayOf: true) + trip.getCompleteItems(for: .task, isDayOf: true)
+                    AppLogger.trip.debug("Day-of progress changed: \(completed)/\(dayOfTotal)")
                 }
                 .padding(.horizontal)
             }

@@ -10,6 +10,7 @@ import SwiftData
 import SwiftUI
 import MapKit
 import WeatherKit
+import OSLog
 
 @Model
 final class TripLocation: Codable {
@@ -135,7 +136,7 @@ extension TripLocation {
     
     func getTripWeather(for trip: Trip) async -> TripWeather? {
         // Try to get cached weather first. We refetch every hour, or if the app has been fully closed.
-        print("Trying to return cached weather. Last fetched: \(self.weatherLastFetched), \(self.weatherLastFetched.distance(to: .now))")
+        AppLogger.weather.debug("Checking weather cache. Last fetched: \(self.weatherLastFetched), \(self.weatherLastFetched.distance(to: .now)) seconds ago")
         if weatherLastFetched.distance(to: .now) < SECONDS_IN_MINUTE * MINUTES_IN_HOUR {
             return self.weather
         }
@@ -148,7 +149,7 @@ extension TripLocation {
         let newWeather: TripWeather
 
         if allowCurrentWeather && allowForecastWeather {
-            print("Trying to get both weathers")
+            AppLogger.weather.debug("Fetching current weather + 5-day forecast")
             let (startDate, endDate) = self.getForecastStartAndEnd(trip: trip)
 
             do {
@@ -159,20 +160,20 @@ extension TripLocation {
                 )
                 newWeather = TripWeather(currentWeather: weatherData.1, dailyForecast: weatherData.0)
             } catch {
-                print("Failed to fetch weather")
+                AppLogger.weather.error("Failed to fetch weather: \(error.localizedDescription)")
                 await MainActor.run {
                     self.weatherLastFetched = Date.now
                 }
                 return nil
             }
         } else if allowCurrentWeather {
-            print("Getting only current weather")
+            AppLogger.weather.debug("Fetching current weather only")
             newWeather = await TripWeather(currentWeather: self.getCurrentWeather(for: trip), dailyForecast: nil)
         } else if allowForecastWeather {
-            print("Getting only forecast weather")
+            AppLogger.weather.debug("Fetching forecast weather only")
             newWeather = await TripWeather(currentWeather: nil, dailyForecast: self.getWeatherForecast(for: trip))
         } else {
-            print("Getting no weather")
+            AppLogger.weather.debug("No weather data available for this trip")
             newWeather = TripWeather(currentWeather: nil, dailyForecast: nil)
         }
 

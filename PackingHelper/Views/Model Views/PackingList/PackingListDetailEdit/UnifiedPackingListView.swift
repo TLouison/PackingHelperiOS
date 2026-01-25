@@ -14,6 +14,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 enum UnifiedPackingListMode: String {
     case unified, detail, templating
@@ -110,9 +111,9 @@ struct UnifiedPackingListView: View {
                 return typeMatch
             }
         }
-        print("Found filtered lists:")
+        AppLogger.views.debug("Found \(filtered.count) filtered lists")
         for list in filtered {
-            print(" \(list.name)")
+            AppLogger.views.debug(" - \(list.name)")
         }
         return PackingList.sorted(filtered, sortOrder: .byDate)
     }

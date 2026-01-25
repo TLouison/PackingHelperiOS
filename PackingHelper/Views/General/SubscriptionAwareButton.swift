@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct SubscriptionAwareButton<Label: View>: View {
 //    @Environment(PurchaseManager.self) private var purchaseManager: PurchaseManager
@@ -29,10 +30,10 @@ struct SubscriptionAwareButton<Label: View>: View {
         Button {
             withAnimation {
                 if canPerformAction {
-                    print("User is Plus, running paid action")
+                    AppLogger.purchases.debug("User has permission, running action")
                     paidAction()
                 } else {
-                    print("User is not subscribed, showing subscription page")
+                    AppLogger.purchases.info("User is not subscribed, showing subscription page")
 //                        isShowingSubscriptionStoreSheet.toggle()
                 }
             }
@@ -59,14 +60,14 @@ struct SubscriptionAwareButton<Label: View>: View {
 #Preview {
     VStack(spacing: 32) {
         SubscriptionAwareButton(localLimitMet: true) {
-            print("Hello!")
+            AppLogger.purchases.debug("Preview button tapped")
         } label: {
             Label("Print Hello", systemImage: "globe")
                 .labelStyle(.iconOnly)
         }
-        
+
         SubscriptionAwareButton(localLimitMet: false) {
-            print("Hello!")
+            AppLogger.purchases.debug("Preview button tapped")
         } label: {
             Label("Print Hello", systemImage: "globe")
                 .labelStyle(.iconOnly)

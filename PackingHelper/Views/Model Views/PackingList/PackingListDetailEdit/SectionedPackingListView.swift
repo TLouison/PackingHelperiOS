@@ -12,6 +12,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 struct SectionedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
@@ -350,21 +351,21 @@ struct SectionedPackingListView: View {
 
     private func handleItemReorder(item: Item, in list: PackingList, to newIndex: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            print("Trying to reorder item \(item.name)")
+            AppLogger.views.debug("Reordering item \(item.name) to index \(newIndex)")
             SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
         }
     }
 
     private func handleCrossListMove(item: Item, to targetList: PackingList, at index: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            print("Trying to reorder item into list \(targetList.name) with name \(item.name)")
+            AppLogger.views.debug("Moving item \(item.name) to list \(targetList.name) at index \(index)")
             SortOrderManager.moveItem(item, to: targetList, at: index)
         }
     }
 
     private func handleSectionReorder(list: PackingList, to newIndex: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            print("Trying to reorder section with name: \(list.name)")
+            AppLogger.views.debug("Reordering section \(list.name) to index \(newIndex)")
             var mutableLists = filteredLists
             SortOrderManager.reorderLists(&mutableLists, moving: list, to: newIndex)
         }

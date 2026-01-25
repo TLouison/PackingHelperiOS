@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import OSLog
 
 struct NotificationUtilities {
     static func getNotificationPermission() {
@@ -14,9 +15,9 @@ struct NotificationUtilities {
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if success {
-                print("All set!")
+                AppLogger.notifications.info("Notification permission granted")
             } else if let error = error {
-                print(error.localizedDescription)
+                AppLogger.notifications.error("Notification permission error: \(error.localizedDescription)")
             }
         }
     }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 struct UserListRowView: View {
     @Environment(\.modelContext) private var modelContext
@@ -61,8 +62,8 @@ struct UserListRowView: View {
     
     func deleteUser(_ user: User) {
         switch User.delete(user, from: modelContext) {
-            case false: print("Couldn't delete user!!!")
-            default: print("Deleted user.")
+            case false: AppLogger.user.error("Failed to delete user \(user.name)")
+            default: AppLogger.user.info("Deleted user \(user.name)")
         }
     }
 }

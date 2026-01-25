@@ -9,8 +9,6 @@ import Foundation
 import SwiftData
 import OSLog
 
-private let logger = Logger(subsystem: "PackingHelper Models", category: "PackingList")
-
 enum ListType: String, CaseIterable, Comparable {
     case packing="Packing", task="Task"
 
@@ -151,14 +149,14 @@ final class PackingList {
 
     func removeItem(_ item: Item) {
         if self.items != nil {
-            print("Removing item \(item.name)")
+            AppLogger.packingList.debug("Removing item \(item.name)")
             self.items!.remove(at: self.items!.firstIndex(of: item)!)
         }
     }
 
     func removeItem(at index: Int) {
         if self.items != nil {
-            print("Removing item at index \(index)")
+            AppLogger.packingList.debug("Removing item at index \(index)")
             self.items?.remove(at: index)
         }
     }
@@ -190,50 +188,50 @@ extension PackingList {
         in context: ModelContext,
         for trip: Trip?
     ) {
-        logger.info("Saving packing list...")
+        AppLogger.packingList.info("Saving packing list...")
         if let packingList {
-            logger.debug("Packing list already exists. Updating with new info.")
+            AppLogger.packingList.debug("Packing list already exists. Updating with new info.")
             packingList.name = name
             packingList.type = type
             packingList.user = user
             packingList.countAsDays = countAsDays
             packingList.isDayOf = isDayOf
         } else {
-            logger.debug("Packing list does not already exist. Creating with new info.")
+            AppLogger.packingList.debug("Packing list does not already exist. Creating with new info.")
             let newPackingList = PackingList(type: type, template: template, name: name, countAsDays: countAsDays, isDayOf: isDayOf)
             newPackingList.user = user
 
             context.insert(newPackingList)
 
             if let trip {
-                logger.debug("New list belongs to trip, applying to trip's lists.")
+                AppLogger.packingList.debug("New list belongs to trip, applying to trip's lists.")
                 trip.addList(newPackingList)
             }
         }
 
         do {
             try context.save()
-            logger.info("Packing list saved!")
+            AppLogger.packingList.info("Packing list saved!")
         } catch {
-            logger.error("Failed to save packing list: \(error.localizedDescription)")
+            AppLogger.packingList.error("Failed to save packing list: \(error.localizedDescription)")
         }
     }
 
     static func delete(_ packingList: PackingList, from context: ModelContext) {
         let list_name = packingList.name
-        logger.info("Deleting \(list_name)")
+        AppLogger.packingList.info("Deleting \(list_name)")
 
         if let trip = packingList.trip {
-            logger.info("Removing \(list_name) from trip \(trip.name)")
+            AppLogger.packingList.info("Removing \(list_name) from trip \(trip.name)")
             _ = trip.removeList(packingList)
         }
 
         context.delete(packingList)
         do {
             try context.save()
-            logger.info("Successfully deleted \(list_name)")
+            AppLogger.packingList.info("Successfully deleted \(list_name)")
         } catch {
-            logger.error("Failed to delete packing list: \(error.localizedDescription)")
+            AppLogger.packingList.error("Failed to delete packing list: \(error.localizedDescription)")
         }
     }
 }
@@ -288,10 +286,10 @@ extension PackingList {
 extension PackingList {
     private static func _copy(_ packingList: PackingList, for trip: Trip? = nil, template: Bool = false) -> PackingList {
         let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays, isDayOf: packingList.isDayOf)
-        logger.info("Copied list.")
+        AppLogger.packingList.info("Copied list.")
 
         if let items = packingList.items {
-            logger.info("Original list contained items, copying items to new list.")
+            AppLogger.packingList.info("Original list contained items, copying items to new list.")
             for item in items {
                 let newItem: Item
                 if template {
@@ -302,7 +300,7 @@ extension PackingList {
                 // Modify the numbers on the list based on number of days if desired
                 if !template && packingList.countAsDays {
                     let itemCount = trip?.duration ?? newItem.count
-                    logger.info("Original list is marked as 'countAsDays=true', setting item count to \(itemCount)")
+                    AppLogger.packingList.info("Original list is marked as 'countAsDays=true', setting item count to \(itemCount)")
                     newItem.count = itemCount
                 }
 
@@ -315,7 +313,7 @@ extension PackingList {
     }
 
     static func copy(_ list: PackingList, for trip: Trip) -> PackingList {
-        logger.info("Copying packing list \(list.name) to apply to a trip.")
+        AppLogger.packingList.info("Copying packing list \(list.name) to apply to a trip.")
         let newList = PackingList._copy(list, for: trip, template: false)
         newList.template = false
 
@@ -330,7 +328,7 @@ extension PackingList {
     static func copy(_ list: PackingList, for trip: Trip, with user: User?) -> PackingList {
         let newList = PackingList.copy(list, for: trip)
         if let user {
-            logger.info("Copied packing list \(list.name) to apply to a trip for user \(user.name).")
+            AppLogger.packingList.info("Copied packing list \(list.name) to apply to a trip for user \(user.name).")
             newList.user = user
         }
         return newList

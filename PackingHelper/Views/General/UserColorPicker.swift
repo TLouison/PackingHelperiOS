@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct UserColorPicker: View {
     @Binding var selectedColor: Color
@@ -13,7 +14,7 @@ struct UserColorPicker: View {
     @ViewBuilder private func colorButtonBase(color: Color) -> some View {
         Button {
             withAnimation(.snappy) {
-                print("Setting color to \(color)")
+                AppLogger.user.debug("Setting user color to \(color.description)")
                 self.selectedColor = color
             }
         } label: {

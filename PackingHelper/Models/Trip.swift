@@ -10,8 +10,6 @@ import SwiftData
 import SwiftUI
 import OSLog
 
-private let logger = Logger(subsystem: "PackingHelper Models", category: "Trip")
-
 enum TripType: Codable, CaseIterable {
     case plane, car, train, boat, ferry
 
@@ -344,10 +342,10 @@ extension Trip {
     func removeList(_ listToRemove: PackingList) -> Bool {
         guard var lists = self.lists,
               let index = lists.firstIndex(of: listToRemove) else {
-            logger.warning("Could not find list \(listToRemove.name) in trip \(self.name)")
+            AppLogger.trip.warning("Could not find list \(listToRemove.name) in trip \(self.name)")
             return false
         }
-        logger.debug("Removing \(listToRemove.name) from lists of \(self.name)")
+        AppLogger.trip.debug("Removing \(listToRemove.name) from lists of \(self.name)")
         lists.remove(at: index)
         self.lists = lists
         return true

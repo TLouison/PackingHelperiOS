@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct LocationSelectionView: View {
     @Environment(\.dismiss) private var dismiss
@@ -76,7 +77,7 @@ struct LocationSelectionView: View {
             location.latitude = latitude
             location.longitude = longitude
             location.name = result.abbreviatedName
-            print("Selected location \(result.abbreviatedName)")
+            AppLogger.location.debug("Selected location: \(result.abbreviatedName)")
             dismiss()
         }
     }

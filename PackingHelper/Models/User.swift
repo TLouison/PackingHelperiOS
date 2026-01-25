@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 @Model
 final class User: Comparable {
@@ -56,11 +57,11 @@ extension User {
         // Try and delete all related packing lists first, then delete the user
         if let userLists = user.lists {
             for packingList in userLists {
-                print("Deleting packing list for deleted user \(user.name) for trip \(packingList.trip?.name ?? "Unknown Name")")
+                AppLogger.user.debug("Deleting packing list for user \(user.name) for trip \(packingList.trip?.name ?? "Unknown Name")")
                 context.delete(packingList)
             }
         }
-        print("Deleting user", user.name)
+        AppLogger.user.info("Deleting user \(user.name)")
         context.delete(user)
         return true
     }
@@ -85,20 +86,19 @@ extension User {
 // Profile Picture methods
 extension User {
     func setProfileImage(_ image: UIImage) {
-        // Add debug print
-        print("Setting profile image")
+        AppLogger.user.debug("Setting profile image")
         if let data = image.jpegData(compressionQuality: 0.7) {
-            print("Image data size: \(data.count) bytes")
+            AppLogger.user.debug("Image data size: \(data.count) bytes")
             self.profileImageData = data
         }
     }
-    
+
     // Add persistence check method
     func verifyImageData() {
         if let data = profileImageData {
-            print("Profile image data exists: \(data.count) bytes")
+            AppLogger.user.debug("Profile image data exists: \(data.count) bytes")
         } else {
-            print("No profile image data found")
+            AppLogger.user.debug("No profile image data found")
         }
     }
     
