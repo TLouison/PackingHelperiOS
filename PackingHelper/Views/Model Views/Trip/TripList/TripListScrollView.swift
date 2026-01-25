@@ -43,7 +43,7 @@ struct TripListScrollView: View {
             HStack {
                 let enumerated = Array(trips.enumerated())
                 
-                ForEach(enumerated, id: \.offset) { index, trip in
+                ForEach(enumerated, id: \.element.id) { index, trip in
                     // Use ZStack to guarantee a hittable layer
                     ZStack {
                         TripListRowView(trip: trip, disabled: shouldDisable(index: index))

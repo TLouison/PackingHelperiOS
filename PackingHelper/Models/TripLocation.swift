@@ -13,7 +13,7 @@ import WeatherKit
 import OSLog
 
 @Model
-final class TripLocation: Codable {
+final class TripLocation: Codable, Equatable {
     var name: String = "Location"
     
     @Relationship(inverse: \Trip.origin) var originTrips: [Trip]? = []
@@ -52,7 +52,12 @@ final class TripLocation: Codable {
         self.latitude = destination.latitude
         self.longitude = destination.longitude
     }
-    
+
+    // Equatable conformance
+    static func == (lhs: TripLocation, rhs: TripLocation) -> Bool {
+        lhs.id == rhs.id
+    }
+
     // Custom coding keys
     private enum CodingKeys: String, CodingKey {
         case name

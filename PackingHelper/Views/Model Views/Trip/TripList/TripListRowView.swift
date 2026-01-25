@@ -89,6 +89,7 @@ struct TripListRowView: View {
                     position: $mapPosition,
                     interactionModes: []
                 )
+                .id(trip.destination?.id)
                 .overlay(Color.clear.allowsHitTesting(true))
                 .transition(.opacity)
             }
@@ -133,6 +134,11 @@ struct TripListRowView: View {
                 withAnimation(.easeOut(duration: 0.3)) {
                     isMapLoading = false
                 }
+            }
+        }
+        .onChange(of: trip.destination) { _, newDestination in
+            if let destination = newDestination {
+                mapPosition = destination.mapCameraPosition
             }
         }
     }
