@@ -20,6 +20,8 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
 
+    @Query private var users: [User]
+
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("packerType") private var packerType = PackerType.nightBefore.rawValue
     @AppStorage("defaultLocation") private var defaultLocationData: Data = (try? JSONEncoder().encode(TripLocation.sampleOrigin)) ?? Data()
@@ -53,6 +55,20 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if !FeatureFlags.shared.showingMultiplePackers, let firstUser = users.first {
+                    Section("Your Profile") {
+                        NavigationLink {
+                            UserEditView(user: firstUser)
+                        } label: {
+                            HStack {
+                                firstUser.pillFirstInitialIconSolid
+                                Text(firstUser.name)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+
                 if FeatureFlags.shared.showingSubscription {
                     Section("Premium") {
                         //                    NavigationLink {

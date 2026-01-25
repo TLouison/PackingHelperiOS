@@ -21,7 +21,7 @@ struct MissingUsersView: View {
             }
         }
         .sheet(isPresented: $showAddPackerSheet) {
-            UserEditView(user: nil)
+            UserEditView(user: nil, isPresentedModally: true)
         }
     }
 }

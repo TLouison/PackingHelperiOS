@@ -20,7 +20,8 @@ final class User: Comparable {
     var profileImageData: Data? // Store image data
     
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
-    
+    @Relationship(deleteRule: .nullify) var defaultLocation: TripLocation?
+
     var colorHex: String = Color.teal.toHex() ?? "008080"
     
     init(name: String, colorHex: String? = nil) {

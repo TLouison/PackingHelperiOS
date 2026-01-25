@@ -57,7 +57,7 @@ struct UserListView: View {
                 }
             }
             .sheet(isPresented: $isShowingAddUserSheet) {
-                UserEditView(user: nil)
+                UserEditView(user: nil, isPresentedModally: true)
                     .presentationDetents([.height(400)])
             }
             .sheet(isPresented: $isShowingSubscriptionStoreSheet) {

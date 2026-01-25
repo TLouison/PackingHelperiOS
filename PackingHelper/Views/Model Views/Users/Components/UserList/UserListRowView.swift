@@ -55,7 +55,7 @@ struct UserListRowView: View {
                 }
             }
             .sheet(isPresented: $isShowingEditUserSheet) {
-                UserEditView(user: user)
+                UserEditView(user: user, isPresentedModally: true)
                     .presentationDetents([.height(400)])
             }
     }

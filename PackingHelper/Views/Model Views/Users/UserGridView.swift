@@ -55,11 +55,11 @@ struct UserGridView: View {
                 }
             }
             .sheet(isPresented: $isShowingAddUserSheet) {
-                UserEditView(user: nil)
+                UserEditView(user: nil, isPresentedModally: true)
             }
             .sheet(item: $selectedUser) { user in
                 NavigationStack {
-                    UserEditView(user: user)
+                    UserEditView(user: user, isPresentedModally: true)
                 }
             }
             .sheet(isPresented: $isShowingSubscriptionStoreSheet) {

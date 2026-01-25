@@ -5,7 +5,9 @@ struct TripEditView: View {
     // MARK: - Properties
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    
+
+    @Query private var users: [User]
+
     // Trip model (can be nil for new trip creation)
     var trip: Trip?
     @Binding var isDeleted: Bool
@@ -99,6 +101,18 @@ struct TripEditView: View {
                 }
             } message: {
                 Text("Are you sure you want to delete this trip? This action cannot be undone.")
+            }
+            .onAppear {
+                // Auto-populate origin from user's default location when creating new trip
+                if trip == nil && originLocation == nil && FeatureFlags.shared.showingDefaultLocation {
+                    if let defaultLoc = users.first?.defaultLocation {
+                        originLocation = TripLocation(
+                            name: defaultLoc.name,
+                            latitude: defaultLoc.latitude,
+                            longitude: defaultLoc.longitude
+                        )
+                    }
+                }
             }
         }
     }

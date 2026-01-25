@@ -18,7 +18,8 @@ final class TripLocation: Codable, Equatable {
     
     @Relationship(inverse: \Trip.origin) var originTrips: [Trip]? = []
     @Relationship(inverse: \Trip.destination) var destinationTrips: [Trip]? = []
-    
+    @Relationship(inverse: \User.defaultLocation) var usersWithDefault: [User]? = []
+
     var latitude: Double = 40.7128
     var longitude: Double = -74.0060
     
