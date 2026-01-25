@@ -29,10 +29,7 @@ struct TripDetailPackingView: View {
                     .font(.title)
                 Spacer()
                 
-                CreateListMenu(
-                    isAddingNewPackingList: $isAddingNewPackingList,
-                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
-                )
+                headerMenu
             }
         } content: {
             if filteredLists.isEmpty {
@@ -157,6 +154,28 @@ struct TripDetailPackingView: View {
                     }
                 }
             }
+        }
+    }
+    
+    var headerMenu: some View {
+        Menu {
+            NavigationLink {
+                PackingListContainerView(
+                    trip: trip, users: trip.packers,
+                    listType: nil,
+                    isDayOf: nil,
+                    title: trip.name
+                )
+            } label: {
+                Text("View All Items")
+            }
+            
+            CreateListMenu(
+                isAddingNewPackingList: $isAddingNewPackingList,
+                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+            )
+        } label: {
+            Label("Menu", systemImage: "ellipse")
         }
     }
 }

@@ -24,10 +24,9 @@ struct UnifiedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
 
     let trip: Trip?
+    let lists: [PackingList]
     let users: [User]?
 
-    let listType: ListType
-    let isDayOf: Bool
     let title: String?
 
     let mode: UnifiedPackingListMode
@@ -56,14 +55,6 @@ struct UnifiedPackingListView: View {
     @State private var localShowingAddListSheet = false
     @State private var localIsApplyingDefaultPackingList = false
 
-    private var lists: [PackingList] {
-        if let trip = trip {
-            return trip.lists ?? []
-        } else {
-            return standaloneLists
-        }
-    }
-
     private var effectiveIsAddingNewItem: Bool {
         // Use bound value for .unified and .templating modes, local value for .detail mode
         (mode == .unified || mode == .templating) ? isAddingNewItem : localIsAddingNewItem
@@ -73,8 +64,6 @@ struct UnifiedPackingListView: View {
         trip: Trip? = nil,
         lists: [PackingList] = [],
         users: [User]?,
-        listType: ListType,
-        isDayOf: Bool,
         title: String?,
         mode: UnifiedPackingListMode,
         isAddingNewItem: Binding<Bool> = .constant(false),
@@ -84,10 +73,9 @@ struct UnifiedPackingListView: View {
         selectedUser: Binding<User?> = .constant(nil)
     ) {
         self.trip = trip
+        self.lists = lists
         self._standaloneLists = State(initialValue: lists)
         self.users = users
-        self.listType = listType
-        self.isDayOf = isDayOf
         self.title = title
         self.mode = mode
         self._isAddingNewItem = isAddingNewItem
@@ -102,25 +90,13 @@ struct UnifiedPackingListView: View {
         return users.count > 1
     }
     
-    var filteredLists: [PackingList] {
-        let filtered = lists.filter { list in
-            let typeMatch = list.type == listType && list.isDayOf == isDayOf
-            if let selectedUser = selectedUser {
-                return list.user == selectedUser && typeMatch
-            } else {
-                return typeMatch
-            }
-        }
-        AppLogger.views.debug("Found \(filtered.count) filtered lists")
-        for list in filtered {
-            AppLogger.views.debug(" - \(list.name)")
-        }
-        return PackingList.sorted(filtered, sortOrder: .byDate)
+    var sortedLists: [PackingList] {
+        return PackingList.sorted(lists, sortOrder: .byDate)
     }
     
     var allItems: [Item] {
         var allItems: [Item] = []
-        for list in filteredLists {
+        for list in sortedLists {
             if let items = list.items {
                 allItems.append(contentsOf: items)
             }
@@ -147,7 +123,7 @@ struct UnifiedPackingListView: View {
                         itemUser: $newItemUser,
                         itemList: $newItemList,
                         shouldRefocus: $shouldRefocusNewItem,
-                        listOptions: filteredLists,
+                        listOptions: sortedLists,
                         showUserPicker: hasMultiplePackers,
                         onCommit: { action in
                             switch action {
@@ -225,7 +201,7 @@ struct UnifiedPackingListView: View {
         .onAppear {
             // New items get first user and first matching list by default
             newItemUser = users?.first
-            newItemList = filteredLists.first
+            newItemList = sortedLists.first
         }
         .onChange(of: effectiveIsAddingNewItem) { _, isAdding in
             if isAdding {
@@ -255,7 +231,7 @@ struct UnifiedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             // Calculate next sort orders
             let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
 
             let newItem = Item(
                 name: newItemName,
@@ -288,7 +264,7 @@ struct UnifiedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             // Calculate next sort orders
             let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
 
             let newItem = Item(
                 name: newItemName,
@@ -351,7 +327,7 @@ struct UnifiedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             // For templating/detail mode, include all items; for unified mode, only unpacked items
             let includeAll = (mode == .templating || mode == .detail)
-            SortOrderManager.reorderUnifiedItems(in: filteredLists, moving: item, to: newIndex, includeAllItems: includeAll)
+            SortOrderManager.reorderUnifiedItems(in: sortedLists, moving: item, to: newIndex, includeAllItems: includeAll)
         }
     }
 }
@@ -426,68 +402,6 @@ struct UnpackedItemsSection: View {
                 }
             }
         }
-    }
-}
-
-struct AddPackingListSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-
-    let trip: Trip
-    let listType: ListType
-    let isDayOf: Bool
-
-    let users: [User]?
-    let onAdd: (PackingList) -> Void
-
-    @State private var listName = ""
-    @State private var listUser: User?
-    @FocusState private var isFocused: Bool
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                TextField("List Name", text: $listName)
-                    .focused($isFocused)
-                
-                UserPickerView(selectedUser: $listUser, style: .inline, allowAll: false)
-            }
-            .navigationTitle("New \(listType.localizedDisplayName) List")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        addList()
-                    }
-                    .fontWeight(.medium)
-                    .disabled(listName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || listUser == nil)
-                }
-            }
-        }
-        .onAppear {
-            if listUser == nil {
-                listUser = users?.first
-            }
-            isFocused = true
-        }
-    }
-    
-    private func addList() {
-        let newList = PackingList(type: listType, template: false, name: listName, countAsDays: false, isDayOf: isDayOf)
-        if let user = listUser {
-            newList.user = user
-        }
-        modelContext.insert(newList)
-        trip.addList(newList)
-
-        onAdd(newList)
-        dismiss()
     }
 }
 

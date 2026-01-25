@@ -18,8 +18,7 @@ struct SectionedPackingListView: View {
     @Environment(\.modelContext) private var modelContext
 
     let users: [User]?
-    let listType: ListType
-    let isDayOf: Bool
+    let lists: [PackingList]
     let title: String?
     let trip: Trip
 
@@ -51,25 +50,14 @@ struct SectionedPackingListView: View {
         return users.count > 1
     }
 
-    private var lists: [PackingList] {
-        trip.lists ?? []
-    }
-
-    var filteredLists: [PackingList] {
-        let filtered = lists.filter { list in
-            let typeMatch = list.type == listType && list.isDayOf == isDayOf
-            if let selectedUser = selectedUser {
-                return list.user == selectedUser && typeMatch
-            }
-            return typeMatch
-        }
+    var sortedLists: [PackingList] {
         // Sort by custom order for manual reordering
-        return PackingList.sorted(filtered, sortOrder: .byCustomOrder)
+        return PackingList.sorted(lists, sortOrder: .byCustomOrder)
     }
 
     var allPackedItems: [Item] {
         var packedItems: [Item] = []
-        for list in filteredLists {
+        for list in lists {
             packedItems.append(contentsOf: list.completeItems)
         }
         return Item.sorted(packedItems, sortOrder: .byCustomOrder)
@@ -101,7 +89,7 @@ struct SectionedPackingListView: View {
                         itemUser: $newItemUser,
                         itemList: $newItemList,
                         shouldRefocus: $shouldRefocusNewItem,
-                        listOptions: filteredLists,
+                        listOptions: lists,
                         showUserPicker: hasMultiplePackers,
                         onCommit: { action in
                             switch action {
@@ -125,7 +113,7 @@ struct SectionedPackingListView: View {
                 }
 
                 // List sections with drag-and-drop reordering
-                ForEach(Array(filteredLists.enumerated()), id: \.element.id) { index, list in
+                ForEach(Array(sortedLists.enumerated()), id: \.element.id) { index, list in
                     VStack(spacing: 0) {
                         // Drop zone before first section
                         if isReorderingSections && index == 0 {
@@ -199,7 +187,7 @@ struct SectionedPackingListView: View {
                 }
 
                 // Empty state
-                if filteredLists.allSatisfy({ ($0.items?.isEmpty ?? true) }) && !isAddingNewItem {
+                if lists.allSatisfy({ ($0.items?.isEmpty ?? true) }) && !isAddingNewItem {
                     EmptyStateView()
                         .padding(.top, 60)
                 }
@@ -210,7 +198,7 @@ struct SectionedPackingListView: View {
             loadCollapseState()
             // Initialize new item defaults
             newItemUser = users?.first
-            newItemList = filteredLists.first
+            newItemList = sortedLists.first
         }
         .onChange(of: isReorderingSections) { _, isReordering in
             if isReordering {
@@ -228,7 +216,7 @@ struct SectionedPackingListView: View {
         collapsedSections = SectionCollapseStateManager.loadCollapsedSections(for: trip.persistentModelID)
 
         // Auto-collapse empty lists
-        for list in filteredLists where (list.items?.isEmpty ?? true) {
+        for list in lists where (list.items?.isEmpty ?? true) {
             let id = String(list.persistentModelID.hashValue)
             if !collapsedSections.contains(id) {
                 collapsedSections.insert(id)
@@ -287,7 +275,7 @@ struct SectionedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             // Calculate next sort orders
             let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
 
             let newItem = Item(
                 name: newItemName,
@@ -319,7 +307,7 @@ struct SectionedPackingListView: View {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             // Calculate next sort orders
             let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
 
             let newItem = Item(
                 name: newItemName,
@@ -366,20 +354,20 @@ struct SectionedPackingListView: View {
     private func handleSectionReorder(list: PackingList, to newIndex: Int) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             AppLogger.views.debug("Reordering section \(list.name) to index \(newIndex)")
-            var mutableLists = filteredLists
+            var mutableLists = sortedLists
             SortOrderManager.reorderLists(&mutableLists, moving: list, to: newIndex)
         }
     }
 
     private func enterReorderMode() {
         // Save which sections are currently expanded
-        expandedSectionsBeforeReorder = Set(filteredLists.compactMap { list in
+        expandedSectionsBeforeReorder = Set(sortedLists.compactMap { list in
             let id = String(list.persistentModelID.hashValue)
             return collapsedSections.contains(id) ? nil : id
         })
         // Collapse all sections
         withAnimation {
-            for list in filteredLists {
+            for list in sortedLists {
                 collapsedSections.insert(String(list.persistentModelID.hashValue))
             }
         }

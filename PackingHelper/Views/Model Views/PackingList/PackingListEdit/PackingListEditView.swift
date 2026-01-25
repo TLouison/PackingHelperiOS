@@ -17,6 +17,7 @@ struct PackingListEditView: View {
 
     var trip: Trip? = nil
     var forceListType: ListType? = nil
+    var forceDayOf: Bool? = nil
 
     @Query private var users: [User]
     @State private var selectedUser: User?
@@ -62,11 +63,17 @@ struct PackingListEditView: View {
                     }
                     
                     Section {
-                        Toggle(isOn: $isDayOf) {
-                            Label("Day-of", systemImage: "sun.horizon")
+                        if let forceDayOf {
+                            Toggle(isOn: .constant(forceDayOf)) {
+                                Label("Day-of", systemImage: "sun.horizon")
+                            }.disabled(true)
+                        } else {
+                            Toggle(isOn: $isDayOf) {
+                                Label("Day-of", systemImage: "sun.horizon")
+                            }
                         }
                     } header: {
-                        Text("Day-f")
+                        EmptyView()
                     } footer: {
                         Text("Day-of lists are separate from your standard lists. They keep track of things that you only need to remember the day you leave.")
                     }
@@ -130,6 +137,10 @@ struct PackingListEditView: View {
             
             if let forceListType {
                 listType = forceListType
+            }
+            
+            if let forceDayOf {
+                isDayOf = forceDayOf
             }
         }
         .alert("Delete \(packingList?.name ?? "list")?", isPresented: $isDeleting) {

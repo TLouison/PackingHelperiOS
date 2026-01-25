@@ -19,7 +19,7 @@ struct CreateListMenu: View {
     var body: some View {
         Menu {
             // Create list options
-            Button("Create List") {
+            Button("Create New List") {
                 withAnimation {
                     isAddingNewPackingList.toggle()
                 }
@@ -33,7 +33,7 @@ struct CreateListMenu: View {
                 }
             }
         } label: {
-            Label("Menu", systemImage: "ellipsis.circle")
+            Label("Add List", systemImage: "plus.circle")
         }
     }
 }

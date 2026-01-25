@@ -118,7 +118,6 @@
 		5110C63F2AFD7F45002742D0 /* PackingListEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditView.swift; sourceTree = "<group>"; };
 		5110C6492B033734002742D0 /* PackingListApplyDefaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListApplyDefaultView.swift; sourceTree = "<group>"; };
 		5116C7712F231D3E00683C9F /* CacheUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheUtilities.swift; sourceTree = "<group>"; };
-		5116C7D32F25D99200683C9F /* PackingHelper copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PackingHelper copy-Info.plist"; path = "/Users/toddlouison/Dev/Projects/Apps/PackingHelper/PackingHelper copy-Info.plist"; sourceTree = "<absolute>"; };
 		51289F162AD3B6CD00545115 /* PackingHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PackingHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51289F192AD3B6CD00545115 /* PackingHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingHelperApp.swift; sourceTree = "<group>"; };
 		51289F1B2AD3B6CD00545115 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -263,13 +262,6 @@
 			path = DefaultPackingList;
 			sourceTree = "<group>";
 		};
-		5110C6412AFD7F76002742D0 /* PackingList */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = PackingList;
-			sourceTree = "<group>";
-		};
 		5110C6422AFD7FA9002742D0 /* PackingListEdit */ = {
 			isa = PBXGroup;
 			children = (
@@ -290,7 +282,6 @@
 				51289F1D2AD3B6CF00545115 /* Assets.xcassets */,
 				51289F172AD3B6CD00545115 /* Products */,
 				519B725C2ADB2D94009401C0 /* Frameworks */,
-				5116C7D32F25D99200683C9F /* PackingHelper copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -376,7 +367,6 @@
 			children = (
 				51C8BB702C25220C005D2B71 /* PackingListDetailEdit */,
 				5110C6422AFD7FA9002742D0 /* PackingListEdit */,
-				5110C6412AFD7F76002742D0 /* PackingList */,
 				51748B572ADCF46E009E919B /* PackingRecommendationView.swift */,
 			);
 			path = PackingList;

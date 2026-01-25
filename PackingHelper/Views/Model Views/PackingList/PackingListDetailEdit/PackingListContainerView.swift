@@ -17,8 +17,8 @@ struct PackingListContainerView: View {
 
     let context: PackingListContext
     let users: [User]?
-    let listType: ListType
-    let isDayOf: Bool
+    let listType: ListType?
+    let isDayOf: Bool?
     let title: String?
 
     @State private var editingList: PackingList? = nil
@@ -51,8 +51,8 @@ struct PackingListContainerView: View {
     init(
         trip: Trip,
         users: [User]?,
-        listType: ListType,
-        isDayOf: Bool,
+        listType: ListType?,
+        isDayOf: Bool?,
         title: String?
     ) {
         self.context = .trip(trip)
@@ -79,15 +79,19 @@ struct PackingListContainerView: View {
     }
 
     private var filteredLists: [PackingList] {
-        let filtered = lists.filter { list in
-            let typeMatch = list.type == listType && list.isDayOf == isDayOf
-            if let selectedUser = selectedUser {
-                return list.user == selectedUser && typeMatch
-            } else {
-                return typeMatch
+        if listType != nil && isDayOf != nil {
+            let filtered = lists.filter { list in
+                let typeMatch = list.type == listType && list.isDayOf == isDayOf
+                if let selectedUser = selectedUser {
+                    return list.user == selectedUser && typeMatch
+                } else {
+                    return typeMatch
+                }
             }
+            return filtered
+        } else {
+            return lists
         }
-        return PackingList.sorted(filtered, sortOrder: .byDate)
     }
 
     /// Determines the mode for UnifiedPackingListView based on context
@@ -125,114 +129,12 @@ struct PackingListContainerView: View {
             Color(UIColor.systemGroupedBackground)
                 .ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // User selector (trip context with multiple packers only)
-                if showUserSelector {
-                    UserSelector(
-                        users: users ?? [],
-                        selectedUser: $selectedUser
-                    )
-                }
-
-                Group {
-                    // For trip context, allow view mode switching
-                    if context.isTrip, let trip = context.trip {
-                        switch viewMode {
-                        case .unified:
-                            UnifiedPackingListView(
-                                trip: trip,
-                                users: users,
-                                listType: listType,
-                                isDayOf: isDayOf,
-                                title: title,
-                                mode: unifiedMode,
-                                isAddingNewItem: $isAddingNewItem,
-                                editingList: $editingList,
-                                showingAddListSheet: $showingAddListSheet,
-                                isApplyingDefaultPackingList:
-                                    $isApplyingDefaultPackingList,
-                                selectedUser: $selectedUser
-                            )
-                        case .sectioned:
-                            SectionedPackingListView(
-                                users: users,
-                                listType: listType,
-                                isDayOf: isDayOf,
-                                title: title,
-                                trip: trip,
-                                isAddingNewItem: $isAddingNewItem,
-                                editingList: $editingList,
-                                showingAddListSheet: $showingAddListSheet,
-                                isApplyingDefaultPackingList:
-                                    $isApplyingDefaultPackingList,
-                                selectedUser: $selectedUser,
-                                isReorderingSections: $isReorderingSections
-                            )
-                        }
-                    }
-                    // For single list context, always use unified view
-                    else if context.isSingleList,
-                        let singleList = context.singleList
-                    {
-                        UnifiedPackingListView(
-                            lists: [singleList],
-                            users: users,
-                            listType: listType,
-                            isDayOf: isDayOf,
-                            title: title,
-                            mode: unifiedMode,
-                            isAddingNewItem: $isAddingNewItem
-                        )
-                    }
-                }
-
-                // Summary bar (conditional based on context)
-                if showSummaryBar {
-                    PackingSummaryBar(packingLists: filteredLists)
-                }
-            }
+            packingListView
         }
         .navigationTitle(title ?? "Packing")
         .navigationBarTitleDisplayMode(.inline)
         .overlay {
-            VStack {
-                Spacer()
-
-                HStack {
-                    Spacer()
-
-                    if isReorderingSections {
-                        // Done button replaces FAB during reorder mode
-                        Button("Done") {
-                            isReorderingSections = false
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                    } else {
-                        Group {
-                            if isAddingNewItem {
-                                Button(action: cancelAddingNewItem) {
-                                    Image(systemName: "x.circle.fill")
-                                        .resizable()
-                                        .foregroundColor(.gray)
-                                }
-                                .frame(width: 60, height: 60)
-                                .glassEffectIfAvailable()
-                            } else {
-                                Button(action: startAddingNewItem) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .resizable()
-                                        .foregroundColor(.blue)
-                                }
-                                .frame(width: 60, height: 60)
-                                .glassEffectIfAvailable()
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom, context.isSingleList ? 30 : 75)
-            }
+            containerOverlay
         }
         .sheet(item: $editingList) { list in
             if let trip = context.trip {
@@ -241,18 +143,19 @@ struct PackingListContainerView: View {
                     trip: trip,
                     isDeleted: .constant(false)
                 )
+                .presentationDetents([.medium])
             }
         }
         .sheet(isPresented: $showingAddListSheet) {
             if let trip = context.trip {
-                AddPackingListSheet(
+                PackingListEditView(
+                    packingList: nil,
                     trip: trip,
-                    listType: listType,
-                    isDayOf: isDayOf,
-                    users: users,
-                    onAdd: { _ in }
+                    forceListType: listType,
+                    forceDayOf: isDayOf,
+                    isDeleted: .constant(false)
                 )
-                .presentationDetents([.height(300)])
+                .presentationDetents([.medium])
             }
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
@@ -276,74 +179,189 @@ struct PackingListContainerView: View {
             dismiss()
         }
         .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                // Trip context: Full menu with view toggle + add list
-                if context.isTrip {
-                    Menu {
-                        if showViewModeToggle {
-                            Button {
-                                viewMode =
-                                    viewMode == .unified ? .sectioned : .unified
-                            } label: {
-                                Label(
-                                    viewMode == .unified
-                                        ? "View by List" : "View Unified",
-                                    systemImage: viewMode == .unified
-                                        ? "list.bullet.indent" : "list.bullet"
-                                )
+            containerToolbar
+        }
+    }
+    
+    private var packingListView: some View {
+        VStack(spacing: 0) {
+            // User selector (trip context with multiple packers only)
+            if showUserSelector {
+                UserSelector(
+                    users: users ?? [],
+                    selectedUser: $selectedUser
+                )
+            }
+
+            Group {
+                // For trip context, allow view mode switching
+                if context.isTrip, let trip = context.trip {
+                    multiListView(trip: trip)
+                }
+                // For single list context, always use unified view
+                else if context.isSingleList, let singleList = context.singleList
+                {
+                    singleListView(list: singleList)
+                }
+            }
+
+            // Summary bar (conditional based on context)
+            if showSummaryBar {
+                PackingSummaryBar(packingLists: filteredLists)
+            }
+        }
+    }
+    
+    private func multiListView(trip: Trip) -> some View {
+        switch viewMode {
+        case .unified:
+            return AnyView(UnifiedPackingListView(
+                lists: filteredLists,
+                users: users,
+                title: title,
+                mode: unifiedMode,
+                isAddingNewItem: $isAddingNewItem,
+                editingList: $editingList,
+                showingAddListSheet: $showingAddListSheet,
+                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                selectedUser: $selectedUser
+            ))
+        case .sectioned:
+            return AnyView(SectionedPackingListView(
+                users: users,
+                lists: filteredLists,
+                title: title,
+                trip: trip,
+                isAddingNewItem: $isAddingNewItem,
+                editingList: $editingList,
+                showingAddListSheet: $showingAddListSheet,
+                isApplyingDefaultPackingList:
+                    $isApplyingDefaultPackingList,
+                selectedUser: $selectedUser,
+                isReorderingSections: $isReorderingSections
+            ))
+        }
+    }
+    
+    private func singleListView(list: PackingList) -> some View {
+       UnifiedPackingListView(
+                lists: [list],
+                users: users,
+                title: title,
+                mode: unifiedMode,
+                isAddingNewItem: $isAddingNewItem
+            )
+    }
+    
+    private var containerOverlay: some View {
+        VStack {
+            Spacer()
+
+            HStack {
+                Spacer()
+
+                if isReorderingSections {
+                    // Done button replaces FAB during reorder mode
+                    Button("Done") {
+                        isReorderingSections = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                } else {
+                    Group {
+                        if isAddingNewItem {
+                            Button(action: cancelAddingNewItem) {
+                                Image(systemName: "x.circle.fill")
+                                    .resizable()
+                                    .foregroundColor(.gray)
                             }
-
-                            Divider()
+                            .frame(width: 60, height: 60)
+                            .glassEffectIfAvailable()
+                        } else {
+                            Button(action: startAddingNewItem) {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .foregroundColor(.blue)
+                            }
+                            .frame(width: 60, height: 60)
+                            .glassEffectIfAvailable()
                         }
-
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom, context.isSingleList ? 30 : 75)
+        }
+    }
+    
+    private var containerToolbar: ToolbarItemGroup<some View> {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            // Trip context: Full menu with view toggle + add list
+            if context.isTrip {
+                Menu {
+                    if showViewModeToggle {
                         Button {
-                            showingAddListSheet.toggle()
-                        } label: {
-                            Label("Create List", systemImage: "plus")
-                        }
-
-                        Button {
-                            isApplyingDefaultPackingList.toggle()
+                            viewMode =
+                                viewMode == .unified ? .sectioned : .unified
                         } label: {
                             Label(
-                                "Apply Template List",
-                                systemImage: "doc.on.doc"
+                                viewMode == .unified
+                                    ? "View by List" : "View Unified",
+                                systemImage: viewMode == .unified
+                                    ? "list.bullet.indent" : "list.bullet"
                             )
                         }
 
-                        if viewMode == .sectioned {
-                            Divider()
-
-                            Button {
-                                isReorderingSections = true
-                            } label: {
-                                Label(
-                                    "Reorder Sections",
-                                    systemImage: "arrow.up.arrow.down"
-                                )
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                    }
-                }
-                // Single list context: Save as default (non-templates) + settings gear
-                else if let singleList = context.singleList {
-                    if !singleList.template {
-                        Menu {
-                            Button("Save As Default") {
-                                saveListAsDefault(singleList)
-                            }
-                        } label: {
-                            Image(systemName: "square.and.arrow.up")
-                        }
+                        Divider()
                     }
 
                     Button {
-                        isShowingListSettings.toggle()
+                        showingAddListSheet.toggle()
                     } label: {
-                        Image(systemName: "gear")
+                        Label("Create List", systemImage: "plus")
                     }
+
+                    Button {
+                        isApplyingDefaultPackingList.toggle()
+                    } label: {
+                        Label(
+                            "Apply Template List",
+                            systemImage: "doc.on.doc"
+                        )
+                    }
+
+                    if viewMode == .sectioned {
+                        Divider()
+
+                        Button {
+                            isReorderingSections = true
+                        } label: {
+                            Label(
+                                "Reorder Sections",
+                                systemImage: "arrow.up.arrow.down"
+                            )
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+            // Single list context: Save as default (non-templates) + settings gear
+            else if let singleList = context.singleList {
+                if !singleList.template {
+                    Menu {
+                        Button("Save As Default") {
+                            saveListAsDefault(singleList)
+                        }
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+
+                Button {
+                    isShowingListSettings.toggle()
+                } label: {
+                    Image(systemName: "gear")
                 }
             }
         }
