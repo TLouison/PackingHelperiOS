@@ -56,7 +56,7 @@ struct PackingListSectionHeader: View {
             TripDetailPackingProgressView(
                 val: Double(packingList.completeItems.count),
                 total: Double(packingList.totalItems),
-                image: PackingList.icon(listType: packingList.type)
+                image: packingList.icon
             )
             .scaleEffect(0.6)
 

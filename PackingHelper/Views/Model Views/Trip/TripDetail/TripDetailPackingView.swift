@@ -170,6 +170,8 @@ struct TripDetailPackingView: View {
                 Text("View All Items")
             }
             
+            Divider()
+            
             CreateListMenu(
                 isAddingNewPackingList: $isAddingNewPackingList,
                 isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
