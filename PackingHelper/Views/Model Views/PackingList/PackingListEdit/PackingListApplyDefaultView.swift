@@ -236,8 +236,10 @@ struct ListSelectionView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .bottomBar) {
-                    selectionSummary
+                if !selectedLists.isEmpty {
+                    ToolbarItem(placement: .bottomBar) {
+                        selectionSummary
+                    }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -265,10 +267,7 @@ struct ListSelectionView: View {
     
     private var selectionSummary: some View {
         HStack {
-            if selectedLists.isEmpty {
-                Text("No lists selected")
-                    .foregroundStyle(.secondary)
-            } else {
+            if !selectedLists.isEmpty {
                 Text("\(selectedLists.count) list\(selectedLists.count == 1 ? "" : "s") selected")
                     .foregroundStyle(.secondary)
                 

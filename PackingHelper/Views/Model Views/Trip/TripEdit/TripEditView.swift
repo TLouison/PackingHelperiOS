@@ -104,7 +104,7 @@ struct TripEditView: View {
             }
             .onAppear {
                 // Auto-populate origin from user's default location when creating new trip
-                if trip == nil && originLocation == nil && FeatureFlags.shared.showingDefaultLocation {
+                if trip == nil && originLocation == nil {
                     if let defaultLoc = users.first?.defaultLocation {
                         originLocation = TripLocation(
                             name: defaultLoc.name,

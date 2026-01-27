@@ -19,20 +19,16 @@ struct DeveloperMenuView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    DisclosureGroup("Feature Flags", isExpanded: $featureFlagsExpanded) {
-                        Toggle("Recommendations", isOn: $featureFlags.showingRecommendations)
-                        Toggle("Multiple Packers", isOn: $featureFlags.showingMultiplePackers)
-                        Toggle("User Profile Pictures", isOn: $featureFlags.showingProfilePictures)
-                        Toggle("Subscription UI", isOn: $featureFlags.showingSubscription)
-                        Toggle("Notifications", isOn: $featureFlags.showingNotifications)
-                        Toggle("Packing Engine", isOn: $featureFlags.showingPackingEngine)
-                        Toggle("Default Location", isOn: $featureFlags.showingDefaultLocation)
-                    }
-                } footer: {
-                    Text("Enable or disable experimental features for testing.").font(.subheadline)
+                VStack(spacing: 20) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.yellow.gradient)
+                        Text("Developer Menu")
+                    }.font(.title)
+                    Text("This menu is for development purposes only, and contains features that are not intended to be used currently.").font(.headline)
+                    Text("If you encounter any issues with any of these features, do not report those issues. They are still works in progress. If you wish to retest the onboarding flow, you can do so below, but it will ERASE your user and lists, which is irreversible.").fixedSize(horizontal: false, vertical: true)
                 }
-
+                
                 Section {
                     Button("Reset Onboarding State") {
                         hasCompletedOnboarding = false
@@ -44,6 +40,19 @@ struct DeveloperMenuView: View {
                     Text("Reset Onboarding")
                 } footer: {
                     Text("Resetting onboarding state will wipe out all trips and users. Be sure you want to do this, it cannot be undone.").font(.subheadline)
+                }
+                
+                Section {
+                    DisclosureGroup("Feature Flags", isExpanded: $featureFlagsExpanded) {
+                        Toggle("Recommendations", isOn: $featureFlags.showingRecommendations)
+                        Toggle("Multiple Packers", isOn: $featureFlags.showingMultiplePackers)
+                        Toggle("User Profile Pictures", isOn: $featureFlags.showingProfilePictures)
+                        Toggle("Subscription UI", isOn: $featureFlags.showingSubscription)
+                        Toggle("Notifications", isOn: $featureFlags.showingNotifications)
+                        Toggle("Packing Engine", isOn: $featureFlags.showingPackingEngine)
+                    }
+                } footer: {
+                    Text("Enable or disable experimental features for testing.").font(.subheadline)
                 }
 
                 Section("Debug Info") {

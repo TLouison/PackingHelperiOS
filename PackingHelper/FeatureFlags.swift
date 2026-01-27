@@ -42,12 +42,6 @@ class FeatureFlags {
         }
     }
 
-    var showingDefaultLocation: Bool {
-        didSet {
-            UserDefaults.standard.set(showingDefaultLocation, forKey: "featureFlag_showingDefaultLocation")
-        }
-    }
-
     var showingProfilePictures: Bool {
         didSet {
             UserDefaults.standard.set(showingProfilePictures, forKey: "featureFlag_showingProfilePictures")
@@ -61,7 +55,6 @@ class FeatureFlags {
         self.showingSubscription = UserDefaults.standard.bool(forKey: "featureFlag_showingSubscription")
         self.showingNotifications = UserDefaults.standard.bool(forKey: "featureFlag_showingNotifications")
         self.showingPackingEngine = UserDefaults.standard.bool(forKey: "featureFlag_showingPackingEngine")
-        self.showingDefaultLocation = UserDefaults.standard.bool(forKey: "featureFlag_showingDefaultLocation")
         self.showingProfilePictures = UserDefaults.standard.bool(forKey: "featureFlag_showingProfilePictures")
     }
 }

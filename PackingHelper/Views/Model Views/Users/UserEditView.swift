@@ -22,7 +22,7 @@ struct UserEditView: View {
     private var editorTitle: String {
         user == nil ? "Add User" : "Edit User"
     }
-    
+
     private var canDelete: Bool {
         !users.isEmpty
     }
@@ -75,44 +75,28 @@ struct UserEditView: View {
                         }
                     }
 
-                    if FeatureFlags.shared.showingDefaultLocation {
-                        Section {
-                            Button {
-                                showingLocationSearch = true
-                            } label: {
-                                HStack {
-                                    if let location = defaultLocation {
-                                        Text(location.name)
-                                            .foregroundColor(.primary)
-                                    } else {
-                                        Text("Set Default Location")
-                                            .foregroundColor(.secondary)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
+                    Section {
+                        Button {
+                            showingLocationSearch = true
+                        } label: {
+                            HStack {
+                                if let location = defaultLocation {
+                                    Text(location.name)
+                                        .foregroundColor(.primary)
+                                } else {
+                                    Text("Set Default Location")
                                         .foregroundColor(.secondary)
-                                        .font(.caption)
                                 }
-                            }
-                        } header: {
-                            Text("Default Origin")
-                        } footer: {
-                            Text("Automatically set this location as your origin for new trips")
-                        }
-                    }
-
-                    if let user {
-                        Section {
-                            Button(role: .destructive) {
-                                showingDeleteConfirmation = true
-                            } label: {
-                                HStack {
-                                    Spacer()
-                                    Text("Delete User")
-                                    Spacer()
-                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
                             }
                         }
+                    } header: {
+                        Text("Default Origin")
+                    } footer: {
+                        Text("Automatically set this location as your origin for new trips")
                     }
                 }
             }
@@ -136,6 +120,17 @@ struct UserEditView: View {
                         }
                     }
                 }
+            }
+            .alert("Delete User", isPresented: $showingDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    if let user {
+                        deleteUser(user)
+                        dismiss()
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to delete this user? This will also delete all associated lists and cannot be undone.")
             }
             .alert("Delete User", isPresented: $showingDeleteConfirmation) {
                 Button("Cancel", role: .cancel) { }

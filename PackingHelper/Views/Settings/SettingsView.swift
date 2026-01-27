@@ -100,25 +100,14 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Packing Preference")) {
-                    Picker("When do you pack?", selection: $packerType) {
-                        ForEach(PackerType.allCases, id: \.self) { type in
-                            Text(type.rawValue).tag(type.rawValue)
-                        }
-                    }
-                }
-                
-                // TODO: Come back and fix this default location implementation
-                //       It currently doesn't actually update the user default
-                //                Section("Default Location") {
-                //                    LocationSelectionBoxView(location: defaultLocation, title: "Default Location")
-                //                        .onChange(of: defaultLocation.wrappedValue) { newLocation in
-                //                            print(newLocation.name)
-                //                        }
-                //                }
-
                 if FeatureFlags.shared.showingNotifications {
-                    Section(header: Text("Notification Time")) {
+                    Section(header: Text("Notification Preferences")) {
+                        Picker("When do you pack?", selection: $packerType) {
+                            ForEach(PackerType.allCases, id: \.self) { type in
+                                Text(type.rawValue).tag(type.rawValue)
+                            }
+                        }
+                        
                         DatePicker(
                             "Notification Time",
                             selection: Binding(
