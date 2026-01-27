@@ -470,7 +470,7 @@ struct TemplateExplanationView: View {
                     .font(.title)
                     .bold()
 
-                Text("Build reusable packing lists for different trip types. Whether it's a beach vacation or a business trip, you'll always know exactly what to pack.")
+                Text("Build reusable packing lists for different trip types. Whether it's a beach vacation or a business trip, you'll always know exactly what to pack. Use template lists for as much as you can!")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

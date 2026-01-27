@@ -67,12 +67,16 @@ struct UserEditView: View {
                         }
                     }
 
-                    Section("Favorite Color") {
+                    Section {
                         HStack {
                             Spacer()
                             UserColorPicker(selectedColor: $userColor)
                             Spacer()
                         }
+                    } header: {
+                        Text("Favorite Color")
+                    } footer: {
+                        Text("Set the color of your user icon to your favorite color!")
                     }
 
                     Section {
@@ -96,7 +100,7 @@ struct UserEditView: View {
                     } header: {
                         Text("Default Origin")
                     } footer: {
-                        Text("Automatically set this location as your origin for new trips")
+                        Text("Automatically set this location as your origin for new trips.")
                     }
                 }
             }

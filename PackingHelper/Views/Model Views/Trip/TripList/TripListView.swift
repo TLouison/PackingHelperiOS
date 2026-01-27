@@ -153,7 +153,7 @@ struct TripListView: View {
                                 isShowingAddTripSheet.toggle()
                             }
                         } label: {
-                            Label("Add Trip", systemImage: "plus.circle")
+                            Label("Add Trip", systemImage: "plus")
                                 .symbolEffect(.bounce.down, value: isShowingAddTripSheet)
                         }
                     }
