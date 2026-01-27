@@ -23,6 +23,7 @@ struct DeveloperMenuView: View {
                     DisclosureGroup("Feature Flags", isExpanded: $featureFlagsExpanded) {
                         Toggle("Recommendations", isOn: $featureFlags.showingRecommendations)
                         Toggle("Multiple Packers", isOn: $featureFlags.showingMultiplePackers)
+                        Toggle("User Profile Pictures", isOn: $featureFlags.showingProfilePictures)
                         Toggle("Subscription UI", isOn: $featureFlags.showingSubscription)
                         Toggle("Notifications", isOn: $featureFlags.showingNotifications)
                         Toggle("Packing Engine", isOn: $featureFlags.showingPackingEngine)

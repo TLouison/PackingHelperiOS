@@ -31,42 +31,48 @@ struct UserEditView: View {
         NavigationStack {
             VStack {
                 Form {
-                    Section {
+                    Section("Name") {
                         TextField("Name", text: $name)
                     }
-                    
-                    Section {
-                        VStack {
-                            if let selectedImage {
-                                Image(uiImage: selectedImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                            } else if let profileImage = user?.profileImage {
-                                profileImage
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .frame(width: 100, height: 100)
-                                    .foregroundStyle(userColor)
+
+                    if FeatureFlags.shared.showingProfilePictures {
+                        Section("Profile Picture") {
+                            VStack {
+                                if let selectedImage {
+                                    Image(uiImage: selectedImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                } else if let profileImage = user?.profileImage {
+                                    profileImage
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .frame(width: 100, height: 100)
+                                        .foregroundStyle(userColor)
+                                }
+
+                                PhotosPicker(selection: $selectedItem,
+                                             matching: .images) {
+                                    Text("Select Photo")
+                                }
                             }
-                            
-                            PhotosPicker(selection: $selectedItem,
-                                         matching: .images) {
-                                Text("Select Photo")
-                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical)
                     }
-                    
-                    Section {
-                        UserColorPicker(selectedColor: $userColor)
+
+                    Section("Favorite Color") {
+                        HStack {
+                            Spacer()
+                            UserColorPicker(selectedColor: $userColor)
+                            Spacer()
+                        }
                     }
 
                     if FeatureFlags.shared.showingDefaultLocation {
