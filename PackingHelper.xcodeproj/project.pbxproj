@@ -47,8 +47,6 @@
 		515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */; };
 		515B859E2AD76F64002D614F /* TripDetailPackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B859D2AD76F64002D614F /* TripDetailPackingView.swift */; };
 		515B85A22AD77273002D614F /* TripEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A12AD77273002D614F /* TripEditView.swift */; };
-		515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85A82AD8D28E002D614F /* LocationSelectionView.swift */; };
-		515B85AB2AD8D395002D614F /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AA2AD8D395002D614F /* LocationService.swift */; };
 		515B85AD2AD8FF45002D614F /* TripLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515B85AC2AD8FF45002D614F /* TripLocation.swift */; };
 		51623D762D489C84003E2BF5 /* PackingListFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51623D752D489C84003E2BF5 /* PackingListFilterSection.swift */; };
 		51623D802D4C5A8F003E2BF5 /* SortOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51623D7F2D4C5A8F003E2BF5 /* SortOrder.swift */; };
@@ -91,7 +89,6 @@
 		51C8BBA82C2CE73B005D2B71 /* ColorUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */; };
 		51C8BBAA2C2D08B7005D2B71 /* UserColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */; };
 		51C8BBB02C30799F005D2B71 /* LoggerUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C8BBAF2C30799F005D2B71 /* LoggerUtilities.swift */; };
-		51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,8 +134,6 @@
 		515B859B2AD76F4C002D614F /* TripSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripSettingsSheet.swift; sourceTree = "<group>"; };
 		515B859D2AD76F64002D614F /* TripDetailPackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDetailPackingView.swift; sourceTree = "<group>"; };
 		515B85A12AD77273002D614F /* TripEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEditView.swift; sourceTree = "<group>"; };
-		515B85A82AD8D28E002D614F /* LocationSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionView.swift; sourceTree = "<group>"; };
-		515B85AA2AD8D395002D614F /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		515B85AC2AD8FF45002D614F /* TripLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLocation.swift; sourceTree = "<group>"; };
 		51623D752D489C84003E2BF5 /* PackingListFilterSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListFilterSection.swift; sourceTree = "<group>"; };
 		51623D7F2D4C5A8F003E2BF5 /* SortOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOrder.swift; sourceTree = "<group>"; };
@@ -181,7 +176,6 @@
 		51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtilities.swift; sourceTree = "<group>"; };
 		51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserColorPicker.swift; sourceTree = "<group>"; };
 		51C8BBAF2C30799F005D2B71 /* LoggerUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerUtilities.swift; sourceTree = "<group>"; };
-		51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSelectionBoxView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -387,7 +381,6 @@
 				5101F9A82F15EBF7000DFA0C /* DragDropUtilities.swift */,
 				5101F9A92F15EBF7000DFA0C /* SortOrderManager.swift */,
 				51C8BBA72C2CE737005D2B71 /* ColorUtilities.swift */,
-				515B85AA2AD8D395002D614F /* LocationService.swift */,
 				5110C6312AE5B028002742D0 /* CalendarUtilities.swift */,
 				51466B332ADB3EA200258ABB /* TransitionUtilities.swift */,
 				51748B662AE0DA53009E919B /* ViewModifierUtilities.swift */,
@@ -442,8 +435,6 @@
 			isa = PBXGroup;
 			children = (
 				515B85A12AD77273002D614F /* TripEditView.swift */,
-				515B85A82AD8D28E002D614F /* LocationSelectionView.swift */,
-				51F1B3B62C003A8D009305F9 /* LocationSelectionBoxView.swift */,
 			);
 			path = TripEdit;
 			sourceTree = "<group>";
@@ -657,7 +648,6 @@
 				51B8A7032E79ED160068296E /* WeatherChip.swift in Sources */,
 				515B859C2AD76F4C002D614F /* TripSettingsSheet.swift in Sources */,
 				51C8BB6F2C251F4E005D2B71 /* EditItemView.swift in Sources */,
-				51F1B3B72C003A8D009305F9 /* LocationSelectionBoxView.swift in Sources */,
 				51AC5FB42C31B47F00DF83F6 /* CreateListMenu.swift in Sources */,
 				518AE7902D25EC6F00F8D8E9 /* DeveloperMenu.swift in Sources */,
 				51B8A7102E7A7B690068296E /* ItemRowViews.swift in Sources */,
@@ -686,7 +676,6 @@
 				51623D762D489C84003E2BF5 /* PackingListFilterSection.swift in Sources */,
 				5134EC752C0EAF8E00862E19 /* User.swift in Sources */,
 				518AE7962D25F90000F8D8E9 /* UserGridView.swift in Sources */,
-				515B85A92AD8D28E002D614F /* LocationSelectionView.swift in Sources */,
 				5107281C2C1FDA1900EBF362 /* UserEditView.swift in Sources */,
 				5110C6362AE5DE7D002742D0 /* FeatureFlags.swift in Sources */,
 				5101F9A52F14B69B000DFA0C /* PackingListContainerView.swift in Sources */,
@@ -701,7 +690,6 @@
 				51C8BBB02C30799F005D2B71 /* LoggerUtilities.swift in Sources */,
 				519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */,
 				5110C63C2AE75F55002742D0 /* NotificationUtilities.swift in Sources */,
-				515B85AB2AD8D395002D614F /* LocationService.swift in Sources */,
 				518AE78B2D25EAEE00F8D8E9 /* OnboardingView.swift in Sources */,
 				5132E84C2AE22CA2002575AC /* TripDetailInfoView.swift in Sources */,
 				5110C63A2AE5E5A6002742D0 /* Item.swift in Sources */,
