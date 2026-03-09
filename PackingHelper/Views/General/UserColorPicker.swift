@@ -51,6 +51,7 @@ struct UserColorPicker: View {
                     colorButton(color: .blue)
                     colorButton(color: .indigo)
                     colorButton(color: .purple)
+                    
                 }
             }
             .frame(maxWidth: 280)

@@ -348,7 +348,7 @@ struct PackingListContainerView: View {
             }
             // Single list context: Save as default (non-templates) + settings gear
             else if let singleList = context.singleList {
-                if !singleList.template {
+                if !singleList.template && !singleList.isDefault {
                     Menu {
                         Button("Save As Default") {
                             saveListAsDefault(singleList)

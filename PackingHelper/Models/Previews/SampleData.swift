@@ -90,7 +90,38 @@ extension PreviewTrait where T == Preview.ViewTraits {
     workTripDayOfList.user = userEmma
     workTripDayOfList.trip = workTrip
     
-    // Default Packing Lists
+    // Default catch-all lists for each trip
+    let springBreakDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    springBreakDefaultPacking.isDefault = true
+    springBreakDefaultPacking.user = userEmma
+    springBreakDefaultPacking.trip = springBreakTrip
+
+    let springBreakDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    springBreakDefaultTask.isDefault = true
+    springBreakDefaultTask.user = userEmma
+    springBreakDefaultTask.trip = springBreakTrip
+
+    let familyVisitDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    familyVisitDefaultPacking.isDefault = true
+    familyVisitDefaultPacking.user = userTodd
+    familyVisitDefaultPacking.trip = familyVisitTrip
+
+    let familyVisitDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    familyVisitDefaultTask.isDefault = true
+    familyVisitDefaultTask.user = userTodd
+    familyVisitDefaultTask.trip = familyVisitTrip
+
+    let workTripDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    workTripDefaultPacking.isDefault = true
+    workTripDefaultPacking.user = userEmma
+    workTripDefaultPacking.trip = workTrip
+
+    let workTripDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    workTripDefaultTask.isDefault = true
+    workTripDefaultTask.user = userEmma
+    workTripDefaultTask.trip = workTrip
+
+    // Default Packing Lists (templates)
     let defaultPackingList = PackingList(type: .packing, template: true, name: "Essential Clothing", countAsDays: true)
     defaultPackingList.addItem(Item(name: "Shirts", category: "Clothing", count: 1, isPacked: false))
     defaultPackingList.addItem(Item(name: "Pants", category: "Clothing", count: 3, isPacked: true))
@@ -107,7 +138,14 @@ extension PreviewTrait where T == Preview.ViewTraits {
     
     container.mainContext.insert(defaultPackingList)
     container.mainContext.insert(defaultElectronicsPackingList)
-    
+
+    container.mainContext.insert(springBreakDefaultPacking)
+    container.mainContext.insert(springBreakDefaultTask)
+    container.mainContext.insert(familyVisitDefaultPacking)
+    container.mainContext.insert(familyVisitDefaultTask)
+    container.mainContext.insert(workTripDefaultPacking)
+    container.mainContext.insert(workTripDefaultTask)
+
     container.mainContext.insert(springBreakTrip)
     container.mainContext.insert(familyVisitTrip)
     container.mainContext.insert(workTripPackingList)

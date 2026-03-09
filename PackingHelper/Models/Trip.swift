@@ -215,6 +215,19 @@ extension Trip {
 
 // List-related Trip Code
 extension Trip {
+    // MARK: Default list accessors
+    var defaultPackingList: PackingList? {
+        lists?.first(where: { $0.isDefault && $0.type == .packing })
+    }
+
+    var defaultTaskList: PackingList? {
+        lists?.first(where: { $0.isDefault && $0.type == .task })
+    }
+
+    var hasDefaultLists: Bool {
+        defaultPackingList != nil && defaultTaskList != nil
+    }
+
     // MARK: List metadata
     var hasMultiplePackers: Bool {
         return self.packers.count > 1

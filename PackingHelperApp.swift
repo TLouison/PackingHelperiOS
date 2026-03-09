@@ -15,6 +15,7 @@ struct PackingHelperApp: App {
     @AppStorage("hasLaunchedBefore") private var hasLaunchedBefore = false
     @AppStorage("hasMigratedDayOfLists") private var hasMigratedDayOfLists = false
     @AppStorage("hasMigratedSortOrders") private var hasMigratedSortOrders = false
+    @AppStorage("hasMigratedDefaultLists") private var hasMigratedDefaultLists = false
 
     @Environment(\.scenePhase) var scenePhase
     
@@ -42,6 +43,10 @@ struct PackingHelperApp: App {
 
         if !hasMigratedSortOrders {
             migrateSortOrders()
+        }
+
+        if !hasMigratedDefaultLists {
+            migrateDefaultLists()
         }
     }
 
@@ -117,6 +122,34 @@ struct PackingHelperApp: App {
 
         try? context.save()
         hasMigratedSortOrders = true
+    }
+
+    private func migrateDefaultLists() {
+        let context = modelContainer.mainContext
+
+        let tripDescriptor = FetchDescriptor<Trip>()
+        let userDescriptor = FetchDescriptor<User>(
+            sortBy: [SortDescriptor(\.created, order: .forward)]
+        )
+
+        if let trips = try? context.fetch(tripDescriptor),
+           let users = try? context.fetch(userDescriptor),
+           let firstUser = users.first {
+            for trip in trips {
+                let hasDefaultPacking = trip.lists?.contains { $0.isDefault && $0.type == .packing } ?? false
+                let hasDefaultTask = trip.lists?.contains { $0.isDefault && $0.type == .task } ?? false
+
+                if !hasDefaultPacking {
+                    PackingList.createDefaultList(for: trip, user: firstUser, type: .packing, in: context)
+                }
+                if !hasDefaultTask {
+                    PackingList.createDefaultList(for: trip, user: firstUser, type: .task, in: context)
+                }
+            }
+            try? context.save()
+        }
+
+        hasMigratedDefaultLists = true
     }
 
     var body: some Scene {

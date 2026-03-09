@@ -404,8 +404,14 @@ struct TripEditView: View {
                 accomodation: tripAccomodation
             )
             modelContext.insert(newTrip)
+
+            // Auto-create default packing and task lists
+            if let firstUser = users.sorted(by: { $0.created < $1.created }).first {
+                PackingList.createDefaultList(for: newTrip, user: firstUser, type: .packing, in: modelContext)
+                PackingList.createDefaultList(for: newTrip, user: firstUser, type: .task, in: modelContext)
+            }
         }
-        
+
         // Save changes and dismiss
         try? modelContext.save()
         dismiss()

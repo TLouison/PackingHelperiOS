@@ -198,7 +198,7 @@ struct SectionedPackingListView: View {
             loadCollapseState()
             // Initialize new item defaults
             newItemUser = users?.first
-            newItemList = sortedLists.first
+            newItemList = sortedLists.first(where: { $0.isDefault }) ?? sortedLists.first
         }
         .onChange(of: isReorderingSections) { _, isReordering in
             if isReordering {
@@ -245,6 +245,7 @@ struct SectionedPackingListView: View {
     }
 
     private func deleteList(_ list: PackingList) {
+        guard !list.isDefault else { return }
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             modelContext.delete(list)
         }
@@ -352,6 +353,7 @@ struct SectionedPackingListView: View {
     }
 
     private func handleSectionReorder(list: PackingList, to newIndex: Int) {
+        guard !list.isDefault else { return }
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             AppLogger.views.debug("Reordering section \(list.name) to index \(newIndex)")
             var mutableLists = sortedLists

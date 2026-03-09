@@ -199,9 +199,9 @@ struct UnifiedPackingListView: View {
             .padding(.horizontal)
         }
         .onAppear {
-            // New items get first user and first matching list by default
+            // New items get first user and default list (or first list) by default
             newItemUser = users?.first
-            newItemList = sortedLists.first
+            newItemList = sortedLists.first(where: { $0.isDefault }) ?? sortedLists.first
         }
         .onChange(of: effectiveIsAddingNewItem) { _, isAdding in
             if isAdding {

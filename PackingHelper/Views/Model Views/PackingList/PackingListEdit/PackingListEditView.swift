@@ -32,7 +32,13 @@ struct PackingListEditView: View {
     @Binding var isDeleted: Bool
     
     var formIsValid: Bool {
-        return !listName.isEmpty
+        let trimmed = listName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        // Reject reserved name unless this IS the default list itself
+        if PackingList.isReservedName(trimmed) && !(packingList?.isDefault ?? false) {
+            return false
+        }
+        return true
     }
     
     var titleString: String {
@@ -44,7 +50,16 @@ struct PackingListEditView: View {
             VStack {
                 Form {
                     Section("List Details") {
-                        TextField("List Name", text: $listName)
+                        if packingList?.isDefault ?? false {
+                            HStack {
+                                Text("List Name")
+                                Spacer()
+                                Text(listName)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } else {
+                            TextField("List Name", text: $listName)
+                        }
 
                         if let forceListType {
                             HStack {
@@ -87,7 +102,7 @@ struct PackingListEditView: View {
                 
                 Spacer()
                 
-                if packingList != nil {
+                if packingList != nil && !(packingList?.isDefault ?? false) {
                     Button("Delete", role: .destructive) {
                         isDeleting.toggle()
                     }

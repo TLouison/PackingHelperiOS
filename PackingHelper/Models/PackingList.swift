@@ -113,6 +113,9 @@ final class PackingList {
     // Sort order for section ordering in sectioned view
     var sortOrder: Int = 0
 
+    // Whether this is a protected default catch-all list (undeletable, name-locked)
+    var isDefault: Bool = false
+
     var user: User?
     var trip: Trip?
 
@@ -173,6 +176,25 @@ final class PackingList {
             case .packing: suitcaseIcon
             case .task: "checklist"
         }
+    }
+}
+
+extension PackingList {
+    static let defaultListName = "Default"
+
+    static func isReservedName(_ name: String) -> Bool {
+        return name.trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() == defaultListName.lowercased()
+    }
+
+    @discardableResult
+    static func createDefaultList(for trip: Trip, user: User, type: ListType, in context: ModelContext) -> PackingList {
+        let list = PackingList(type: type, template: false, name: defaultListName, countAsDays: false, sortOrder: -1)
+        list.isDefault = true
+        list.user = user
+        context.insert(list)
+        trip.addList(list)
+        return list
     }
 }
 

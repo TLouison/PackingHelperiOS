@@ -89,7 +89,7 @@ struct PackingListSectionHeader: View {
                     Label("Edit List", systemImage: "pencil")
                 }
 
-                if !packingList.template {
+                if !packingList.template && !packingList.isDefault {
                     Button {
                         onSaveAsDefault()
                     } label: {
@@ -97,10 +97,12 @@ struct PackingListSectionHeader: View {
                     }
                 }
 
-                Button(role: .destructive) {
-                    onDeleteList()
-                } label: {
-                    Label("Delete List", systemImage: "trash")
+                if !packingList.isDefault {
+                    Button(role: .destructive) {
+                        onDeleteList()
+                    } label: {
+                        Label("Delete List", systemImage: "trash")
+                    }
                 }
             }
         }
