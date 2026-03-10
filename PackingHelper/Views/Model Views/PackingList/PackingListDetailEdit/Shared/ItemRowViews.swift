@@ -9,25 +9,22 @@ import SwiftData
 import SwiftUI
 
 struct NewItemRow: View {
-    private enum FocusedField {
-        case itemName
-    }
-
     @Binding var itemName: String
     @Binding var itemCount: Int
-    @Binding var shouldRefocus: Bool
+    @Binding var isFocused: Bool
 
     let onSubmitReturn: () -> Void
 
-    @FocusState private var focusedField: FocusedField?
     @State private var countingDown = false
 
     var body: some View {
         HStack(alignment: .center) {
-            TextField("Item name", text: $itemName)
-                .focused($focusedField, equals: .itemName)
-                .submitLabel(.done)
-                .onSubmit { onSubmitReturn() }
+            PersistentTextField(
+                text: $itemName,
+                isFocused: $isFocused,
+                placeholder: "Item name",
+                onSubmit: onSubmitReturn
+            )
 
             Spacer()
 
@@ -57,15 +54,6 @@ struct NewItemRow: View {
                 }
             }
             .buttonStyle(.borderless)
-        }
-        .onAppear {
-            focusedField = .itemName
-        }
-        .onChange(of: shouldRefocus) { _, newValue in
-            if newValue {
-                focusedField = .itemName
-                shouldRefocus = false
-            }
         }
     }
 }

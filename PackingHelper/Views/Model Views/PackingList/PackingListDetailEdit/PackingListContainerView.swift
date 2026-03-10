@@ -35,7 +35,7 @@ struct PackingListContainerView: View {
     @State private var newItemCount = 1
     @State private var newItemUser: User? = nil
     @State private var newItemList: PackingList? = nil
-    @State private var shouldRefocusNewItem = false
+    @State private var newItemFieldFocused = false
     @State private var scrollToPlaceholder = false
 
     // Single list mode state
@@ -268,7 +268,7 @@ struct PackingListContainerView: View {
             NewItemRow(
                 itemName: $newItemName,
                 itemCount: $newItemCount,
-                shouldRefocus: $shouldRefocusNewItem,
+                isFocused: $newItemFieldFocused,
                 onSubmitReturn: addNewItemAndContinue
             )
             .roundedBox()
@@ -484,12 +484,14 @@ struct PackingListContainerView: View {
     // MARK: - Add Item Actions
 
     private func startAddingNewItem() {
+        newItemFieldFocused = true
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             isAddingNewItem = true
         }
     }
 
     private func cancelAddingNewItem() {
+        newItemFieldFocused = false
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             newItemName = ""
             newItemCount = 1
@@ -500,7 +502,6 @@ struct PackingListContainerView: View {
     private func addNewItemAndContinue() {
         guard let list = newItemList else { return }
         guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            shouldRefocusNewItem = true
             return
         }
 
@@ -523,7 +524,6 @@ struct PackingListContainerView: View {
             newItemCount = 1
         }
 
-        shouldRefocusNewItem = true
         scrollToPlaceholder = true
     }
 
@@ -548,6 +548,7 @@ struct PackingListContainerView: View {
             }
         }
 
+        newItemFieldFocused = false
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             newItemName = ""
             newItemCount = 1

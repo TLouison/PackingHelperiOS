@@ -221,10 +221,12 @@ struct SectionedPackingListView: View {
             if shouldScroll, let targetList = newItemList {
                 scrollToPlaceholder = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    proxy.scrollTo(
-                        "insertionPlaceholder-\(targetList.persistentModelID.hashValue)",
-                        anchor: .bottom
-                    )
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        proxy.scrollTo(
+                            "insertionPlaceholder-\(targetList.persistentModelID.hashValue)",
+                            anchor: .bottom
+                        )
+                    }
                 }
             }
         }

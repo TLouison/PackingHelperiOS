@@ -62,6 +62,7 @@
 		518AE7962D25F90000F8D8E9 /* UserGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518AE7952D25F90000F8D8E9 /* UserGridView.swift */; };
 		5192C8692EEFA7310034D2B4 /* PackingAddItemCountPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5192C8682EEFA7310034D2B4 /* PackingAddItemCountPickerView.swift */; };
 		5192C86B2EEFA7540034D2B4 /* PackingListEditSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5192C86A2EEFA7540034D2B4 /* PackingListEditSection.swift */; };
+		519A48142F604E0500CB8475 /* PersistentTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519A48132F604E0500CB8475 /* PersistentTextField.swift */; };
 		519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */; };
 		519B72572ADA06C3009401C0 /* TripListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72562ADA06C3009401C0 /* TripListView.swift */; };
 		519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72582ADA1BF7009401C0 /* PackingList.swift */; };
@@ -149,6 +150,7 @@
 		518AE7952D25F90000F8D8E9 /* UserGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGridView.swift; sourceTree = "<group>"; };
 		5192C8682EEFA7310034D2B4 /* PackingAddItemCountPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingAddItemCountPickerView.swift; sourceTree = "<group>"; };
 		5192C86A2EEFA7540034D2B4 /* PackingListEditSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditSection.swift; sourceTree = "<group>"; };
+		519A48132F604E0500CB8475 /* PersistentTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTextField.swift; sourceTree = "<group>"; };
 		519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = ProductSuggestionModel.mlmodel; sourceTree = "<group>"; };
 		519B72562ADA06C3009401C0 /* TripListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListView.swift; sourceTree = "<group>"; };
 		519B72582ADA1BF7009401C0 /* PackingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList.swift; sourceTree = "<group>"; };
@@ -529,6 +531,7 @@
 		51C8BBA42C2BA360005D2B71 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				519A48132F604E0500CB8475 /* PersistentTextField.swift */,
 				518AE78C2D25EC5D00F8D8E9 /* Developer */,
 				51C8BBA52C2BA372005D2B71 /* CollapsibleSection.swift */,
 				51C8BBA92C2D08B7005D2B71 /* UserColorPicker.swift */,
@@ -663,6 +666,7 @@
 				51AC5FB72C4326C400DF83F6 /* MissingUsersView.swift in Sources */,
 				51289F282AD4DDA500545115 /* TripDetailView.swift in Sources */,
 				51C8BB762C287A60005D2B71 /* Preferences.swift in Sources */,
+				519A48142F604E0500CB8475 /* PersistentTextField.swift in Sources */,
 				510728202C21297C00EBF362 /* UserListRowView.swift in Sources */,
 				51748B672AE0DA53009E919B /* ViewModifierUtilities.swift in Sources */,
 				5110C64A2B033734002742D0 /* PackingListApplyDefaultView.swift in Sources */,
