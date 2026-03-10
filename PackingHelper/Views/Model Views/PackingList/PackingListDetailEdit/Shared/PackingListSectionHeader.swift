@@ -38,9 +38,17 @@ struct PackingListSectionHeader: View {
 
             // List name (always shown)
             Group {
-                Text(packingList.name)
-                    .font(.headline)
-                    .bold()
+                HStack(spacing: 4) {
+                    Text(packingList.name)
+                        .font(.headline)
+                        .bold()
+
+                    if packingList.appliedFromTemplate != nil {
+                        Image(systemName: "square.on.square")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
 
                 Spacer()
             }

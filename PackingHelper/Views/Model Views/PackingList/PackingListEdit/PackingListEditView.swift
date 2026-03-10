@@ -162,6 +162,11 @@ struct PackingListEditView: View {
             Button("Yes, delete \(packingList?.name ?? "list")", role: .destructive) {
                 delete(packingList!)
             }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            if packingList?.appliedFromTemplate != nil {
+                Text("This list will be removed from your trip. The template it was applied from will not be deleted.")
+            }
         }
     }
     

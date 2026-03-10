@@ -39,6 +39,7 @@ struct SectionedPackingListView: View {
     @State private var draggedList: PackingList?
 
     @State private var isShowingSaveSuccessful: Bool = false
+    @State private var listToDelete: PackingList?
 
     var hasMultiplePackers: Bool {
         guard let users = users else { return false }
@@ -100,7 +101,7 @@ struct SectionedPackingListView: View {
                             onUpdateItem: updateItem,
                             onDeleteItem: deleteItem,
                             onEditList: { editingList = list },
-                            onDeleteList: { deleteList(list) },
+                            onDeleteList: { listToDelete = list },
                             onSaveAsDefault: { saveListAsDefault(list) },
                             onItemReorder: handleItemReorder,
                             onCrossListDrop: handleCrossListMove,
@@ -232,6 +233,25 @@ struct SectionedPackingListView: View {
         }
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
             Button("OK", role: .cancel) {}
+        }
+        .alert(
+            "Delete List",
+            isPresented: Binding(get: { listToDelete != nil }, set: { if !$0 { listToDelete = nil } }),
+            presenting: listToDelete
+        ) { list in
+            Button("Delete", role: .destructive) {
+                deleteList(list)
+                listToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                listToDelete = nil
+            }
+        } message: { list in
+            if list.appliedFromTemplate != nil {
+                Text("This will delete \"\(list.name)\" from your trip. The template list it was applied from will not be deleted.")
+            } else {
+                Text("Are you sure you want to delete \"\(list.name)\"?")
+            }
         }
         } // end ScrollViewReader
     }
