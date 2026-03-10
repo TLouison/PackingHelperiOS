@@ -13,6 +13,8 @@ struct PackingListApplyDefaultView: View {
     @Environment(\.modelContext) private var modelContext
 
     let trip: Trip
+    var listType: ListType? = nil
+    var isDayOf: Bool? = nil
 
     @State private var selectedUser: User?
     @State private var selectedLists: [PackingList] = []
@@ -48,7 +50,9 @@ struct PackingListApplyDefaultView: View {
                         ListSelectionView(
                             selectedLists: $selectedLists,
                             user: selectedUser,
-                            trip: trip
+                            trip: trip,
+                            listType: listType,
+                            isDayOf: isDayOf
                         )
                     } label: {
                         HStack {
@@ -149,40 +153,58 @@ struct AppliedListsView: View {
 struct ListSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     @Binding var selectedLists: [PackingList]
     let user: User?
     let trip: Trip
-    
+    var listType: ListType? = nil
+    var isDayOf: Bool? = nil
+
     @Query(
         filter: #Predicate<PackingList> { $0.template == true },
         sort: [SortDescriptor(\.name)],
         animation: .snappy
     )
     private var defaultPackingLists: [PackingList]
-    
+
     @State private var searchText = ""
     @State private var selectedListType: ListType?
     @State private var showingFilters = false
-    
+    @State private var showingOtherLists = false
+
     private var filteredLists: [PackingList] {
         defaultPackingLists
             .filter { list in
-                // Exclude already applied templates
                 !trip.alreadyUsedTemplates.contains(list) &&
-                // Apply user filter if specified
                 (user == nil || list.user == user) &&
-                // Apply type filter
-                (selectedListType == nil || list.type == selectedListType) &&
-                // Apply search filter
+                (listType != nil ? list.type == listType : selectedListType == nil || list.type == selectedListType) &&
                 (searchText.isEmpty || list.name.localizedCaseInsensitiveContains(searchText))
             }
     }
-    
-    private var hasActiveFilters: Bool {
-        selectedListType != nil || !searchText.isEmpty
+
+    private var primaryLists: [PackingList] {
+        guard let isDayOf else { return filteredLists }
+        return filteredLists.filter { $0.isDayOf == isDayOf }
     }
-    
+
+    private var secondaryLists: [PackingList] {
+        guard let isDayOf else { return [] }
+        return filteredLists.filter { $0.isDayOf != isDayOf }
+    }
+
+    private var primarySectionTitle: String {
+        guard let isDayOf else { return "Lists" }
+        if isDayOf { return "Day-Of Lists" }
+        switch listType {
+        case .task: return "Task Lists"
+        default: return "Packing Lists"
+        }
+    }
+
+    private var hasActiveFilters: Bool {
+        (listType == nil && selectedListType != nil) || !searchText.isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -190,15 +212,16 @@ struct ListSelectionView: View {
                     PackingListFilterSection(
                         searchText: $searchText,
                         selectedListType: $selectedListType,
-                        selectedUser: .constant(user), // Fixed user for selection view
+                        selectedUser: .constant(user),
                         users: [],
                         showUserFilter: false,
+                        showTypeFilter: listType == nil,
                         hasActiveFilters: hasActiveFilters,
                         onClearFilters: clearFilters
                     )
                     .transition(.move(edge: .top).combined(with: .opacity))
                 }
-                
+
                 if filteredLists.isEmpty {
                     PackingListEmptyStateView(
                         hasFilters: hasActiveFilters,
@@ -213,8 +236,14 @@ struct ListSelectionView: View {
                     .frame(maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        selectablePackingListsGrid
-                            .padding(.top)
+                        if isDayOf != nil {
+                            sectionedListsView
+                                .padding(.top)
+                        } else {
+                            listCardsView(filteredLists)
+                                .padding(.horizontal)
+                                .padding(.top)
+                        }
                     }
                 }
             }
@@ -235,13 +264,13 @@ struct ListSelectionView: View {
                             .foregroundStyle(hasActiveFilters ? .accent : .primary)
                     }
                 }
-                
+
                 if !selectedLists.isEmpty {
                     ToolbarItem(placement: .bottomBar) {
                         selectionSummary
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
@@ -250,10 +279,35 @@ struct ListSelectionView: View {
             }
         }
     }
-    
-    private var selectablePackingListsGrid: some View {
+
+    private var sectionedListsView: some View {
+        LazyVStack(alignment: .leading, spacing: 16) {
+            if !primaryLists.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(primarySectionTitle)
+                        .font(.headline)
+                        .padding(.horizontal)
+                    listCardsView(primaryLists)
+                        .padding(.horizontal)
+                }
+            }
+
+            if !secondaryLists.isEmpty {
+                DisclosureGroup(isExpanded: $showingOtherLists) {
+                    listCardsView(secondaryLists)
+                        .padding(.top, 8)
+                } label: {
+                    Text("Other Lists")
+                        .font(.headline)
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    private func listCardsView(_ lists: [PackingList]) -> some View {
         LazyVStack(spacing: 8) {
-            ForEach(filteredLists) { list in
+            ForEach(lists) { list in
                 SelectablePackingListCard(
                     list: list,
                     isSelected: selectedLists.contains(list)
@@ -262,7 +316,6 @@ struct ListSelectionView: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
     
     private var selectionSummary: some View {

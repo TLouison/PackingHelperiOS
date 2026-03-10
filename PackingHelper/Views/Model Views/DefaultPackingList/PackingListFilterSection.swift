@@ -15,19 +15,22 @@ struct PackingListFilterSection: View {
     @Binding var selectedUser: User?
     let users: [User]
     let showUserFilter: Bool
+    var showTypeFilter: Bool = true
     let hasActiveFilters: Bool
-    
+
     var onClearFilters: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 12) {
             searchBar
-            
+
             if showUserFilter {
                 userFilterSection
             }
-            
-            listTypeFilterSection
+
+            if showTypeFilter {
+                listTypeFilterSection
+            }
             
             if hasActiveFilters {
                 Button {

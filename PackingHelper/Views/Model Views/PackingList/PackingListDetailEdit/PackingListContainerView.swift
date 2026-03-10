@@ -179,7 +179,7 @@ struct PackingListContainerView: View {
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
             if let trip = context.trip {
-                PackingListApplyDefaultView(trip: trip)
+                PackingListApplyDefaultView(trip: trip, listType: listType, isDayOf: isDayOf)
             }
         }
         .sheet(isPresented: $isShowingListSettings) {
