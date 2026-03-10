@@ -79,7 +79,7 @@ struct PackingListSection: View {
                         },
                         onCrossListMove: onCrossListDrop
                     )
-                    .padding(.horizontal)
+                    .padding(.horizontal, 8)
                 }
 
                 // Insertion placeholder

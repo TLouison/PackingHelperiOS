@@ -30,6 +30,7 @@ struct SectionedPackingListView: View {
     @Binding var isApplyingDefaultPackingList: Bool
     @Binding var selectedUser: User?
     @Binding var isReorderingSections: Bool
+    @Binding var scrollToPlaceholder: Bool
 
     // Local state
     @State private var collapsedSections: Set<String> = []
@@ -173,7 +174,8 @@ struct SectionedPackingListView: View {
                         .padding(.top, 60)
                 }
             }
-            .padding()
+            .padding(.vertical)
+            .padding(.horizontal, 8)
         }
         .onAppear {
             loadCollapseState()
@@ -213,6 +215,17 @@ struct SectionedPackingListView: View {
                 enterReorderMode()
             } else {
                 exitReorderMode()
+            }
+        }
+        .onChange(of: scrollToPlaceholder) { _, shouldScroll in
+            if shouldScroll, let targetList = newItemList {
+                scrollToPlaceholder = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    proxy.scrollTo(
+                        "insertionPlaceholder-\(targetList.persistentModelID.hashValue)",
+                        anchor: .bottom
+                    )
+                }
             }
         }
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {

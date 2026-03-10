@@ -26,6 +26,7 @@ struct NewItemRow: View {
         HStack(alignment: .center) {
             TextField("Item name", text: $itemName)
                 .focused($focusedField, equals: .itemName)
+                .submitLabel(.done)
                 .onSubmit { onSubmitReturn() }
 
             Spacer()

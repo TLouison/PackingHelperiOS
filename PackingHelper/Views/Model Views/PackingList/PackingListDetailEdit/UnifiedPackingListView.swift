@@ -37,6 +37,7 @@ struct UnifiedPackingListView: View {
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     @Binding var selectedUser: User?
+    @Binding var scrollToPlaceholder: Bool
 
     // Local state
     @State private var editingItemId: PersistentIdentifier?
@@ -55,7 +56,8 @@ struct UnifiedPackingListView: View {
         editingList: Binding<PackingList?> = .constant(nil),
         showingAddListSheet: Binding<Bool> = .constant(false),
         isApplyingDefaultPackingList: Binding<Bool> = .constant(false),
-        selectedUser: Binding<User?> = .constant(nil)
+        selectedUser: Binding<User?> = .constant(nil),
+        scrollToPlaceholder: Binding<Bool> = .constant(false)
     ) {
         self.trip = trip
         self.lists = lists
@@ -68,6 +70,7 @@ struct UnifiedPackingListView: View {
         self._showingAddListSheet = showingAddListSheet
         self._isApplyingDefaultPackingList = isApplyingDefaultPackingList
         self._selectedUser = selectedUser
+        self._scrollToPlaceholder = scrollToPlaceholder
     }
     
     var hasMultiplePackers: Bool {
@@ -163,7 +166,7 @@ struct UnifiedPackingListView: View {
                         }
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 8)
             }
             .onChange(of: isAddingNewItem) { _, isAdding in
                 if isAdding {
@@ -175,6 +178,14 @@ struct UnifiedPackingListView: View {
             .onChange(of: newItemList) { _, _ in
                 if isAddingNewItem {
                     withAnimation {
+                        proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
+                    }
+                }
+            }
+            .onChange(of: scrollToPlaceholder) { _, shouldScroll in
+                if shouldScroll {
+                    scrollToPlaceholder = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
                     }
                 }

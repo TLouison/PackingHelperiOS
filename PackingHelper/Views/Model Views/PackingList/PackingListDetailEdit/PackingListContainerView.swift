@@ -36,6 +36,7 @@ struct PackingListContainerView: View {
     @State private var newItemUser: User? = nil
     @State private var newItemList: PackingList? = nil
     @State private var shouldRefocusNewItem = false
+    @State private var scrollToPlaceholder = false
 
     // Single list mode state
     @State private var isShowingListSettings: Bool = false
@@ -272,6 +273,7 @@ struct PackingListContainerView: View {
             )
             .roundedBox()
             .shaded()
+            .padding(.horizontal, 8)
         }
         .padding(.bottom, 8)
         .transition(.asymmetric(
@@ -352,7 +354,8 @@ struct PackingListContainerView: View {
                 editingList: $editingList,
                 showingAddListSheet: $showingAddListSheet,
                 isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
-                selectedUser: $selectedUser
+                selectedUser: $selectedUser,
+                scrollToPlaceholder: $scrollToPlaceholder
             ))
         case .sectioned:
             return AnyView(SectionedPackingListView(
@@ -366,7 +369,8 @@ struct PackingListContainerView: View {
                 showingAddListSheet: $showingAddListSheet,
                 isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
                 selectedUser: $selectedUser,
-                isReorderingSections: $isReorderingSections
+                isReorderingSections: $isReorderingSections,
+                scrollToPlaceholder: $scrollToPlaceholder
             ))
         }
     }
@@ -378,7 +382,8 @@ struct PackingListContainerView: View {
             title: title,
             mode: unifiedMode,
             newItemList: newItemList,
-            isAddingNewItem: $isAddingNewItem
+            isAddingNewItem: $isAddingNewItem,
+            scrollToPlaceholder: $scrollToPlaceholder
         )
     }
 
@@ -519,6 +524,7 @@ struct PackingListContainerView: View {
         }
 
         shouldRefocusNewItem = true
+        scrollToPlaceholder = true
     }
 
     private func addNewItemAndClose() {
