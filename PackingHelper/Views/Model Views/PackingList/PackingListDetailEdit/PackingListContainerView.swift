@@ -136,7 +136,7 @@ struct PackingListContainerView: View {
 
     var body: some View {
         ZStack {
-            Color(UIColor.systemGroupedBackground)
+            Color(.systemGroupedBackground)
                 .ignoresSafeArea()
 
             packingListView
@@ -288,8 +288,9 @@ struct PackingListContainerView: View {
         Button(action: startAddingNewItem) {
             Image(systemName: "plus.circle.fill")
                 .resizable()
-                .foregroundColor(.blue)
+                .foregroundStyle(.blue)
         }
+        .accessibilityLabel("Add Item")
         .frame(width: 60, height: 60)
         .glassEffectIfAvailable()
         .padding(.trailing, 16)
@@ -341,10 +342,11 @@ struct PackingListContainerView: View {
         }
     }
 
+    @ViewBuilder
     private func multiListView(trip: Trip) -> some View {
         switch viewMode {
         case .unified:
-            return AnyView(UnifiedPackingListView(
+            UnifiedPackingListView(
                 lists: filteredLists,
                 users: users,
                 title: title,
@@ -356,9 +358,9 @@ struct PackingListContainerView: View {
                 isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
                 selectedUser: $selectedUser,
                 scrollToPlaceholder: $scrollToPlaceholder
-            ))
+            )
         case .sectioned:
-            return AnyView(SectionedPackingListView(
+            SectionedPackingListView(
                 users: users,
                 lists: filteredLists,
                 title: title,
@@ -371,7 +373,7 @@ struct PackingListContainerView: View {
                 selectedUser: $selectedUser,
                 isReorderingSections: $isReorderingSections,
                 scrollToPlaceholder: $scrollToPlaceholder
-            ))
+            )
         }
     }
 
@@ -417,7 +419,7 @@ struct PackingListContainerView: View {
 
     @ToolbarContentBuilder
     private var tripToolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 if showViewModeToggle {
                     Button {
@@ -452,7 +454,7 @@ struct PackingListContainerView: View {
                     }
                 }
             } label: {
-                Image(systemName: "ellipsis.circle")
+                Label("Options", systemImage: "ellipsis.circle")
             }
         }
     }
@@ -461,21 +463,21 @@ struct PackingListContainerView: View {
     private var singleListToolbar: some ToolbarContent {
         if let singleList = context.singleList {
             if !singleList.template && !singleList.isDefault {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button("Save As Default") {
                             saveListAsDefault(singleList)
                         }
                     } label: {
-                        Image(systemName: "square.and.arrow.up")
+                        Label("Save As Default", systemImage: "square.and.arrow.up")
                     }
                 }
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     isShowingListSettings.toggle()
                 } label: {
-                    Image(systemName: "gear")
+                    Label("List Settings", systemImage: "gear")
                 }
             }
         }
@@ -505,7 +507,7 @@ struct PackingListContainerView: View {
             return
         }
 
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
             let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
 
@@ -531,7 +533,7 @@ struct PackingListContainerView: View {
         if !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
            let list = newItemList
         {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            withAnimation(.packingSpring) {
                 let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
                 let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
 

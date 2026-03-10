@@ -27,7 +27,7 @@ enum TripType: Codable, CaseIterable {
     func startLabel(text: String) -> some View {
         Label(
             title: { Text(text) },
-            icon: { self.endIcon }
+            icon: { self.startIcon }
         )
     }
 

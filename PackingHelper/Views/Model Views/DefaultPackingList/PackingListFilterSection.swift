@@ -38,7 +38,7 @@ struct PackingListFilterSection: View {
                 } label: {
                     Text("Clear All Filters")
                         .font(.subheadline)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
             }
         }
@@ -50,7 +50,7 @@ struct PackingListFilterSection: View {
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
             TextField("Search lists...", text: $searchText)
                 .textFieldStyle(.plain)
@@ -60,23 +60,23 @@ struct PackingListFilterSection: View {
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
         .padding(12)
         .background(Color(.tertiarySystemGroupedBackground))
-        .cornerRadius(12)
+        .clipShape(.rect(cornerRadius: 12))
     }
     
     private var userFilterSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Filter by User")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {                    
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
                     ForEach(users) { user in
                         FilterChip(
                             isSelected: selectedUser == user,
@@ -91,6 +91,7 @@ struct PackingListFilterSection: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -98,9 +99,9 @@ struct PackingListFilterSection: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Filter by Type")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     ForEach(ListType.allCases, id: \.self) { type in
                         FilterChip(
@@ -116,6 +117,7 @@ struct PackingListFilterSection: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
     }
 }
@@ -130,30 +132,30 @@ struct PackingListEmptyStateView: View {
         VStack(spacing: 16) {
             Image(systemName: "suitcase")
                 .font(.system(size: 48))
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
             
             Text("No Lists Found")
                 .font(.title2)
                 .fontWeight(.semibold)
             
             Text(message)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
             Button(action: onAction) {
                 Text(actionButtonTitle)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.accentColor)
-                    .cornerRadius(12)
+                    .clipShape(.rect(cornerRadius: 12))
             }
             .padding(.horizontal, 32)
         }
         .padding(32)
         .background(Color(.secondarySystemGroupedBackground))
-        .cornerRadius(16)
+        .clipShape(.rect(cornerRadius: 16))
         .padding(.horizontal)
     }
 }

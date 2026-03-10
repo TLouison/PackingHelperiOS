@@ -383,10 +383,10 @@ struct SelectablePackingListCard: View {
                     HStack(spacing: 4) {
                         Text("\(list.totalItems)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                             
                         Image(systemName: list.icon)
-                            .foregroundColor(.accentColor)
+                            .foregroundStyle(Color.accentColor)
                             .font(.subheadline)
                     }
                 }
@@ -394,7 +394,7 @@ struct SelectablePackingListCard: View {
             .padding(.vertical, 10)
             .padding(.horizontal)
             .background(Color(.secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .clipShape(.rect(cornerRadius: 12))
         }
         .buttonStyle(.plain)
     }

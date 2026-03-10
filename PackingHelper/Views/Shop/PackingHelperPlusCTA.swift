@@ -146,7 +146,7 @@ struct PackingHelperPlusCTA: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.blue)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
@@ -206,7 +206,7 @@ struct SubscriptionCTAView: View {
                    .frame(maxWidth: .infinity)
                    .padding()
                    .background(.blue)
-                   .foregroundColor(.white)
+                   .foregroundStyle(.white)
                    .clipShape(RoundedRectangle(cornerRadius: 10))
            }
        }

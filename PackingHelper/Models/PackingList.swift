@@ -290,7 +290,7 @@ extension PackingList {
     }
 
     static func containsMultiplePackers(_ lists: [PackingList]) -> Bool {
-        return lists.map { $0.user }.count > 1
+        return Set(lists.compactMap { $0.user?.persistentModelID }).count > 1
     }
 }
 

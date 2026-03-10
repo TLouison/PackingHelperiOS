@@ -142,16 +142,16 @@ struct FilterChip: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 icon
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundStyle(isSelected ? .white : .accentColor)
                 
                 Text(label)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundStyle(isSelected ? .white : .primary)
             }
             .padding(.horizontal, 10) // Reduced from 12
             .padding(.vertical, 6)    // Reduced from 8
             .background(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
-            .cornerRadius(8)
+            .clipShape(.rect(cornerRadius: 8))
         }
     }
 }
@@ -205,22 +205,22 @@ struct PackingListCard: View {
                     HStack(spacing: 4) {
                         Text("\(list.totalItems)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                             
                         Image(systemName: list.icon)
-                            .foregroundColor(.accentColor)
+                            .foregroundStyle(Color.accentColor)
                             .font(.subheadline)
                     }
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(.vertical, 10)
             .padding(.horizontal)
             .background(Color(.secondarySystemGroupedBackground))
-            .cornerRadius(12)
+            .clipShape(.rect(cornerRadius: 12))
         }
     }
 }

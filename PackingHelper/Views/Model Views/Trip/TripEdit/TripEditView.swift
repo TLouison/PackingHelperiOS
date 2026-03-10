@@ -122,17 +122,17 @@ struct TripEditView: View {
         // Overlay with trip name
         VStack(alignment: .leading) {
             TextField("Trip Name", text: $tripName)
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.primary)
+                .font(.largeTitle.bold())
+                .foregroundStyle(.primary)
                 .padding(.bottom, 4)
 
             if let destination = destinationLocation {
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
 
                     Text(destination.name)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -156,12 +156,12 @@ struct TripEditView: View {
         }
         .padding(20)
         .background(Color(.secondarySystemGroupedBackground))
-        .cornerRadius(20)
+        .clipShape(.rect(cornerRadius: 20))
     }
     
     // MARK: - Trip Type Selector
     var tripTypeSelector: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             HStack(spacing: 10) {
                 ForEach(TripType.allCases, id: \.self) { type in
                     Button(action: {
@@ -174,14 +174,15 @@ struct TripEditView: View {
                         .padding(.horizontal, 15)
                         .padding(.vertical, 8)
                         .background(tripType == type ? Color.accentColor : Color(.tertiarySystemFill))
-                        .foregroundColor(tripType == type ? .white : .primary)
-                        .cornerRadius(20)
+                        .foregroundStyle(tripType == type ? .white : .primary)
+                        .clipShape(.rect(cornerRadius: 20))
                     }
                 }
             }
         }
+        .scrollIndicators(.hidden)
     }
-    
+
     // MARK: - Date Selection Cards
     var dateSelectionCards: some View {
         HStack(spacing: 15) {
@@ -189,28 +190,28 @@ struct TripEditView: View {
             VStack(alignment: .leading) {
                 Text("Start Date")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
 
                 DatePicker("", selection: $startDate, displayedComponents: .date)
                     .labelsHidden()
             }
             .padding()
             .background(Color(.tertiarySystemFill))
-            .cornerRadius(15)
+            .clipShape(.rect(cornerRadius: 15))
             .frame(maxWidth: .infinity)
 
             // End date card
             VStack(alignment: .leading) {
                 Text("End Date")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
 
                 DatePicker("", selection: $endDate, displayedComponents: .date)
                     .labelsHidden()
             }
             .padding()
             .background(Color(.tertiarySystemFill))
-            .cornerRadius(15)
+            .clipShape(.rect(cornerRadius: 15))
             .frame(maxWidth: .infinity)
         }
         .onChange(of: startDate) { _, newStartDate in
@@ -238,25 +239,25 @@ struct TripEditView: View {
                     VStack(alignment: .leading) {
                         Text("Origin")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                         
                         if let origin = originLocation {
                             tripType.startLabel(text: origin.name)
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                         } else {
                             Text("Select Origin")
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                         }
                     }
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 .background(Color(.tertiarySystemFill))
-                .cornerRadius(15)
+                .clipShape(.rect(cornerRadius: 15))
             }
             
             // Destination location card
@@ -267,30 +268,30 @@ struct TripEditView: View {
                     VStack(alignment: .leading) {
                         Text("Destination")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                         
                         if let destination = destinationLocation {
                             tripType.endLabel(text: destination.name)
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                         } else {
                             Text("Select Destination")
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                         }
                     }
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 .background(Color(.tertiarySystemFill))
-                .cornerRadius(15)
+                .clipShape(.rect(cornerRadius: 15))
             }
         }
         .padding(20)
         .background(Color(.secondarySystemGroupedBackground))
-        .cornerRadius(20)
+        .clipShape(.rect(cornerRadius: 20))
     }
     
     // MARK: - Accommodation Section
@@ -302,7 +303,7 @@ struct TripEditView: View {
                 .padding(.top, 10)
             
             // Accommodation type selector
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 10) {
                     ForEach(TripAccomodation.allCases, id: \.self) { accom in
                         Button(action: {
@@ -315,16 +316,17 @@ struct TripEditView: View {
                             .padding(.horizontal, 15)
                             .padding(.vertical, 8)
                             .background(tripAccomodation == accom ? Color.accentColor : Color(.tertiarySystemFill))
-                            .foregroundColor(tripAccomodation == accom ? .white : .primary)
-                            .cornerRadius(20)
+                            .foregroundStyle(tripAccomodation == accom ? .white : .primary)
+                            .clipShape(.rect(cornerRadius: 20))
                         }
                     }
                 }
             }
+            .scrollIndicators(.hidden)
         }
         .padding(20)
         .background(Color(.secondarySystemGroupedBackground))
-        .cornerRadius(20)
+        .clipShape(.rect(cornerRadius: 20))
     }
     
     // MARK: - Button Section
@@ -340,8 +342,8 @@ struct TripEditView: View {
                     .padding()
                     .background(originLocation == nil || destinationLocation == nil || tripName.isEmpty ?
                                Color(.systemGray) : Color.accentColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(15)
+                    .foregroundStyle(.white)
+                    .clipShape(.rect(cornerRadius: 15))
             }
             .disabled(originLocation == nil || destinationLocation == nil || tripName.isEmpty)
             
@@ -355,8 +357,8 @@ struct TripEditView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color(.systemRed).opacity(0.2))
-                        .foregroundColor(Color(.systemRed))
-                        .cornerRadius(15)
+                        .foregroundStyle(Color(.systemRed))
+                        .clipShape(.rect(cornerRadius: 15))
                 }
             }
         }

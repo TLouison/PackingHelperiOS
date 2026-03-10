@@ -38,8 +38,9 @@ struct NewItemRow: View {
                     Image(systemName: "minus")
                         .frame(width: 32, height: 32)
                 }
+                .accessibilityLabel("Decrease count")
                 Text("\(itemCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .monospacedDigit()
                     .frame(minWidth: 24, alignment: .center)
                     .contentTransition(.numericText(countsDown: countingDown))
@@ -52,6 +53,7 @@ struct NewItemRow: View {
                     Image(systemName: "plus")
                         .frame(width: 32, height: 32)
                 }
+                .accessibilityLabel("Increase count")
             }
             .buttonStyle(.borderless)
         }
@@ -90,7 +92,7 @@ struct EditableItemRow: View {
                         ? "checkmark.square.fill" : "square"
                 )
                 .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                .foregroundStyle(item.isPacked ? .blue : .gray.opacity(0.5))
                 .padding(.trailing, 12)
             }
 
@@ -104,7 +106,7 @@ struct EditableItemRow: View {
 
             Stepper(value: $editCount, in: 1...99) {
                 Text("\(editCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .frame(minWidth: 30)
             }
 
@@ -112,15 +114,16 @@ struct EditableItemRow: View {
                 onCommit(editName, editCount)
             }) {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
                     .font(.title3)
             }
+            .accessibilityLabel("Confirm")
             .padding(.leading, 12)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(10)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(.rect(cornerRadius: 10))
         .shadow(color: .black.opacity(0.1), radius: 3, y: 1)
         .onAppear {
             isFocused = true
@@ -171,7 +174,7 @@ struct UnifiedItemRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(UIColor.secondarySystemBackground).opacity(Double(swipeProgress * swipeProgress)))
+                    .fill(Color(.secondarySystemBackground).opacity(Double(swipeProgress * swipeProgress)))
                     .padding(.vertical, -3)
             }
             .offset(x: showSwipeDelete ? offset : 0)
@@ -186,7 +189,7 @@ struct UnifiedItemRow: View {
                             }
                         }
                         .onEnded { _ in
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            withAnimation(.packingSpring) {
                                 offset = offset < snapThreshold ? maxOffset : 0
                             }
                         } : nil
@@ -194,7 +197,7 @@ struct UnifiedItemRow: View {
             .overlay(alignment: .trailing) {
                 if showSwipeDelete && offset < 0 {
                     Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        withAnimation(.packingSpring) {
                             offset = 0
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -203,7 +206,7 @@ struct UnifiedItemRow: View {
                     }) {
                         Image(systemName: "trash.fill")
                             .font(.body)
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                             .frame(width: 44, height: 44)
                             .background(Color.red)
                             .clipShape(Circle())
@@ -216,7 +219,7 @@ struct UnifiedItemRow: View {
             }
         .onChange(of: item.isPacked) { _, _ in
             // Reset offset when item is packed/unpacked
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            withAnimation(.packingSpring) {
                 offset = 0
             }
         }
@@ -229,31 +232,91 @@ struct UnifiedItemRow: View {
     var rowContent: some View {
         HStack(spacing: 12) {
             if mode != .templating {
-                Image(
-                    systemName: item.isPacked
-                        ? "checkmark.square.fill" : "square"
-                )
-                .font(.title3)
-                .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
-                .onTapGesture(perform: onTogglePacked)
+                Button(action: onTogglePacked) {
+                    Image(
+                        systemName: item.isPacked
+                            ? "checkmark.square.fill" : "square"
+                    )
+                    .font(.title3)
+                    .foregroundStyle(item.isPacked ? .blue : .gray.opacity(0.5))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(item.isPacked ? "Mark as unpacked" : "Mark as packed")
             }
 
-            Text(item.name)
-                .font(.system(size: 18))
-                .strikethrough(item.isPacked)
-                .foregroundColor(item.isPacked ? .gray : .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onEdit)
+            Button(action: onEdit) {
+                Text(item.name)
+                    .font(.body)
+                    .strikethrough(item.isPacked)
+                    .foregroundStyle(item.isPacked ? .gray : .primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
 
             if item.count > 1 {
                 Text("\(item.count)")
                     .font(.caption)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
                     .background(Color.blue)
-                    .cornerRadius(10)
+                    .clipShape(.rect(cornerRadius: 10))
+            }
+        }
+    }
+}
+
+// MARK: - Packed Items Section
+
+struct PackedItemsSection: View {
+    let items: [Item]
+    let onTogglePacked: (Item) -> Void
+    let onDeleteItem: (Item) -> Void
+    var horizontalPadding: CGFloat = 16
+
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                withAnimation(.packingSpring) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    Text("PACKED ITEMS")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Text("\(items.count)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(spacing: 4) {
+                    ForEach(items) { item in
+                        UnifiedItemRow(
+                            item: item,
+                            mode: .unified,
+                            onTogglePacked: { onTogglePacked(item) },
+                            onEdit: {},
+                            onDelete: { onDeleteItem(item) }
+                        )
+                        .opacity(0.6)
+                    }
+                }
             }
         }
     }

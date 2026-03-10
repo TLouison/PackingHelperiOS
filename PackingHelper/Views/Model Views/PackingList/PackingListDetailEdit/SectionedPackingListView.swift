@@ -126,7 +126,7 @@ struct SectionedPackingListView: View {
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                             .background(.ultraThickMaterial)
-                            .cornerRadius(12)
+                            .clipShape(.rect(cornerRadius: 12))
                         }
                         .onAppear {
                             // Track when dragging starts
@@ -269,7 +269,7 @@ struct SectionedPackingListView: View {
     }
 
     private func togglePacked(_ item: Item) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             item.isPacked.toggle()
         }
     }
@@ -283,14 +283,14 @@ struct SectionedPackingListView: View {
     }
 
     private func deleteItem(_ item: Item) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             modelContext.delete(item)
         }
     }
 
     private func deleteList(_ list: PackingList) {
         guard !list.isDefault else { return }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             modelContext.delete(list)
         }
     }
@@ -304,14 +304,14 @@ struct SectionedPackingListView: View {
     }
 
     private func handleItemReorder(item: Item, in list: PackingList, to newIndex: Int) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             AppLogger.views.debug("Reordering item \(item.name) to index \(newIndex)")
             SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
         }
     }
 
     private func handleCrossListMove(item: Item, to targetList: PackingList, at index: Int) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             AppLogger.views.debug("Moving item \(item.name) to list \(targetList.name) at index \(index)")
             SortOrderManager.moveItem(item, to: targetList, at: index)
         }
@@ -319,7 +319,7 @@ struct SectionedPackingListView: View {
 
     private func handleSectionReorder(list: PackingList, to newIndex: Int) {
         guard !list.isDefault else { return }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             AppLogger.views.debug("Reordering section \(list.name) to index \(newIndex)")
             var mutableLists = sortedLists
             SortOrderManager.reorderLists(&mutableLists, moving: list, to: newIndex)
@@ -350,56 +350,3 @@ struct SectionedPackingListView: View {
     }
 }
 
-private struct PackedItemsSection: View {
-    let items: [Item]
-    let onTogglePacked: (Item) -> Void
-    let onDeleteItem: (Item) -> Void
-
-    @State private var isExpanded = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button(action: {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    isExpanded.toggle()
-                }
-            }) {
-                HStack {
-                    Text("PACKED ITEMS")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Text("\(items.count)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-            }
-            .buttonStyle(.plain)
-
-            if isExpanded {
-                VStack(spacing: 4) {
-                    ForEach(items) { item in
-                        UnifiedItemRow(
-                            item: item,
-                            mode: .unified,
-                            onTogglePacked: { onTogglePacked(item) },
-                            onEdit: {},
-                            onDelete: { onDeleteItem(item) }
-                        )
-                        .opacity(0.6)
-                        .padding(.horizontal)
-                    }
-                }
-            }
-        }
-    }
-}

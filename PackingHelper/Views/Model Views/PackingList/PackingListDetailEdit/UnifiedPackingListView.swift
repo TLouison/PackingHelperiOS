@@ -155,7 +155,8 @@ struct UnifiedPackingListView: View {
                             PackedItemsSection(
                                 items: packedItems,
                                 onTogglePacked: togglePacked,
-                                onDeleteItem: deleteItem
+                                onDeleteItem: deleteItem,
+                                horizontalPadding: 4
                             )
                         }
 
@@ -196,7 +197,7 @@ struct UnifiedPackingListView: View {
     }
 
     private func togglePacked(_ item: Item) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             item.isPacked.toggle()
         }
     }
@@ -210,13 +211,13 @@ struct UnifiedPackingListView: View {
     }
     
     private func deleteItem(_ item: Item) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             modelContext.delete(item)
         }
     }
 
     private func handleUnifiedReorder(item: Item, newIndex: Int) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.packingSpring) {
             // For templating/detail mode, include all items; for unified mode, only unpacked items
             let includeAll = (mode == .templating || mode == .detail)
             SortOrderManager.reorderUnifiedItems(in: sortedLists, moving: item, to: newIndex, includeAllItems: includeAll)
@@ -229,31 +230,35 @@ struct UserSelector: View {
     @Binding var selectedUser: User?
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             HStack(spacing: 12) {
                 ForEach(users.sorted { $0.name < $1.name }) { user in
-                    user.pillIcon
-                        .scaleEffect(user == selectedUser ? 1.3 : 1.0)
-                        .opacity(user == selectedUser || selectedUser == nil ? 1.0 : 0.3)
-                        .onTapGesture {
-                            if selectedUser != user {
-                                DispatchQueue.main.async {
-                                    withAnimation {
-                                        self.selectedUser = user
-                                    }
-                                }
-                            } else {
+                    Button {
+                        if selectedUser != user {
+                            DispatchQueue.main.async {
                                 withAnimation {
-                                    self.selectedUser = nil
+                                    self.selectedUser = user
                                 }
                             }
+                        } else {
+                            withAnimation {
+                                self.selectedUser = nil
+                            }
                         }
+                    } label: {
+                        user.pillIcon
+                            .scaleEffect(user == selectedUser ? 1.3 : 1.0)
+                            .opacity(user == selectedUser || selectedUser == nil ? 1.0 : 0.3)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(user.name)
                 }
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
         }
-        .background(Color(UIColor.systemBackground))
+        .scrollIndicators(.hidden)
+        .background(Color(.systemBackground))
         .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
     }
 }
@@ -302,15 +307,15 @@ struct EmptyStateView: View {
         VStack(spacing: 16) {
             Image(systemName: "shippingbox")
                 .font(.system(size: 60))
-                .foregroundColor(.gray.opacity(0.3))
+                .foregroundStyle(.gray.opacity(0.3))
             
             Text("You haven't added any items yet!")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
             Text("Tap the + button to add your first item")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
     }
@@ -323,7 +328,7 @@ struct NoListSelectedView: View {
         VStack(spacing: 20) {
             Image(systemName: "list.bullet.rectangle")
                 .font(.system(size: 80))
-                .foregroundColor(.gray.opacity(0.3))
+                .foregroundStyle(.gray.opacity(0.3))
             
             Text("No Packing Lists")
                 .font(.title2)
@@ -331,7 +336,7 @@ struct NoListSelectedView: View {
             
             Text("Create your first packing list to get started")
                 .font(.body)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
             Button(action: onCreateList) {
@@ -340,64 +345,14 @@ struct NoListSelectedView: View {
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
                     .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(25)
+                    .foregroundStyle(.white)
+                    .clipShape(.rect(cornerRadius: 25))
             }
         }
         .padding()
     }
 }
 
-private struct PackedItemsSection: View {
-    let items: [Item]
-    let onTogglePacked: (Item) -> Void
-    let onDeleteItem: (Item) -> Void
-    
-    @State private var isExpanded = false
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button(action: {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    isExpanded.toggle()
-                }
-            }) {
-                HStack {
-                    Text("PACKED ITEMS")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Text("\(items.count)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal, 4)
-            }
-            
-            if isExpanded {
-                VStack(spacing: 4) {
-                    ForEach(items) { item in
-                        UnifiedItemRow(
-                            item: item,
-                            mode: .unified,
-                            onTogglePacked: { onTogglePacked(item) },
-                            onEdit: { },
-                            onDelete: { onDeleteItem(item) }
-                        )
-                        .opacity(0.6)
-                    }
-                }
-            }
-        }
-    }
-}
 
 private struct CategoryChip: View {
     let title: String
@@ -412,8 +367,8 @@ private struct CategoryChip: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(isSelected ? Color.blue : Color.gray.opacity(0.2))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(15)
+                .foregroundStyle(isSelected ? .white : .primary)
+                .clipShape(.rect(cornerRadius: 15))
         }
     }
 }

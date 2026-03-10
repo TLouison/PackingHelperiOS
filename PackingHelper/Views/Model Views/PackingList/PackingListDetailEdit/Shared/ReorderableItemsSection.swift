@@ -95,7 +95,7 @@ struct ItemDropZone: View {
         Rectangle()
             .fill(isTargeted ? Color.blue.opacity(0.3) : Color.clear)
             .frame(height: isTargeted ? 40 : 8)
-            .cornerRadius(8)
+            .clipShape(.rect(cornerRadius: 8))
             .padding(.vertical, isTargeted ? 4 : 0)
             .contentShape(Rectangle())
             .dropDestination(for: ItemTransferData.self) { items, location in
@@ -137,7 +137,7 @@ struct SectionDropZone: View {
         Rectangle()
             .fill(isTargeted ? Color.blue.opacity(0.3) : Color.clear)
             .frame(height: isTargeted ? 60 : 16)
-            .cornerRadius(8)
+            .clipShape(.rect(cornerRadius: 8))
             .padding(.vertical, isTargeted ? 4 : 0)
             .contentShape(Rectangle())
             .dropDestination(for: PackingListTransferData.self) { lists, location in

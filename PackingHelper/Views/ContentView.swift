@@ -8,45 +8,43 @@
 import SwiftUI
 import SwiftData
 
+enum AppTab: Hashable {
+    case trips, templates, packers, settings
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
 
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @State private var showOnboarding = false
-    @State private var selectedTab = 0
+    @State private var selectedTab: AppTab = .trips
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            TripListView()
-                .tabItem {
-                    Label("Trips", systemImage: "airplane.departure")
-                }
-                .tag(0)
-
-            DefaultPackingListView()
-                .tabItem {
-                    Label("Templates", systemImage: suitcaseIcon)
-                }
-                .tag(1)
-
-            if FeatureFlags.shared.showingMultiplePackers {
-                UserGridView()
-                    .tabItem {
-                        Label("Packers", systemImage: "person.circle")
-                    }
-                    .tag(2)
+            Tab("Trips", systemImage: "airplane.departure", value: AppTab.trips) {
+                TripListView()
             }
 
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
+            Tab("Templates", systemImage: suitcaseIcon, value: AppTab.templates) {
+                DefaultPackingListView()
+            }
+
+            if FeatureFlags.shared.showingMultiplePackers {
+                Tab("Packers", systemImage: "person.circle", value: AppTab.packers) {
+                    UserGridView()
                 }
-                .tag(3)
+            }
+
+            Tab("Settings", systemImage: "gear", value: AppTab.settings) {
+                SettingsView()
+            }
         }
-        .sheet(isPresented: .constant(!hasCompletedOnboarding), content: {
+        .sheet(isPresented: Binding(
+            get: { !hasCompletedOnboarding },
+            set: { _ in }
+        )) {
             OnboardingContainerView(modelContext: modelContext)
                 .interactiveDismissDisabled()
-        })
+        }
     }
 }
 

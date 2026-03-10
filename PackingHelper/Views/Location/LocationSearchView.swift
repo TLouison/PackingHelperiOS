@@ -23,7 +23,7 @@ struct LocationSearchView: View {
                 // Search Bar
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                     
                     TextField("Search for location...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
@@ -39,13 +39,13 @@ struct LocationSearchView: View {
                             searchResults = []
                         }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.gray)
+                                .foregroundStyle(.gray)
                         }
                     }
                 }
                 .padding()
                 .background(Color(.systemGray6))
-                .cornerRadius(10)
+                .clipShape(.rect(cornerRadius: 10))
                 .padding(.horizontal)
                 
                 // Results List
@@ -56,11 +56,11 @@ struct LocationSearchView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(place.name)
                                 .font(.headline)
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                             
                             Text(place.address)
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                         }
                         .padding(.vertical, 4)
                     }

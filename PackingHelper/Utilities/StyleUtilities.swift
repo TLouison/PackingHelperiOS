@@ -19,3 +19,7 @@ let userIcon: String = "person.circle"
 func pluralizeString(_ string: String, count: Int) -> String {
     count == 1 ? string : string + "s"
 }
+
+extension Animation {
+    static let packingSpring = Animation.spring(response: 0.3, dampingFraction: 0.8)
+}

@@ -43,18 +43,18 @@ struct PackingSummaryBar: View {
             HStack {
                 Label("\(packedItems)/\(totalItems) packed", systemImage: "checkmark.square.fill")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 
                 Spacer()
                 
                 if progress == 1.0 {
                     Label("Ready to go!", systemImage: "sparkles")
                         .font(.subheadline)
-                        .foregroundColor(.green)
+                        .foregroundStyle(.green)
                 }
             }
             .padding()
-            .background(Color(UIColor.systemBackground))
+            .background(Color(.systemBackground))
         }
         .shadow(color: .black.opacity(0.1), radius: 5, y: -2)
     }

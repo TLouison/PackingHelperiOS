@@ -128,13 +128,13 @@ extension PreviewTrait where T == Preview.ViewTraits {
     defaultPackingList.addItem(Item(name: "Underwear", category: "Clothing", count: 1, isPacked: true))
     defaultPackingList.addItem(Item(name: "Socks", category: "Accessories", count: 2, isPacked: false))
     defaultPackingList.user = userTodd
-    
+
     let defaultElectronicsPackingList = PackingList(type: .packing, template: true, name: "Essential Clothing", countAsDays: false)
     defaultElectronicsPackingList.addItem(Item(name: "Phone", category: "Clothing", count: 1, isPacked: false))
     defaultElectronicsPackingList.addItem(Item(name: "Phone Charger", category: "Clothing", count: 3, isPacked: true))
     defaultElectronicsPackingList.addItem(Item(name: "Laptop", category: "Clothing", count: 1, isPacked: true))
     defaultElectronicsPackingList.addItem(Item(name: "Laptop Charger", category: "Accessories", count: 2, isPacked: false))
-    defaultPackingList.user = userTodd
+    defaultElectronicsPackingList.user = userTodd
     
     container.mainContext.insert(defaultPackingList)
     container.mainContext.insert(defaultElectronicsPackingList)

@@ -80,10 +80,8 @@ struct TripDetailView: View {
                 PackingListApplyDefaultView(trip: trip)
             }
             .toolbar(.hidden, for: .navigationBar)
-            .onAppear {
-                Task {
-                    tripWeather = await trip.destination?.getTripWeather(for: trip)
-                }
+            .task {
+                tripWeather = await trip.destination?.getTripWeather(for: trip)
             }
             .onChange(of: isDeleted) {
                 if isDeleted {

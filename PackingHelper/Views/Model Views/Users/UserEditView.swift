@@ -86,14 +86,14 @@ struct UserEditView: View {
                             HStack {
                                 if let location = defaultLocation {
                                     Text(location.name)
-                                        .foregroundColor(.primary)
+                                        .foregroundStyle(.primary)
                                 } else {
                                     Text("Set Default Location")
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(.secondary)
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                                     .font(.caption)
                             }
                         }
