@@ -24,6 +24,7 @@ struct SectionedPackingListView: View {
 
     // Bindings from container
     @Binding var isAddingNewItem: Bool
+    @Binding var newItemList: PackingList?
     @Binding var editingList: PackingList?
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
@@ -35,13 +36,6 @@ struct SectionedPackingListView: View {
     @State private var expandedSectionsBeforeReorder: Set<String> = []
     @State private var editingItemId: PersistentIdentifier?
     @State private var draggedList: PackingList?
-
-    @State private var newItemName = ""
-    @State private var newItemCount = 1
-    @State private var newItemUser: User? = nil
-    @State private var newItemList: PackingList? = nil
-    @State private var shouldRefocusNewItem = false
-    @FocusState private var isTextFieldFocused: Bool
 
     @State private var isShowingSaveSuccessful: Bool = false
 
@@ -79,39 +73,9 @@ struct SectionedPackingListView: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         ScrollView {
-            VStack(spacing: 8) {
-                // Add new item section (global)
-                if isAddingNewItem {
-                    NewItemRow(
-                        itemName: $newItemName,
-                        itemCount: $newItemCount,
-                        itemUser: $newItemUser,
-                        itemList: $newItemList,
-                        shouldRefocus: $shouldRefocusNewItem,
-                        listOptions: lists,
-                        showUserPicker: hasMultiplePackers,
-                        onCommit: { action in
-                            switch action {
-                            case .saveAndContinue:
-                                if let list = newItemList {
-                                    addNewItemAndContinue(to: list)
-                                }
-                            case .saveAndClose:
-                                if let list = newItemList {
-                                    addNewItemAndClose(to: list)
-                                }
-                            case .cancel:
-                                cancelAddingNewItem()
-                            }
-                        }
-                    )
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .opacity
-                    ))
-                }
-
+            VStack(spacing: 16) {
                 // List sections with drag-and-drop reordering
                 ForEach(Array(sortedLists.enumerated()), id: \.element.id) { index, list in
                     VStack(spacing: 0) {
@@ -139,7 +103,13 @@ struct SectionedPackingListView: View {
                             onSaveAsDefault: { saveListAsDefault(list) },
                             onItemReorder: handleItemReorder,
                             onCrossListDrop: handleCrossListMove,
-                            isReorderMode: isReorderingSections
+                            onAddItemToList: { targetList in
+                                newItemList = targetList
+                                withAnimation { isAddingNewItem = true }
+                            },
+                            isReorderMode: isReorderingSections,
+                            isAddingNewItem: isAddingNewItem,
+                            targetList: newItemList
                         )
                         .draggable(PackingListTransferData(list: list)) {
                             // Section drag preview
@@ -163,7 +133,7 @@ struct SectionedPackingListView: View {
                             }
                         }
 
-                        // Drop zone after each section
+                        // Drop zone after each section (reorder mode only)
                         if isReorderingSections {
                             SectionDropZone(
                                 insertionIndex: index + 1,
@@ -174,16 +144,27 @@ struct SectionedPackingListView: View {
                             )
                         }
                     }
+
+                    // Divider between sections (not in reorder mode, not after last)
+                    if !isReorderingSections && index < sortedLists.count - 1 {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.2))
+                            .frame(height: 2)
+                            .padding(.horizontal)
+                    }
                 }
 
                 // Global packed items section
                 if !allPackedItems.isEmpty {
+                    Rectangle()
+                        .fill(Color.secondary.opacity(0.2))
+                        .frame(height: 2)
+                        .padding(.horizontal)
                     PackedItemsSection(
                         items: allPackedItems,
                         onTogglePacked: togglePacked,
                         onDeleteItem: deleteItem
                     )
-                    .padding(.top, 8)
                 }
 
                 // Empty state
@@ -196,9 +177,36 @@ struct SectionedPackingListView: View {
         }
         .onAppear {
             loadCollapseState()
-            // Initialize new item defaults
-            newItemUser = users?.first
-            newItemList = sortedLists.first(where: { $0.isDefault }) ?? sortedLists.first
+        }
+        .onChange(of: newItemList) { _, targetList in
+            // Auto-expand the target section when it changes
+            if let targetList {
+                let id = String(targetList.persistentModelID.hashValue)
+                if collapsedSections.contains(id) {
+                    withAnimation { collapsedSections.remove(id) }
+                }
+                // Scroll to placeholder — delay to allow section expansion to render
+                if isAddingNewItem {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation {
+                            proxy.scrollTo(
+                                "insertionPlaceholder-\(targetList.persistentModelID.hashValue)",
+                                anchor: .bottom
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        .onChange(of: isAddingNewItem) { _, isAdding in
+            if isAdding, let targetList = newItemList {
+                withAnimation {
+                    proxy.scrollTo(
+                        "insertionPlaceholder-\(targetList.persistentModelID.hashValue)",
+                        anchor: .bottom
+                    )
+                }
+            }
         }
         .onChange(of: isReorderingSections) { _, isReordering in
             if isReordering {
@@ -210,6 +218,7 @@ struct SectionedPackingListView: View {
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
             Button("OK", role: .cancel) {}
         }
+        } // end ScrollViewReader
     }
 
     private func loadCollapseState() {
@@ -256,85 +265,6 @@ struct SectionedPackingListView: View {
             let newDefaultList = PackingList.copyAsTemplate(list)
             modelContext.insert(newDefaultList)
             isShowingSaveSuccessful = true
-        }
-    }
-
-    private func startAddingNewItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            isAddingNewItem = true
-            isTextFieldFocused = true
-        }
-    }
-
-    private func addNewItemAndContinue(to list: PackingList) {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            // Empty text on Enter: just refocus, don't save
-            shouldRefocusNewItem = true
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-            list.addItem(newItem)
-
-            // Reset for next item but keep row open
-            newItemName = ""
-            newItemCount = 1
-            // Do NOT set isAddingNewItem = false
-        }
-
-        // Trigger refocus after animation completes
-        shouldRefocusNewItem = true
-    }
-
-    private func addNewItemAndClose(to list: PackingList) {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            cancelAddingNewItem()
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-            list.addItem(newItem)
-
-            // Reset fields and close the input row
-            newItemName = ""
-            newItemCount = 1
-            isAddingNewItem = false
-            isTextFieldFocused = false
-        }
-    }
-
-    private func cancelAddingNewItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            newItemName = ""
-            newItemCount = 1
-            isAddingNewItem = false
-            isTextFieldFocused = false
         }
     }
 
@@ -436,8 +366,5 @@ private struct PackedItemsSection: View {
                 }
             }
         }
-        .roundedBox()
-        .shaded()
-        .padding(.horizontal)
     }
 }

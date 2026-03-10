@@ -8,12 +8,6 @@
 import SwiftData
 import SwiftUI
 
-enum NewItemCommitAction {
-    case saveAndContinue  // Enter key - save and start new item
-    case saveAndClose     // Checkmark button - save and close
-    case cancel           // X button - discard and close
-}
-
 struct NewItemRow: View {
     private enum FocusedField {
         case itemName
@@ -21,86 +15,48 @@ struct NewItemRow: View {
 
     @Binding var itemName: String
     @Binding var itemCount: Int
-    @Binding var itemUser: User?
-    @Binding var itemList: PackingList?
     @Binding var shouldRefocus: Bool
 
-    let listOptions: [PackingList]
-    let showUserPicker: Bool
+    let onSubmitReturn: () -> Void
 
     @FocusState private var focusedField: FocusedField?
-    let onCommit: (NewItemCommitAction) -> Void
-
-    var visibleLists: [PackingList] {
-        listOptions.filter { $0.user == itemUser }
-    }
-
-    var showListSelector: Bool {
-        listOptions.count > 1
-    }
+    @State private var countingDown = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 12) {
-                // X button to cancel
-                Button(action: { onCommit(.cancel) }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
-                        .font(.title3)
-                }
+        HStack(alignment: .center) {
+            TextField("Item name", text: $itemName)
+                .focused($focusedField, equals: .itemName)
+                .onSubmit { onSubmitReturn() }
 
-                TextField("Item name", text: $itemName)
-                    .focused($focusedField, equals: .itemName)
-                    .onSubmit {
-                        onCommit(.saveAndContinue)
+            Spacer()
+
+            HStack(spacing: 0) {
+                Button {
+                    if itemCount > 1 {
+                        countingDown = true
+                        withAnimation(.snappy) { itemCount -= 1 }
                     }
-
-                Stepper(value: $itemCount, in: 1...99) {
-                    Text("\(itemCount)")
-                        .foregroundColor(.secondary)
-                        .frame(minWidth: 30)
+                } label: {
+                    Image(systemName: "minus")
+                        .frame(width: 32, height: 32)
                 }
-
-                // Checkmark button to save and close
-                Button(action: { onCommit(.saveAndClose) }) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.title3)
-                }
-                .opacity(itemName.isEmpty ? 0.3 : 1.0)
-                .disabled(itemName.isEmpty)
-            }
-
-            if showListSelector || showUserPicker {
-                HStack {
-                    if showListSelector {
-                        Picker("Packing List", selection: $itemList) {
-                            ForEach(visibleLists, id: \.id) { list in
-                                Text(list.name)
-                                    .tag(list)
-                            }
-                        }
-                        .onChange(of: itemUser) {
-                            itemList = visibleLists.first
-                        }
+                Text("\(itemCount)")
+                    .foregroundColor(.secondary)
+                    .monospacedDigit()
+                    .frame(minWidth: 24, alignment: .center)
+                    .contentTransition(.numericText(countsDown: countingDown))
+                Button {
+                    if itemCount < 99 {
+                        countingDown = false
+                        withAnimation(.snappy) { itemCount += 1 }
                     }
-
-                    Spacer()
-
-                    if showUserPicker {
-                        UserPickerView(
-                            selectedUser: $itemUser,
-                            style: .menu,
-                            allowAll: false
-                        )
-                    }
+                } label: {
+                    Image(systemName: "plus")
+                        .frame(width: 32, height: 32)
                 }
             }
+            .buttonStyle(.borderless)
         }
-        .padding()
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 3, y: 2)
         .onAppear {
             focusedField = .itemName
         }
@@ -138,7 +94,7 @@ struct EditableItemRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .center) {
             if mode != .templating {
                 Image(
                     systemName: item.isPacked
@@ -146,6 +102,7 @@ struct EditableItemRow: View {
                 )
                 .font(.title3)
                 .foregroundColor(item.isPacked ? .blue : .gray.opacity(0.5))
+                .padding(.trailing, 12)
             }
 
             TextField("Item name", text: $editName)
@@ -153,6 +110,8 @@ struct EditableItemRow: View {
                 .onSubmit {
                     onCommit(editName, editCount)
                 }
+            
+            Spacer()
 
             Stepper(value: $editCount, in: 1...99) {
                 Text("\(editCount)")
@@ -167,6 +126,7 @@ struct EditableItemRow: View {
                     .foregroundColor(.blue)
                     .font(.title3)
             }
+            .padding(.leading, 12)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
@@ -308,6 +268,37 @@ struct UnifiedItemRow: View {
                     .padding(.vertical, 2)
                     .background(Color.blue)
                     .cornerRadius(10)
+            }
+        }
+    }
+}
+
+// MARK: - Insertion Placeholder
+
+struct InsertionPlaceholder: View {
+    @State private var opacity: Double = 0.3
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(Color.accentColor)
+                .frame(width: 6, height: 6)
+            Rectangle()
+                .fill(Color.accentColor)
+                .frame(height: 2)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.accentColor.opacity(0.1))
+        )
+        .opacity(opacity)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 2)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                opacity = 1.0
             }
         }
     }

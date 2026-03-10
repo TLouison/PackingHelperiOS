@@ -39,26 +39,10 @@ struct UnifiedPackingListView: View {
     @Binding var selectedUser: User?
 
     // Local state
-    @State private var newItemName = ""
-    @State private var newItemCount = 1
-    @State private var newItemUser: User? = nil
-    @State private var newItemList: PackingList? = nil
-    @State private var shouldRefocusNewItem = false
-
-    @FocusState private var isTextFieldFocused: Bool
     @State private var editingItemId: PersistentIdentifier?
 
-    // For standalone mode (templating/detail) - stores lists passed in
-    @State private var standaloneLists: [PackingList] = []
-    @State private var localIsAddingNewItem = false
-    @State private var localEditingList: PackingList? = nil
-    @State private var localShowingAddListSheet = false
-    @State private var localIsApplyingDefaultPackingList = false
-
-    private var effectiveIsAddingNewItem: Bool {
-        // Use bound value for .unified and .templating modes, local value for .detail mode
-        (mode == .unified || mode == .templating) ? isAddingNewItem : localIsAddingNewItem
-    }
+    // Target list for placeholder display (set by container)
+    let newItemList: PackingList?
 
     init(
         trip: Trip? = nil,
@@ -66,6 +50,7 @@ struct UnifiedPackingListView: View {
         users: [User]?,
         title: String?,
         mode: UnifiedPackingListMode,
+        newItemList: PackingList? = nil,
         isAddingNewItem: Binding<Bool> = .constant(false),
         editingList: Binding<PackingList?> = .constant(nil),
         showingAddListSheet: Binding<Bool> = .constant(false),
@@ -74,10 +59,10 @@ struct UnifiedPackingListView: View {
     ) {
         self.trip = trip
         self.lists = lists
-        self._standaloneLists = State(initialValue: lists)
         self.users = users
         self.title = title
         self.mode = mode
+        self.newItemList = newItemList
         self._isAddingNewItem = isAddingNewItem
         self._editingList = editingList
         self._showingAddListSheet = showingAddListSheet
@@ -113,63 +98,14 @@ struct UnifiedPackingListView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Add new item section
-                if effectiveIsAddingNewItem {
-                    NewItemRow(
-                        itemName: $newItemName,
-                        itemCount: $newItemCount,
-                        itemUser: $newItemUser,
-                        itemList: $newItemList,
-                        shouldRefocus: $shouldRefocusNewItem,
-                        listOptions: sortedLists,
-                        showUserPicker: hasMultiplePackers,
-                        onCommit: { action in
-                            switch action {
-                            case .saveAndContinue:
-                                if let list = newItemList {
-                                    addNewItemAndContinue(to: list)
-                                }
-                            case .saveAndClose:
-                                if let list = newItemList {
-                                    addNewItemAndClose(to: list)
-                                }
-                            case .cancel:
-                                cancelAddingNewItem()
-                            }
-                        }
-                    )
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .opacity
-                    ))
-                }
-
-                // If we are working on a template, put all items in a section
-                // together. Otherwise, separate them by packed/unpacked
-                if mode == .templating {
-                    ReorderableItemsSection(
-                        items: allItems,
-                        mode: mode,
-                        editingItemId: $editingItemId,
-                        onTogglePacked: togglePacked,
-                        onUpdateItem: updateItem,
-                        onDeleteItem: deleteItem,
-                        onReorder: handleUnifiedReorder
-                    )
-
-                    // Empty state
-                    if (allItems.isEmpty && !effectiveIsAddingNewItem) {
-                        EmptyStateView()
-                            .padding(.top, 60)
-                    }
-                } else {
-                    // Unpacked items
-                    let unpackedItems = getFilteredItems(packed: false)
-                    if !unpackedItems.isEmpty {
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 16) {
+                    // If we are working on a template, put all items in a section
+                    // together. Otherwise, separate them by packed/unpacked
+                    if mode == .templating {
                         ReorderableItemsSection(
-                            items: unpackedItems,
+                            items: allItems,
                             mode: mode,
                             editingItemId: $editingItemId,
                             onTogglePacked: togglePacked,
@@ -177,132 +113,75 @@ struct UnifiedPackingListView: View {
                             onDeleteItem: deleteItem,
                             onReorder: handleUnifiedReorder
                         )
-                    }
 
-                    let packedItems = getFilteredItems(packed: true)
-                    // Packed items
-                    if !packedItems.isEmpty {
-                        PackedItemsSection(
-                            items: packedItems,
-                            onTogglePacked: togglePacked,
-                            onDeleteItem: deleteItem
-                        )
-                    }
+                        // Insertion placeholder (templating mode)
+                        if isAddingNewItem {
+                            InsertionPlaceholder()
+                                .id("insertionPlaceholder")
+                        }
 
-                    // Empty state
-                    if (packedItems.isEmpty && unpackedItems.isEmpty && !effectiveIsAddingNewItem) {
-                        Spacer()
-                        EmptyStateView()
+                        // Empty state
+                        if (allItems.isEmpty && !isAddingNewItem) {
+                            EmptyStateView()
+                                .padding(.top, 60)
+                        }
+                    } else {
+                        // Unpacked items
+                        let unpackedItems = getFilteredItems(packed: false)
+                        if !unpackedItems.isEmpty {
+                            ReorderableItemsSection(
+                                items: unpackedItems,
+                                mode: mode,
+                                editingItemId: $editingItemId,
+                                onTogglePacked: togglePacked,
+                                onUpdateItem: updateItem,
+                                onDeleteItem: deleteItem,
+                                onReorder: handleUnifiedReorder
+                            )
+                        }
+
+                        // Insertion placeholder (after unpacked items)
+                        if isAddingNewItem {
+                            InsertionPlaceholder()
+                                .id("insertionPlaceholder")
+                        }
+
+                        let packedItems = getFilteredItems(packed: true)
+                        // Packed items
+                        if !packedItems.isEmpty {
+                            PackedItemsSection(
+                                items: packedItems,
+                                onTogglePacked: togglePacked,
+                                onDeleteItem: deleteItem
+                            )
+                        }
+
+                        // Empty state
+                        if (packedItems.isEmpty && unpackedItems.isEmpty && !isAddingNewItem) {
+                            Spacer()
+                            EmptyStateView()
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+            .onChange(of: isAddingNewItem) { _, isAdding in
+                if isAdding {
+                    withAnimation {
+                        proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
                     }
                 }
             }
-            .padding(.horizontal)
-        }
-        .onAppear {
-            // New items get first user and default list (or first list) by default
-            newItemUser = users?.first
-            newItemList = sortedLists.first(where: { $0.isDefault }) ?? sortedLists.first
-        }
-        .onChange(of: effectiveIsAddingNewItem) { _, isAdding in
-            if isAdding {
-                isTextFieldFocused = true
+            .onChange(of: newItemList) { _, _ in
+                if isAddingNewItem {
+                    withAnimation {
+                        proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
+                    }
+                }
             }
         }
     }
-    
-    private func startAddingNewItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            if mode == .unified || mode == .templating {
-                isAddingNewItem = true
-            } else {
-                localIsAddingNewItem = true
-            }
-            isTextFieldFocused = true
-        }
-    }
 
-    private func addNewItemAndContinue(to list: PackingList) {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            // Empty text on Enter: just refocus, don't save
-            shouldRefocusNewItem = true
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-
-            list.addItem(newItem)
-
-            // Reset for next item but keep row open
-            newItemName = ""
-            newItemCount = 1
-            // Do NOT set isAddingNewItem = false
-        }
-
-        // Trigger refocus after animation completes
-        shouldRefocusNewItem = true
-    }
-
-    private func addNewItemAndClose(to list: PackingList) {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            cancelAddingNewItem()
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: sortedLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-
-            list.addItem(newItem)
-
-            // Reset fields and close the input row
-            newItemName = ""
-            newItemCount = 1
-            if mode == .unified || mode == .templating {
-                isAddingNewItem = false
-            } else {
-                localIsAddingNewItem = false
-            }
-            isTextFieldFocused = false
-        }
-    }
-
-    private func cancelAddingNewItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            newItemName = ""
-            newItemCount = 1
-            if mode == .unified || mode == .templating {
-                isAddingNewItem = false
-            } else {
-                localIsAddingNewItem = false
-            }
-            isTextFieldFocused = false
-        }
-    }
-    
     private func togglePacked(_ item: Item) {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             item.isPacked.toggle()

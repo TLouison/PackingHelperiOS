@@ -11,6 +11,8 @@
 import SwiftData
 import SwiftUI
 
+// MARK: - Container View
+
 struct PackingListContainerView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -27,6 +29,13 @@ struct PackingListContainerView: View {
     @State private var isAddingNewItem: Bool = false
     @State private var selectedUser: User?
     @State private var isReorderingSections: Bool = false
+
+    // Centralized add-item state
+    @State private var newItemName = ""
+    @State private var newItemCount = 1
+    @State private var newItemUser: User? = nil
+    @State private var newItemList: PackingList? = nil
+    @State private var shouldRefocusNewItem = false
 
     // Single list mode state
     @State private var isShowingListSettings: Bool = false
@@ -131,11 +140,20 @@ struct PackingListContainerView: View {
 
             packingListView
         }
+        .safeAreaInset(edge: .bottom) {
+            if isAddingNewItem && !isReorderingSections {
+                floatingInputBar
+            }
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if isReorderingSections {
+                doneButton
+            } else if !isAddingNewItem {
+                fabButton
+            }
+        }
         .navigationTitle(title ?? "Packing")
         .navigationBarTitleDisplayMode(.inline)
-        .overlay {
-            containerOverlay
-        }
         .sheet(item: $editingList) { list in
             if let trip = context.trip {
                 PackingListEditView(
@@ -178,11 +196,120 @@ struct PackingListContainerView: View {
         .onChange(of: isDeleted) {
             dismiss()
         }
+        .onChange(of: newItemUser) {
+            newItemList = visibleListsForNewItem.first
+        }
         .toolbar {
             containerToolbar
         }
+        .onAppear {
+            newItemUser = users?.first
+            newItemList = filteredLists.first(where: { $0.isDefault }) ?? filteredLists.first
+        }
     }
-    
+
+    // MARK: - Floating Input Bar
+
+    private var visibleListsForNewItem: [PackingList] {
+        filteredLists.filter { $0.user == newItemUser }
+    }
+
+    private var listPickerChips: some View {
+        HStack(spacing: 8) {
+            Menu {
+                ForEach(visibleListsForNewItem, id: \.id) { list in
+                    Button {
+                        newItemList = list
+                    } label: {
+                        if list.id == newItemList?.id {
+                            Label(list.name, systemImage: "checkmark")
+                        } else {
+                            Text(list.name)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "list.bullet")
+                        .font(.caption)
+                    Text(newItemList?.name ?? "Select List")
+                        .fontWeight(.medium)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.thinMaterial)
+                .clipShape(Capsule())
+            }
+            .disabled(visibleListsForNewItem.count <= 1)
+
+            if hasMultiplePackers {
+                UserPickerView(
+                    selectedUser: $newItemUser,
+                    style: .menu,
+                    allowAll: false
+                )
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
+
+    private var floatingInputBar: some View {
+        VStack(spacing: 8) {
+            if context.isTrip {
+                listPickerChips
+            }
+
+            NewItemRow(
+                itemName: $newItemName,
+                itemCount: $newItemCount,
+                shouldRefocus: $shouldRefocusNewItem,
+                onSubmitReturn: addNewItemAndContinue
+            )
+            .roundedBox()
+            .shaded()
+        }
+        .padding(.bottom, 8)
+        .transition(.asymmetric(
+            insertion: .scale(scale: 0.3, anchor: .bottomTrailing).combined(with: .opacity),
+            removal: .scale(scale: 0.3, anchor: .bottomTrailing).combined(with: .opacity)
+        ))
+    }
+
+    // MARK: - FAB Button
+
+    private var fabButton: some View {
+        Button(action: startAddingNewItem) {
+            Image(systemName: "plus.circle.fill")
+                .resizable()
+                .foregroundColor(.blue)
+        }
+        .frame(width: 60, height: 60)
+        .glassEffectIfAvailable()
+        .padding(.trailing, 16)
+        .padding(.bottom, 16)
+        .transition(.asymmetric(
+            insertion: .scale(scale: 0.3, anchor: .bottomTrailing).combined(with: .opacity),
+            removal: .scale(scale: 0.3, anchor: .bottomTrailing).combined(with: .opacity)
+        ))
+    }
+
+    // MARK: - Done Button (Reorder Mode)
+
+    private var doneButton: some View {
+        Button("Done") {
+            isReorderingSections = false
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .padding(.trailing, 16)
+        .padding(.bottom, 16)
+    }
+
     private var packingListView: some View {
         VStack(spacing: 0) {
             // User selector (trip context with multiple packers only)
@@ -205,13 +332,13 @@ struct PackingListContainerView: View {
                 }
             }
 
-            // Summary bar (conditional based on context)
-            if showSummaryBar {
+            // Summary bar hidden when adding to prevent stacking with input bar
+            if showSummaryBar && !isAddingNewItem {
                 PackingSummaryBar(packingLists: filteredLists)
             }
         }
     }
-    
+
     private func multiListView(trip: Trip) -> some View {
         switch viewMode {
         case .unified:
@@ -220,6 +347,7 @@ struct PackingListContainerView: View {
                 users: users,
                 title: title,
                 mode: unifiedMode,
+                newItemList: newItemList,
                 isAddingNewItem: $isAddingNewItem,
                 editingList: $editingList,
                 showingAddListSheet: $showingAddListSheet,
@@ -233,122 +361,102 @@ struct PackingListContainerView: View {
                 title: title,
                 trip: trip,
                 isAddingNewItem: $isAddingNewItem,
+                newItemList: $newItemList,
                 editingList: $editingList,
                 showingAddListSheet: $showingAddListSheet,
-                isApplyingDefaultPackingList:
-                    $isApplyingDefaultPackingList,
+                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
                 selectedUser: $selectedUser,
                 isReorderingSections: $isReorderingSections
             ))
         }
     }
-    
+
     private func singleListView(list: PackingList) -> some View {
-       UnifiedPackingListView(
-                lists: [list],
-                users: users,
-                title: title,
-                mode: unifiedMode,
-                isAddingNewItem: $isAddingNewItem
-            )
+        UnifiedPackingListView(
+            lists: [list],
+            users: users,
+            title: title,
+            mode: unifiedMode,
+            newItemList: newItemList,
+            isAddingNewItem: $isAddingNewItem
+        )
     }
-    
-    private var containerOverlay: some View {
-        VStack {
-            Spacer()
 
-            HStack {
-                Spacer()
-
-                if isReorderingSections {
-                    // Done button replaces FAB during reorder mode
-                    Button("Done") {
-                        isReorderingSections = false
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                } else {
-                    Group {
-                        if isAddingNewItem {
-                            Button(action: cancelAddingNewItem) {
-                                Image(systemName: "x.circle.fill")
-                                    .resizable()
-                                    .foregroundColor(.gray)
-                            }
-                            .frame(width: 60, height: 60)
-                            .glassEffectIfAvailable()
-                        } else {
-                            Button(action: startAddingNewItem) {
-                                Image(systemName: "plus.circle.fill")
-                                    .resizable()
-                                    .foregroundColor(.blue)
-                            }
-                            .frame(width: 60, height: 60)
-                            .glassEffectIfAvailable()
-                        }
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom, context.isSingleList ? 30 : 75)
+    @ToolbarContentBuilder
+    private var containerToolbar: some ToolbarContent {
+        if isAddingNewItem {
+            addingItemToolbar
+        } else if context.isTrip {
+            tripToolbar
+        } else {
+            singleListToolbar
         }
     }
-    
-    private var containerToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-            // Trip context: Full menu with view toggle + add list
-            if context.isTrip {
-                Menu {
-                    if showViewModeToggle {
-                        Button {
-                            viewMode =
-                                viewMode == .unified ? .sectioned : .unified
-                        } label: {
-                            Label(
-                                viewMode == .unified
-                                    ? "View by List" : "View Unified",
-                                systemImage: viewMode == .unified
-                                    ? "list.bullet.indent" : "list.bullet"
-                            )
-                        }
 
-                        Divider()
-                    }
+    @ToolbarContentBuilder
+    private var addingItemToolbar: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button { cancelAddingNewItem() } label: {
+                Text("Cancel")
+            }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+            Button { addNewItemAndClose() } label: {
+                Image(systemName: "checkmark")
+                    .fontWeight(.semibold)
+            }
+            .opacity(newItemName.isEmpty ? 0.3 : 1.0)
+            .disabled(newItemName.isEmpty)
+        }
+    }
 
+    @ToolbarContentBuilder
+    private var tripToolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Menu {
+                if showViewModeToggle {
                     Button {
-                        showingAddListSheet.toggle()
-                    } label: {
-                        Label("Create List", systemImage: "plus")
-                    }
-
-                    Button {
-                        isApplyingDefaultPackingList.toggle()
+                        viewMode = viewMode == .unified ? .sectioned : .unified
                     } label: {
                         Label(
-                            "Apply Template List",
-                            systemImage: "doc.on.doc"
+                            viewMode == .unified ? "View by List" : "View Unified",
+                            systemImage: viewMode == .unified ? "list.bullet.indent" : "list.bullet"
                         )
                     }
-
-                    if viewMode == .sectioned {
-                        Divider()
-
-                        Button {
-                            isReorderingSections = true
-                        } label: {
-                            Label(
-                                "Reorder Sections",
-                                systemImage: "arrow.up.arrow.down"
-                            )
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Divider()
                 }
+
+                Button {
+                    showingAddListSheet.toggle()
+                } label: {
+                    Label("Create List", systemImage: "plus")
+                }
+
+                Button {
+                    isApplyingDefaultPackingList.toggle()
+                } label: {
+                    Label("Apply Template List", systemImage: "doc.on.doc")
+                }
+
+                if viewMode == .sectioned {
+                    Divider()
+                    Button {
+                        isReorderingSections = true
+                    } label: {
+                        Label("Reorder Sections", systemImage: "arrow.up.arrow.down")
+                    }
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
             }
-            // Single list context: Save as default (non-templates) + settings gear
-            else if let singleList = context.singleList {
-                if !singleList.template && !singleList.isDefault {
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var singleListToolbar: some ToolbarContent {
+        if let singleList = context.singleList {
+            if !singleList.template && !singleList.isDefault {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button("Save As Default") {
                             saveListAsDefault(singleList)
@@ -357,7 +465,8 @@ struct PackingListContainerView: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
-
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     isShowingListSettings.toggle()
                 } label: {
@@ -367,14 +476,75 @@ struct PackingListContainerView: View {
         }
     }
 
+    // MARK: - Add Item Actions
+
     private func startAddingNewItem() {
-        withAnimation {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             isAddingNewItem = true
         }
     }
 
     private func cancelAddingNewItem() {
-        withAnimation {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+            newItemName = ""
+            newItemCount = 1
+            isAddingNewItem = false
+        }
+    }
+
+    private func addNewItemAndContinue() {
+        guard let list = newItemList else { return }
+        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            shouldRefocusNewItem = true
+            return
+        }
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
+            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+
+            let newItem = Item(
+                name: newItemName,
+                category: "",
+                count: newItemCount,
+                isPacked: false,
+                sortOrder: nextSortOrder,
+                unifiedSortOrder: nextUnifiedSortOrder
+            )
+            modelContext.insert(newItem)
+            list.addItem(newItem)
+
+            newItemName = ""
+            newItemCount = 1
+        }
+
+        shouldRefocusNewItem = true
+    }
+
+    private func addNewItemAndClose() {
+        if !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+           let list = newItemList
+        {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
+                let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
+
+                let newItem = Item(
+                    name: newItemName,
+                    category: "",
+                    count: newItemCount,
+                    isPacked: false,
+                    sortOrder: nextSortOrder,
+                    unifiedSortOrder: nextUnifiedSortOrder
+                )
+                modelContext.insert(newItem)
+                list.addItem(newItem)
+            }
+        }
+
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+            newItemName = ""
+            newItemCount = 1
             isAddingNewItem = false
         }
     }

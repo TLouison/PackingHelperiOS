@@ -24,19 +24,19 @@ struct PackingListSection: View {
     let onSaveAsDefault: () -> Void
     let onItemReorder: (Item, PackingList, Int) -> Void
     let onCrossListDrop: (Item, PackingList, Int) -> Void
+    let onAddItemToList: (PackingList) -> Void
     var isReorderMode: Bool = false
 
-    @State private var isAddingItem = false
-    @State private var newItemName = ""
-    @State private var newItemCount = 1
-    @State private var shouldRefocusNewItem = false
+    // Placeholder display
+    var isAddingNewItem: Bool = false
+    var targetList: PackingList? = nil
 
     private var unpackedItems: [Item] {
         Item.sorted(packingList.incompleteItems, sortOrder: .byCustomOrder)
     }
 
-    private var isEmpty: Bool {
-        packingList.items?.isEmpty ?? true
+    private var isTargetList: Bool {
+        isAddingNewItem && targetList?.persistentModelID == packingList.persistentModelID
     }
 
     var body: some View {
@@ -45,46 +45,21 @@ struct PackingListSection: View {
             PackingListSectionHeader(
                 packingList: packingList,
                 isExpanded: $isExpanded,
-                onAddItem: startAddingItem,
+                onAddItem: {
+                    withAnimation { isExpanded = true }
+                    onAddItemToList(packingList)
+                },
                 onEditList: onEditList,
                 onDeleteList: onDeleteList,
                 onSaveAsDefault: onSaveAsDefault,
                 isReorderMode: isReorderMode
             )
 
-            if !isReorderMode && isExpanded{
+            if !isReorderMode && isExpanded {
                 Divider()
-                
-                // New item row
-                if isAddingItem {
-                    NewItemRow(
-                        itemName: $newItemName,
-                        itemCount: $newItemCount,
-                        itemUser: .constant(nil),
-                        itemList: .constant(packingList),
-                        shouldRefocus: $shouldRefocusNewItem,
-                        listOptions: [packingList],
-                        showUserPicker: false,
-                        onCommit: { action in
-                            switch action {
-                            case .saveAndContinue:
-                                addNewItemAndContinue()
-                            case .saveAndClose:
-                                addNewItemAndClose()
-                            case .cancel:
-                                cancelAddingItem()
-                            }
-                        }
-                    )
-                    .padding(.horizontal)
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .opacity
-                    ))
-                }
-                
+
                 // Unpacked items
-                if unpackedItems.isEmpty && !isAddingItem {
+                if unpackedItems.isEmpty && !isTargetList {
                     Text("No items")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -106,89 +81,14 @@ struct PackingListSection: View {
                     )
                     .padding(.horizontal)
                 }
+
+                // Insertion placeholder
+                if isTargetList {
+                    InsertionPlaceholder()
+                        .id("insertionPlaceholder-\(packingList.persistentModelID.hashValue)")
+                }
             }
         }
-        .roundedBox()
-    }
-
-    private func startAddingItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            isAddingItem = true
-            isExpanded = true
-        }
-    }
-
-    private func addNewItemAndContinue() {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            // Empty text on Enter: just refocus, don't save
-            shouldRefocusNewItem = true
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: packingList)
-            let allLists = packingList.trip?.lists ?? [packingList]
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: allLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-
-            packingList.addItem(newItem)
-
-            // Reset for next item but keep row open
-            newItemName = ""
-            newItemCount = 1
-            // Do NOT set isAddingItem = false
-        }
-
-        // Trigger refocus after animation completes
-        shouldRefocusNewItem = true
-    }
-
-    private func addNewItemAndClose() {
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            cancelAddingItem()
-            return
-        }
-
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            // Calculate next sort orders
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: packingList)
-            let allLists = packingList.trip?.lists ?? [packingList]
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: allLists)
-
-            let newItem = Item(
-                name: newItemName,
-                category: "",
-                count: newItemCount,
-                isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
-            )
-            modelContext.insert(newItem)
-
-            packingList.addItem(newItem)
-
-            // Reset fields and close the input row
-            newItemName = ""
-            newItemCount = 1
-            isAddingItem = false
-        }
-    }
-
-    private func cancelAddingItem() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            newItemName = ""
-            newItemCount = 1
-            isAddingItem = false
-        }
+        .padding(.vertical, 8)
     }
 }

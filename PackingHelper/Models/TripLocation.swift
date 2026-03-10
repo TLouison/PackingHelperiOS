@@ -193,6 +193,23 @@ extension TripLocation {
     }
 }
 
+// MARK: - DefaultLocationInformation
+
+/// Lightweight Codable mirror of TripLocation used for AppStorage persistence.
+struct DefaultLocationInformation: Codable {
+    let name: String
+    let latitude: Double
+    let longitude: Double
+
+    static var `default`: DefaultLocationInformation {
+        DefaultLocationInformation(name: "New York City", latitude: 40.7128, longitude: -74.0060)
+    }
+
+    static func decode(from data: Data) -> DefaultLocationInformation? {
+        try? JSONDecoder().decode(DefaultLocationInformation.self, from: data)
+    }
+}
+
 extension TripLocation {
     static var sampleOrigin: TripLocation {
         TripLocation(name: "New York City", latitude: 40.7128, longitude: -74.0060)
