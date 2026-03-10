@@ -158,66 +158,62 @@ struct UnifiedItemRow: View {
         return progress
     }
 
-    var body: some View {
-        ZStack(alignment: .trailing) {
-            // Row content (slides left when swiped)
-            rowContent
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-                .background(Color(UIColor.secondarySystemGroupedBackground))
-                .cornerRadius(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .offset(x: showSwipeDelete ? offset : 0)
-                .gesture(
-                    showSwipeDelete
-                        ? DragGesture(minimumDistance: 20)
-                            .onChanged { value in
-                                if value.translation.width < 0 {
-                                    // Follow the user's finger - no clamping during drag
-                                    offset = value.translation.width
-                                } else if offset < 0 {
-                                    // Allow swiping right to close
-                                    offset = min(
-                                        0,
-                                        offset + value.translation.width
-                                    )
-                                }
-                            }
-                            .onEnded { value in
-                                withAnimation(
-                                    .spring(response: 0.3, dampingFraction: 0.8)
-                                ) {
-                                    offset =
-                                        offset < snapThreshold ? maxOffset : 0
-                                }
-                            } : nil
-                )
+    // Swipe progress from 0 to 1
+    private var swipeProgress: CGFloat {
+        guard showSwipeDelete else { return 0 }
+        return min(1, -offset / (-maxOffset))
+    }
 
-            // Floating delete button (overlays on right side)
-            if showSwipeDelete && offset < 0 {
-                Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8))
-                    {
-                        offset = 0
-                    }
-                    // Delay delete slightly to allow animation
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        onDelete()
-                    }
-                }) {
-                    Image(systemName: "trash.fill")
-                        .font(.body)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Color.red)
-                        .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
-                }
-                .offset(x: 8)  // Position slightly outside the row edge
-                .scaleEffect(deleteButtonScale)
-                .opacity(deleteButtonOpacity)
+    var body: some View {
+        rowContent
+            .padding(.vertical, 7)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(UIColor.secondarySystemBackground).opacity(Double(swipeProgress * swipeProgress)))
+                    .padding(.vertical, -3)
             }
-        }
+            .offset(x: showSwipeDelete ? offset : 0)
+            .gesture(
+                showSwipeDelete
+                    ? DragGesture(minimumDistance: 20)
+                        .onChanged { value in
+                            if value.translation.width < 0 {
+                                offset = value.translation.width
+                            } else if offset < 0 {
+                                offset = min(0, offset + value.translation.width)
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                offset = offset < snapThreshold ? maxOffset : 0
+                            }
+                        } : nil
+            )
+            .overlay(alignment: .trailing) {
+                if showSwipeDelete && offset < 0 {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            offset = 0
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            onDelete()
+                        }
+                    }) {
+                        Image(systemName: "trash.fill")
+                            .font(.body)
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.red)
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                    }
+                    .offset(x: 8)
+                    .scaleEffect(deleteButtonScale)
+                    .opacity(deleteButtonOpacity)
+                }
+            }
         .onChange(of: item.isPacked) { _, _ in
             // Reset offset when item is packed/unpacked
             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -243,6 +239,7 @@ struct UnifiedItemRow: View {
             }
 
             Text(item.name)
+                .font(.system(size: 18))
                 .strikethrough(item.isPacked)
                 .foregroundColor(item.isPacked ? .gray : .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)

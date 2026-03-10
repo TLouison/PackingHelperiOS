@@ -40,7 +40,7 @@ struct PackingListSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: isReorderMode ? 4 : 12) {
+        VStack(alignment: .leading, spacing: isReorderMode ? 4 : 4) {
             // Section header
             PackingListSectionHeader(
                 packingList: packingList,
@@ -56,8 +56,6 @@ struct PackingListSection: View {
             )
 
             if !isReorderMode && isExpanded {
-                Divider()
-
                 // Unpacked items
                 if unpackedItems.isEmpty && !isTargetList {
                     Text("No items")

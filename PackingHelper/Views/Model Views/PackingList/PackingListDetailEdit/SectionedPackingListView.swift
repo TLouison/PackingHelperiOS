@@ -151,7 +151,7 @@ struct SectionedPackingListView: View {
                         Rectangle()
                             .fill(Color.secondary.opacity(0.2))
                             .frame(height: 2)
-                            .padding(.horizontal)
+                            .padding(.horizontal, 8)
                     }
                 }
 
