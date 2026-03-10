@@ -18,6 +18,7 @@ struct PackingListEditView: View {
     var trip: Trip? = nil
     var forceListType: ListType? = nil
     var forceDayOf: Bool? = nil
+    var onListCreated: ((PackingList) -> Void)? = nil
 
     @Query private var users: [User]
     @State private var selectedUser: User?
@@ -171,7 +172,7 @@ struct PackingListEditView: View {
     }
     
     func save() {
-        PackingList.save(
+        let newList = PackingList.save(
             packingList,
             name: listName,
             type: listType,
@@ -182,6 +183,9 @@ struct PackingListEditView: View {
             in: modelContext,
             for: trip
         )
+        if let newList {
+            onListCreated?(newList)
+        }
     }
     
     private func delete(_ packingList: PackingList) {

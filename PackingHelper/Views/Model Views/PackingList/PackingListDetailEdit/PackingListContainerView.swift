@@ -172,7 +172,10 @@ struct PackingListContainerView: View {
                     trip: trip,
                     forceListType: listType,
                     forceDayOf: isDayOf,
-                    isDeleted: .constant(false)
+                    onListCreated: { newList in
+                        newItemUser = newList.user
+                        newItemList = newList
+                    }, isDeleted: .constant(false)
                 )
                 .presentationDetents([.medium])
             }
@@ -198,7 +201,10 @@ struct PackingListContainerView: View {
             dismiss()
         }
         .onChange(of: newItemUser) {
-            newItemList = visibleListsForNewItem.first
+            // Don't reset if current list already belongs to the new user (e.g., just created)
+            if newItemList?.user != newItemUser {
+                newItemList = visibleListsForNewItem.first
+            }
         }
         .toolbar {
             containerToolbar

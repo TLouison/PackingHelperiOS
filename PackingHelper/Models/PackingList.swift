@@ -199,6 +199,7 @@ extension PackingList {
 }
 
 extension PackingList {
+    @discardableResult
     static func save(
         _ packingList: PackingList?,
         name: String,
@@ -209,7 +210,7 @@ extension PackingList {
         user: User,
         in context: ModelContext,
         for trip: Trip?
-    ) {
+    ) -> PackingList? {
         AppLogger.packingList.info("Saving packing list...")
         if let packingList {
             AppLogger.packingList.debug("Packing list already exists. Updating with new info.")
@@ -229,6 +230,15 @@ extension PackingList {
                 AppLogger.packingList.debug("New list belongs to trip, applying to trip's lists.")
                 trip.addList(newPackingList)
             }
+
+            do {
+                try context.save()
+                AppLogger.packingList.info("Packing list saved!")
+            } catch {
+                AppLogger.packingList.error("Failed to save packing list: \(error.localizedDescription)")
+            }
+
+            return newPackingList
         }
 
         do {
@@ -237,6 +247,8 @@ extension PackingList {
         } catch {
             AppLogger.packingList.error("Failed to save packing list: \(error.localizedDescription)")
         }
+
+        return nil
     }
 
     static func delete(_ packingList: PackingList, from context: ModelContext) {
