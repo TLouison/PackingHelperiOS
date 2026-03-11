@@ -67,6 +67,7 @@ struct PackingListSectionHeader: View {
                 image: packingList.icon
             )
             .scaleEffect(0.6)
+            .frame(width: 26, height: 26)
 
             // Add button
             Button {

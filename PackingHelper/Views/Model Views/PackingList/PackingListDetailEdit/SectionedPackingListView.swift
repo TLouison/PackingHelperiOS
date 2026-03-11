@@ -318,7 +318,6 @@ struct SectionedPackingListView: View {
     }
 
     private func handleSectionReorder(list: PackingList, to newIndex: Int) {
-        guard !list.isDefault else { return }
         withAnimation(.packingSpring) {
             AppLogger.views.debug("Reordering section \(list.name) to index \(newIndex)")
             var mutableLists = sortedLists

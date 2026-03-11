@@ -89,9 +89,9 @@ struct EditableItemRow: View {
             if mode != .templating {
                 Image(
                     systemName: item.isPacked
-                        ? "checkmark.square.fill" : "square"
+                        ? "checkmark.circle.fill" : "circle"
                 )
-                .font(.title3)
+                .font(.title2)
                 .foregroundStyle(item.isPacked ? .blue : .gray.opacity(0.5))
                 .padding(.trailing, 12)
             }
@@ -169,7 +169,7 @@ struct UnifiedItemRow: View {
 
     var body: some View {
         rowContent
-            .padding(.vertical, 7)
+            .padding(.vertical, 4)
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
@@ -235,9 +235,9 @@ struct UnifiedItemRow: View {
                 Button(action: onTogglePacked) {
                     Image(
                         systemName: item.isPacked
-                            ? "checkmark.square.fill" : "square"
+                            ? "checkmark.circle.fill" : "circle"
                     )
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundStyle(item.isPacked ? .blue : .gray.opacity(0.5))
                 }
                 .buttonStyle(.plain)
