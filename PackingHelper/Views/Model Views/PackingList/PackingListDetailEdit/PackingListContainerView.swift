@@ -40,6 +40,7 @@ struct PackingListContainerView: View {
 
     // Single list mode state
     @State private var isShowingListSettings: Bool = false
+    @State private var isShowingTemplateInfo: Bool = false
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
 
@@ -134,7 +135,7 @@ struct PackingListContainerView: View {
         context.isTrip
     }
 
-    var body: some View {
+    private var baseView: some View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
@@ -154,7 +155,7 @@ struct PackingListContainerView: View {
             }
         }
         .navigationTitle(title ?? "Packing")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(context.singleList?.template == true ? .large : .inline)
         .sheet(item: $editingList) { list in
             if let trip = context.trip {
                 PackingListEditView(
@@ -194,6 +195,16 @@ struct PackingListContainerView: View {
                 )
             }
         }
+        .sheet(isPresented: $isShowingTemplateInfo) {
+            if let singleList = context.singleList {
+                TemplateListInfoView(list: singleList)
+                    .presentationDetents([.fraction(0.65), .large])
+            }
+        }
+    }
+
+    var body: some View {
+        baseView
         .alert("List saved as default", isPresented: $isShowingSaveSuccessful) {
             Button("OK", role: .cancel) {}
         }
@@ -476,6 +487,15 @@ struct PackingListContainerView: View {
                         }
                     } label: {
                         Label("Save As Default", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+            if singleList.template {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingTemplateInfo.toggle()
+                    } label: {
+                        Label("List Info", systemImage: "info.circle")
                     }
                 }
             }

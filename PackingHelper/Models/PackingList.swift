@@ -307,6 +307,28 @@ extension PackingList {
 }
 
 extension PackingList {
+    var appliedTrips: [Trip] {
+        let applied = appliedToLists ?? []
+        var seen = Set<PersistentIdentifier>()
+        var unique: [Trip] = []
+        for list in applied {
+            if let trip = list.trip, seen.insert(trip.persistentModelID).inserted {
+                unique.append(trip)
+            }
+        }
+        return unique
+    }
+
+    var lastUpdatedDate: Date? {
+        items?.compactMap { $0.created }.max()
+    }
+
+    var lastAppliedTrip: Trip? {
+        appliedTrips.max(by: { $0.startDate < $1.startDate })
+    }
+}
+
+extension PackingList {
     static func samplePackingList() -> PackingList {
         return PackingList(type: .packing, template: false, name: "Packing List", countAsDays: false)
     }
