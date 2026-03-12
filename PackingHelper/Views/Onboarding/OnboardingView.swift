@@ -11,18 +11,27 @@ final class OnboardingViewModel: ObservableObject {
     @Published var isMovingForward = true
     let colorOptions: [Color] = [.blue, .red, .green, .purple, .orange, .pink]
     let modelContext: ModelContext
+    var isPreviewMode: Bool = false
+    var onComplete: (() -> Void)?
 
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, isPreviewMode: Bool = false, onComplete: (() -> Void)? = nil) {
         self.modelContext = modelContext
+        self.isPreviewMode = isPreviewMode
+        self.onComplete = onComplete
     }
 
     func saveUser() {
+        if isPreviewMode {
+            onComplete?()
+            return
+        }
         let hexColor = selectedColor.toHex() ?? "#007AFF"
         let user = User(name: userName, colorHex: hexColor)
         user.defaultLocation = defaultLocation
         modelContext.insert(user)
         try? modelContext.save()
         hasCompletedOnboarding = true
+        onComplete?()
     }
 
     func nextPage() {
@@ -45,8 +54,8 @@ struct OnboardingContainerView: View {
     @Namespace private var animation
     @State private var dragOffset: CGFloat = 0
 
-    init(modelContext: ModelContext) {
-        _viewModel = StateObject(wrappedValue: OnboardingViewModel(modelContext: modelContext))
+    init(modelContext: ModelContext, isPreviewMode: Bool = false, onComplete: (() -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: OnboardingViewModel(modelContext: modelContext, isPreviewMode: isPreviewMode, onComplete: onComplete))
     }
 
     var body: some View {

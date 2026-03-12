@@ -15,6 +15,7 @@ struct DeveloperMenuView: View {
     @Query private var users: [User]
     @State private var featureFlagsExpanded = true
     @State private var featureFlags = FeatureFlags.shared
+    @State private var showingOnboardingPreview = false
 
     var body: some View {
         NavigationStack {
@@ -29,6 +30,14 @@ struct DeveloperMenuView: View {
                     Text("If you encounter any issues with any of these features, do not report those issues. They are still works in progress. If you wish to retest the onboarding flow, you can do so below, but it will ERASE your user and lists, which is irreversible.").fixedSize(horizontal: false, vertical: true)
                 }
                 
+                Section {
+                    Button("Preview Onboarding") {
+                        showingOnboardingPreview = true
+                    }
+                } footer: {
+                    Text("Preview the onboarding flow without affecting your data.").font(.subheadline)
+                }
+
                 Section {
                     Button("Reset Onboarding State") {
                         hasCompletedOnboarding = false
@@ -66,6 +75,9 @@ struct DeveloperMenuView: View {
                 }
             }
             .navigationTitle("Developer Menu")
+            .sheet(isPresented: $showingOnboardingPreview) {
+                OnboardingContainerView(modelContext: modelContext, isPreviewMode: true, onComplete: { showingOnboardingPreview = false })
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
