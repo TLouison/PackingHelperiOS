@@ -28,7 +28,7 @@ struct UserColorPicker: View {
     }
     
     @ViewBuilder private func colorButton(color: Color) -> some View {
-        if color == selectedColor {
+        if color.toHex() == selectedColor.toHex() {
             colorButtonBase(color: color)
                 .overlay {
                     RoundedRectangle(cornerRadius: defaultCornerRadius)
