@@ -224,10 +224,6 @@ struct NameInputView: View {
                         .padding(.vertical, 14)
                         .background(Color(.systemGray5))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(isNameFieldFocused ? AnyShapeStyle(defaultLinearGradient) : AnyShapeStyle(Color.clear), lineWidth: 2)
-                        )
                         .focused($isNameFieldFocused)
                 }
                 .padding(.horizontal, 32)
@@ -250,7 +246,7 @@ struct NameInputView: View {
                     .background(
                         viewModel.userName.isEmpty ?
                         AnyShapeStyle(Color.gray) :
-                        AnyShapeStyle(defaultLinearGradient)
+                            AnyShapeStyle(Color.blue)
                     )
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -461,26 +457,21 @@ struct TemplateExplanationView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 24) {
-                // Icon with circular background
-                ZStack {
-                    Circle()
-                        .fill(viewModel.selectedColor.opacity(0.15))
-                        .frame(width: 120, height: 120)
-                        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-
-                    Image(systemName: "checklist")
-                        .font(.system(size: 50))
-                        .foregroundStyle(viewModel.selectedColor)
-                        .symbolEffect(.bounce, value: viewModel.currentPage)
-                }
-                .padding(.top, 40)
+                TemplateAnimationView(selectedColor: viewModel.selectedColor)
+                    .padding(.top, 40)
 
                 Text("Packing Templates")
                     .font(.title)
                     .bold()
 
-                Text("Build reusable packing lists for different trip types. Whether it's a beach vacation or a business trip, you'll always know exactly what to pack. Use template lists for as much as you can!")
+                Text("Build reusable packing lists for beach vacations, business trips, weekend getaways, and everything in between.")
                     .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+
+                Text("Applying a template creates a separate copy on your trip, so you can add items, remove what doesn't apply, and tweak it to fit. Your original is never changed.")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)

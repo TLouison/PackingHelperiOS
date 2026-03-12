@@ -64,6 +64,7 @@
 		5192C86B2EEFA7540034D2B4 /* PackingListEditSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5192C86A2EEFA7540034D2B4 /* PackingListEditSection.swift */; };
 		519A48142F604E0500CB8475 /* PersistentTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519A48132F604E0500CB8475 /* PersistentTextField.swift */; };
 		519A48162F60E3E600CB8475 /* TemplateListInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519A48152F60E3E600CB8475 /* TemplateListInfoView.swift */; };
+		519A481A2F625D0E00CB8475 /* TemplateAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519A48182F625D0E00CB8475 /* TemplateAnimationView.swift */; };
 		519A53042B4FACC200183CB1 /* ProductSuggestionModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */; };
 		519B72572ADA06C3009401C0 /* TripListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72562ADA06C3009401C0 /* TripListView.swift */; };
 		519B72592ADA1BF7009401C0 /* PackingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519B72582ADA1BF7009401C0 /* PackingList.swift */; };
@@ -153,6 +154,7 @@
 		5192C86A2EEFA7540034D2B4 /* PackingListEditSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListEditSection.swift; sourceTree = "<group>"; };
 		519A48132F604E0500CB8475 /* PersistentTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentTextField.swift; sourceTree = "<group>"; };
 		519A48152F60E3E600CB8475 /* TemplateListInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateListInfoView.swift; sourceTree = "<group>"; };
+		519A48182F625D0E00CB8475 /* TemplateAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateAnimationView.swift; sourceTree = "<group>"; };
 		519A53032B4FACC200183CB1 /* ProductSuggestionModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = ProductSuggestionModel.mlmodel; sourceTree = "<group>"; };
 		519B72562ADA06C3009401C0 /* TripListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripListView.swift; sourceTree = "<group>"; };
 		519B72582ADA1BF7009401C0 /* PackingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 		510728162C1FD90900EBF362 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				519A48182F625D0E00CB8475 /* TemplateAnimationView.swift */,
 				518AE78A2D25EAE900F8D8E9 /* OnboardingView.swift */,
 			);
 			path = Onboarding;
@@ -641,6 +644,7 @@
 				5192C86B2EEFA7540034D2B4 /* PackingListEditSection.swift in Sources */,
 				51289F312AD4EA5A00545115 /* Trip.swift in Sources */,
 				51748B582ADCF46E009E919B /* PackingRecommendationView.swift in Sources */,
+				519A481A2F625D0E00CB8475 /* TemplateAnimationView.swift in Sources */,
 				51AC5FC02C4749BF00DF83F6 /* PurchaseManager.swift in Sources */,
 				5132E84F2AE23AE7002575AC /* DefaultPackingListView.swift in Sources */,
 				51289F1C2AD3B6CD00545115 /* ContentView.swift in Sources */,
