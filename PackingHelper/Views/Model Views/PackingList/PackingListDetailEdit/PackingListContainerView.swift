@@ -217,6 +217,15 @@ struct PackingListContainerView: View {
                 newItemList = visibleListsForNewItem.first
             }
         }
+        .onChange(of: newItemFieldFocused) { _, isFocused in
+            if !isFocused && isAddingNewItem {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                    newItemName = ""
+                    newItemCount = 1
+                    isAddingNewItem = false
+                }
+            }
+        }
         .toolbar {
             containerToolbar
         }
@@ -356,6 +365,16 @@ struct PackingListContainerView: View {
                 PackingSummaryBar(packingLists: filteredLists)
             }
         }
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if isAddingNewItem {
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil, from: nil, for: nil
+                    )
+                }
+            }
+        )
     }
 
     @ViewBuilder
@@ -418,11 +437,6 @@ struct PackingListContainerView: View {
 
     @ToolbarContentBuilder
     private var addingItemToolbar: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button { cancelAddingNewItem() } label: {
-                Text("Cancel")
-            }
-        }
         ToolbarItem(placement: .confirmationAction) {
             Button { addNewItemAndClose() } label: {
                 Image(systemName: "checkmark")
@@ -514,15 +528,6 @@ struct PackingListContainerView: View {
         newItemFieldFocused = true
         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
             isAddingNewItem = true
-        }
-    }
-
-    private func cancelAddingNewItem() {
-        newItemFieldFocused = false
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-            newItemName = ""
-            newItemCount = 1
-            isAddingNewItem = false
         }
     }
 
