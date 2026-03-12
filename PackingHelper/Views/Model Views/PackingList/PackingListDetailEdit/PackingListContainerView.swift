@@ -258,8 +258,7 @@ struct PackingListContainerView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(.thinMaterial)
-                .clipShape(Capsule())
+                .opaqueGlassCapsule()
             }
             .disabled(visibleListsForNewItem.count <= 1)
 
@@ -288,7 +287,7 @@ struct PackingListContainerView: View {
                 isFocused: $newItemFieldFocused,
                 onSubmitReturn: addNewItemAndContinue
             )
-            .roundedBox()
+            .opaqueRoundedBox()
             .shaded()
             .padding(.horizontal, 8)
         }

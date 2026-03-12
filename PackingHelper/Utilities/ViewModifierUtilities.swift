@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct Box: ViewModifier {
     let background: Material
@@ -63,24 +64,69 @@ struct GlassEffectIfAvailable: ViewModifier {
     }
 }
 
+// MARK: - OpaqueBox (less-transparent glass for floating input bar)
+
+struct OpaqueBox: ViewModifier {
+    let background: Material
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .padding()
+                .background(Color(UIColor.systemBackground).opacity(0.5), in: RoundedRectangle(cornerRadius: defaultCornerRadius))
+                .glassEffect(in: .rect(cornerRadius: defaultCornerRadius))
+        } else {
+            content
+                .padding()
+                .background(background)
+        }
+    }
+}
+
+// MARK: - OpaqueGlassCapsule (less-transparent glass for chip/pill shapes)
+
+struct OpaqueGlassCapsule: ViewModifier {
+    let background: Material
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .background(Color(UIColor.systemBackground).opacity(0.3), in: Capsule())
+                .glassEffect(in: .capsule)
+        } else {
+            content
+                .background(background)
+                .clipShape(Capsule())
+        }
+    }
+}
+
 extension View {
     func rounded()
         -> some View {
             modifier(Rounded())
       }
-    
+
     func box(background: Material = .thinMaterial) -> some View {
         modifier(Box(background: background))
     }
-    
+
     func roundedBox(background: Material = .thinMaterial) -> some View {
         modifier(Box(background: background)).modifier(Rounded())
     }
-    
+
+    func opaqueRoundedBox(background: Material = .thinMaterial) -> some View {
+        modifier(OpaqueBox(background: background)).modifier(Rounded())
+    }
+
+    func opaqueGlassCapsule(background: Material = .thinMaterial) -> some View {
+        modifier(OpaqueGlassCapsule(background: background))
+    }
+
     func shaded() -> some View {
         modifier(Shaded())
     }
-    
+
     func borderGradient(width: CGFloat = 1) -> some View {
         modifier(BorderGradient(width: width))
     }
