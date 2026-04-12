@@ -101,7 +101,7 @@ struct PackingListMultiListView: View {
                 TripDetailPackingProgressView(
                     val: Double(trip.getCompleteItems(for: listType)),
                     total: Double(trip.getTotalItems(for: listType)),
-                    image: PackingList.icon(listType: listType)
+                    image: PackingList.iconImage(listType: listType)
                 )
                 .scaleEffect(x: 0.5, y: 0.5)
             }

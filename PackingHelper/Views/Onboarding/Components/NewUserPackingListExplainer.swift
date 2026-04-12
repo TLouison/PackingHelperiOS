@@ -49,7 +49,7 @@ struct NewUserPackingListExplainer: View {
                         .frame(height: 1)
 
                     GridRow {
-                        Label("Day-of", systemImage: "sun.horizon")
+                        Label { Text("Day-of") } icon: { Image(suitcaseDayOfIcon) }
                             .bold()
                         Text("Mark any list for last-minute items")
                     }

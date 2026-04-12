@@ -81,11 +81,11 @@ struct PackingListEditView: View {
                     Section {
                         if let forceDayOf {
                             Toggle(isOn: .constant(forceDayOf)) {
-                                Label("Day-of", systemImage: "sun.horizon")
+                                Label { Text("Day-of") } icon: { PackingList.iconImage(listType: listType, isDayOf: true) }
                             }.disabled(true)
                         } else {
                             Toggle(isOn: $isDayOf) {
-                                Label("Day-of", systemImage: "sun.horizon")
+                                Label { Text("Day-of") } icon: { PackingList.iconImage(listType: listType, isDayOf: true) }
                             }
                         }
                     } header: {

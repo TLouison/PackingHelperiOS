@@ -207,7 +207,7 @@ struct PackingListCard: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             
-                        Image(systemName: list.icon)
+                        list.iconImage
                             .foregroundStyle(Color.accentColor)
                             .font(.subheadline)
                     }

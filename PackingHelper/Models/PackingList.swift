@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 import OSLog
 
@@ -168,13 +169,42 @@ final class PackingList {
         return PackingList.icon(listType: self.type, isDayOf: self.isDayOf)
     }
 
+    @ViewBuilder
+    var iconImage: some View {
+        PackingList.iconImage(listType: self.type, isDayOf: self.isDayOf)
+    }
+
     static func icon(listType: ListType, isDayOf: Bool = false) -> String {
         if isDayOf {
-            return "sun.horizon"
+            return switch listType {
+                case .packing: suitcaseDayOfIcon
+                case .task: checklistDayOfIcon
+            }
         }
         return switch listType {
             case .packing: suitcaseIcon
             case .task: "checklist"
+        }
+    }
+
+    @ViewBuilder
+    static func iconImage(listType: ListType, isDayOf: Bool = false) -> some View {
+        if isDayOf {
+            switch listType {
+            case .packing:
+                Image(suitcaseDayOfIcon)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.yellow, Color.accentColor, Color.white)
+            case .task:
+                Image(checklistDayOfIcon)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.yellow, Color.accentColor, Color.white)
+            }
+        } else {
+            switch listType {
+            case .packing: Image(systemName: suitcaseIcon)
+            case .task: Image(systemName: "checklist")
+            }
         }
     }
 }

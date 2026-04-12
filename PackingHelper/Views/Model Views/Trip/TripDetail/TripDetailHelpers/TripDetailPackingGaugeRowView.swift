@@ -21,7 +21,7 @@ struct TripDetailPackingGaugeRowView: View {
                     TripDetailPackingProgressView(
                         val: Double(trip.getCompleteItems(for: listType, isDayOf: false)),
                         total: Double(total),
-                        image: PackingList.icon(listType: listType)
+                        image: PackingList.iconImage(listType: listType)
                     )
                     .onChange(of: total) {
                         AppLogger.trip.debug("Progress changed for \(listType.rawValue): \(trip.getCompleteItems(for: listType, isDayOf: false))/\(total)")
@@ -38,7 +38,7 @@ struct TripDetailPackingGaugeRowView: View {
                     val: Double(trip.getCompleteItems(for: .packing, isDayOf: true) +
                                trip.getCompleteItems(for: .task, isDayOf: true)),
                     total: Double(dayOfTotal),
-                    image: "sun.horizon"
+                    image: PackingList.iconImage(listType: .packing, isDayOf: true)
                 )
                 .onChange(of: dayOfTotal) {
                     let completed = trip.getCompleteItems(for: .packing, isDayOf: true) + trip.getCompleteItems(for: .task, isDayOf: true)

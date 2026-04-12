@@ -69,7 +69,7 @@ struct TripDetailPackingView: View {
                                     TripDetailPackingProgressView(
                                         val: Double(trip.getCompleteItems(for: listType, isDayOf: false)),
                                         total: Double(trip.getTotalItems(for: listType, isDayOf: false)),
-                                        image: PackingList.icon(listType: listType)
+                                        image: PackingList.iconImage(listType: listType)
                                     )
                                     .scaleEffect(x: 0.75, y: 0.75)
                                 }
@@ -104,15 +104,14 @@ struct TripDetailPackingView: View {
                         } label: {
                             HStack {
                                 HStack(spacing: 4) {
-                                    Image(systemName: "sun.horizon")
-                                        .foregroundStyle(.orange)
+                                    PackingList.iconImage(listType: .packing, isDayOf: true)
                                     Text("Day-of Packing").font(.headline)
                                 }
                                 Spacer()
                                 TripDetailPackingProgressView(
                                     val: Double(trip.getCompleteItems(for: .packing, isDayOf: true)),
                                     total: Double(trip.getTotalItems(for: .packing, isDayOf: true)),
-                                    image: "sun.horizon"
+                                    image: PackingList.iconImage(listType: .packing, isDayOf: true)
                                 )
                                 .scaleEffect(x: 0.75, y: 0.75)
                             }
@@ -135,15 +134,14 @@ struct TripDetailPackingView: View {
                         } label: {
                             HStack {
                                 HStack(spacing: 4) {
-                                    Image(systemName: "sun.horizon")
-                                        .foregroundStyle(.orange)
+                                    PackingList.iconImage(listType: .task, isDayOf: true)
                                     Text("Day-of Tasks").font(.headline)
                                 }
                                 Spacer()
                                 TripDetailPackingProgressView(
                                     val: Double(trip.getCompleteItems(for: .task, isDayOf: true)),
                                     total: Double(trip.getTotalItems(for: .task, isDayOf: true)),
-                                    image: "sun.horizon"
+                                    image: PackingList.iconImage(listType: .task, isDayOf: true)
                                 )
                                 .scaleEffect(x: 0.75, y: 0.75)
                             }

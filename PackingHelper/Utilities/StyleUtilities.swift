@@ -13,6 +13,8 @@ let defaultCornerRadius: CGFloat = 16
 let defaultLinearGradient: LinearGradient = LinearGradient(colors: [.accentColor, .purple], startPoint: .leading, endPoint: .trailing)
 
 let suitcaseIcon: String = "suitcase.rolling.fill"
+let suitcaseDayOfIcon: String = "DayOfPacking"
+let checklistDayOfIcon: String = "DayOfTask"
 let defaultPackingListIcon: String = suitcaseIcon
 let userIcon: String = "person.circle"
 
