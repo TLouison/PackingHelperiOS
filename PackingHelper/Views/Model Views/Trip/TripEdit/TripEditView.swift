@@ -29,6 +29,8 @@ struct TripEditView: View {
     @State private var selectedImage: UIImage?
     @State private var showImagePicker = false
     @State private var showDeleteAlert = false
+
+    @AppStorage("autoCreateDefaultLists") private var autoCreateDefaultLists = true
     
     // MARK: - Initialization
     init(trip: Trip?, isDeleted: Binding<Bool>) {
@@ -407,8 +409,8 @@ struct TripEditView: View {
             )
             modelContext.insert(newTrip)
 
-            // Auto-create default packing and task lists
-            if let firstUser = users.sorted(by: { $0.created < $1.created }).first {
+            // Auto-create default packing and task lists (if enabled in settings)
+            if autoCreateDefaultLists, let firstUser = users.sorted(by: { $0.created < $1.created }).first {
                 PackingList.createDefaultList(for: newTrip, user: firstUser, type: .packing, in: modelContext)
                 PackingList.createDefaultList(for: newTrip, user: firstUser, type: .task, in: modelContext)
             }
