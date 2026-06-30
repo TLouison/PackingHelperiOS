@@ -62,7 +62,7 @@ struct NewItemRow: View {
 
 struct EditableItemRow: View {
     let item: Item
-    let mode: UnifiedPackingListMode
+    let isTemplating: Bool
     let onCommit: (String, Int) -> Void
     let onCancel: () -> Void
 
@@ -72,12 +72,12 @@ struct EditableItemRow: View {
 
     init(
         item: Item,
-        mode: UnifiedPackingListMode,
+        isTemplating: Bool,
         onCommit: @escaping (String, Int) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.item = item
-        self.mode = mode
+        self.isTemplating = isTemplating
         self.onCommit = onCommit
         self.onCancel = onCancel
         self._editName = State(initialValue: item.name)
@@ -86,7 +86,7 @@ struct EditableItemRow: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            if mode != .templating {
+            if !isTemplating {
                 Image(
                     systemName: item.isPacked
                         ? "checkmark.circle.fill" : "circle"
@@ -133,7 +133,7 @@ struct EditableItemRow: View {
 
 struct UnifiedItemRow: View {
     let item: Item
-    let mode: UnifiedPackingListMode
+    let isTemplating: Bool
     let onTogglePacked: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
@@ -144,7 +144,7 @@ struct UnifiedItemRow: View {
 
     // Show swipe-to-delete for template items (always) or unpacked items (non-template)
     private var showSwipeDelete: Bool {
-        mode == .templating || !item.isPacked
+        isTemplating || !item.isPacked
     }
 
     // Animate button scale from 0.5 to 1.0 as user swipes
@@ -231,7 +231,7 @@ struct UnifiedItemRow: View {
 
     var rowContent: some View {
         HStack(spacing: 12) {
-            if mode != .templating {
+            if !isTemplating {
                 Button(action: onTogglePacked) {
                     Image(
                         systemName: item.isPacked
@@ -309,7 +309,7 @@ struct PackedItemsSection: View {
                     ForEach(items) { item in
                         UnifiedItemRow(
                             item: item,
-                            mode: .unified,
+                            isTemplating: false,
                             onTogglePacked: { onTogglePacked(item) },
                             onEdit: {},
                             onDelete: { onDeleteItem(item) }

@@ -18,13 +18,6 @@ class SortOrderManager {
         return maxOrder + 1
     }
 
-    /// Calculate next unified sort order for a new item
-    static func nextUnifiedSortOrder(in lists: [PackingList]) -> Int {
-        let allItems = lists.flatMap { $0.items ?? [] }
-        let maxOrder = allItems.map { $0.unifiedSortOrder }.max() ?? -1
-        return maxOrder + 1
-    }
-
     /// Reorder items within a list after a drag operation
     static func reorderItems(in list: PackingList, moving item: Item, to newIndex: Int) {
         var items = list.incompleteItems.sorted { $0.sortOrder < $1.sortOrder }
@@ -61,41 +54,6 @@ class SortOrderManager {
 
         // Reorder in target list
         reorderItems(in: targetList, moving: item, to: index)
-    }
-
-    /// Reorder items in unified view (across all lists)
-    static func reorderUnifiedItems(in lists: [PackingList], moving item: Item, to newIndex: Int, includeAllItems: Bool = false) {
-        var allItems: [Item]
-
-        if includeAllItems {
-            // For templates or detail mode: include all items
-            allItems = lists
-                .flatMap { $0.items ?? [] }
-                .sorted { $0.unifiedSortOrder < $1.unifiedSortOrder }
-        } else {
-            // For regular packing mode: only unpacked items
-            allItems = lists
-                .flatMap { $0.incompleteItems }
-                .sorted { $0.unifiedSortOrder < $1.unifiedSortOrder }
-        }
-
-        // Find current index before removing
-        guard let currentIndex = allItems.firstIndex(where: { $0.persistentModelID == item.persistentModelID }) else {
-            return
-        }
-
-        // Adjust newIndex if moving forward (accounts for removal shifting indices)
-        let adjustedIndex = currentIndex < newIndex ? newIndex - 1 : newIndex
-
-        // Remove and reinsert
-        allItems.removeAll { $0.persistentModelID == item.persistentModelID }
-        let clampedIndex = min(max(0, adjustedIndex), allItems.count)
-        allItems.insert(item, at: clampedIndex)
-
-        // Reassign unified sort orders
-        for (index, currentItem) in allItems.enumerated() {
-            currentItem.unifiedSortOrder = index
-        }
     }
 
     // MARK: - PackingList Order Management

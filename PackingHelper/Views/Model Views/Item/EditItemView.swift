@@ -28,7 +28,7 @@ struct EditItemView: View {
     }
 
     var showCount: Bool {
-        item?.list?.type != .task && item?.list?.template == false
+        item?.type != .task && item?.list?.template == false
     }
 
     var body: some View {

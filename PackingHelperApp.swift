@@ -16,6 +16,7 @@ struct PackingHelperApp: App {
     @AppStorage("hasMigratedDayOfLists") private var hasMigratedDayOfLists = false
     @AppStorage("hasMigratedSortOrders") private var hasMigratedSortOrders = false
     @AppStorage("hasMigratedDefaultLists") private var hasMigratedDefaultLists = false
+    @AppStorage("hasMigratedPackingModelV2") private var hasMigratedPackingModelV2 = false
 
     @Environment(\.scenePhase) var scenePhase
     
@@ -47,6 +48,10 @@ struct PackingHelperApp: App {
 
         if !hasMigratedDefaultLists {
             migrateDefaultLists()
+        }
+
+        if !hasMigratedPackingModelV2 {
+            migratePackingModelV2()
         }
     }
 
@@ -124,26 +129,60 @@ struct PackingHelperApp: App {
         hasMigratedSortOrders = true
     }
 
+    // Stamps list-level type/user/isDayOf onto each item, collapses to a single
+    // default section per trip, and uses unifiedSortOrder as the canonical order.
+    private func migratePackingModelV2() {
+        let context = modelContainer.mainContext
+
+        let listDescriptor = FetchDescriptor<PackingList>()
+        guard let lists = try? context.fetch(listDescriptor) else {
+            hasMigratedPackingModelV2 = true
+            return
+        }
+
+        // Stamp list-level attributes onto items
+        for list in lists {
+            guard let items = list.items else { continue }
+            for item in items {
+                item.type = list.type
+                item.isDayOf = list.isDayOf
+                item.user = list.user
+                // Use the old unified sort order as the new single sort order if it was set
+                if item.unifiedSortOrder > 0 {
+                    item.sortOrder = item.unifiedSortOrder
+                }
+            }
+        }
+
+        // Per trip: keep exactly one isDefault catch-all section
+        let tripDescriptor = FetchDescriptor<Trip>()
+        if let trips = try? context.fetch(tripDescriptor) {
+            for trip in trips {
+                let defaultLists = (trip.lists ?? []).filter { $0.isDefault }
+                guard !defaultLists.isEmpty else { continue }
+
+                // Prefer the packing default as the survivor; demote all others
+                let survivor = defaultLists.first(where: { $0.type == .packing }) ?? defaultLists[0]
+                for list in defaultLists where list.persistentModelID != survivor.persistentModelID {
+                    list.isDefault = false
+                }
+            }
+        }
+
+        try? context.save()
+        hasMigratedPackingModelV2 = true
+    }
+
     private func migrateDefaultLists() {
         let context = modelContainer.mainContext
 
         let tripDescriptor = FetchDescriptor<Trip>()
-        let userDescriptor = FetchDescriptor<User>(
-            sortBy: [SortDescriptor(\.created, order: .forward)]
-        )
 
-        if let trips = try? context.fetch(tripDescriptor),
-           let users = try? context.fetch(userDescriptor),
-           let firstUser = users.first {
+        if let trips = try? context.fetch(tripDescriptor) {
             for trip in trips {
-                let hasDefaultPacking = trip.lists?.contains { $0.isDefault && $0.type == .packing } ?? false
-                let hasDefaultTask = trip.lists?.contains { $0.isDefault && $0.type == .task } ?? false
-
-                if !hasDefaultPacking {
-                    PackingList.createDefaultList(for: trip, user: firstUser, type: .packing, in: context)
-                }
-                if !hasDefaultTask {
-                    PackingList.createDefaultList(for: trip, user: firstUser, type: .task, in: context)
+                let hasDefault = trip.lists?.contains { $0.isDefault } ?? false
+                if !hasDefault {
+                    PackingList.createDefaultList(for: trip, in: context)
                 }
             }
             try? context.save()

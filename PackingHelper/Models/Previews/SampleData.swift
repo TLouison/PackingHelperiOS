@@ -51,104 +51,109 @@ extension PreviewTrait where T == Preview.ViewTraits {
         TripLocation(name: "New York City", latitude: 40.7128, longitude: -74.0060),
         TripLocation(name: "Amsterdam", latitude: 52.3676, longitude: 4.9041)
     ]
-    let workTrip = Trip(name: "Family Visit", startDate: Date.distantFuture.advanced(by: -SECONDS_IN_DAY), endDate: Date.distantFuture, type: .car, origin: workTripLocations[0], destination: workTripLocations[1], accomodation: .hotel)
+    let workTrip = Trip(name: "Work Trip", startDate: Date.distantFuture.advanced(by: -SECONDS_IN_DAY), endDate: Date.distantFuture, type: .car, origin: workTripLocations[0], destination: workTripLocations[1], accomodation: .hotel)
     
-    // Packing List Creation
-    let springBreakPackingList = PackingList(type: .packing, template: false, name: "Beachwear", countAsDays: true)
-    springBreakPackingList.addItem(Item(name: "Board Shorts", category: "Clothing", count: 2, isPacked: false))
-    springBreakPackingList.addItem(Item(name: "Bikini", category: "Clothing", count: 3, isPacked: true))
-    springBreakPackingList.addItem(Item(name: "Sunscreen", category: "Clothing", count: 1, isPacked: true))
-    springBreakPackingList.addItem(Item(name: "Sunglasses", category: "Accessories", count: 2, isPacked: false))
-    springBreakPackingList.user = userEmma
-    springBreakPackingList.trip = springBreakTrip
+    // Packing List Creation (sections — user is on items, not lists)
+    let springBreakBeachwear = PackingList(template: false, name: "Beachwear", countAsDays: true)
+    let sbItem1 = Item(name: "Board Shorts", category: "Clothing", count: 2, isPacked: false, type: .packing)
+    sbItem1.user = userEmma
+    let sbItem2 = Item(name: "Bikini", category: "Clothing", count: 3, isPacked: true, type: .packing)
+    sbItem2.user = userEmma
+    let sbItem3 = Item(name: "Sunscreen", category: "Clothing", count: 1, isPacked: true, type: .packing)
+    sbItem3.user = userEmma
+    let sbItem4 = Item(name: "Sunglasses", category: "Accessories", count: 2, isPacked: false, type: .packing)
+    sbItem4.user = userEmma
+    springBreakBeachwear.addItem(sbItem1)
+    springBreakBeachwear.addItem(sbItem2)
+    springBreakBeachwear.addItem(sbItem3)
+    springBreakBeachwear.addItem(sbItem4)
+    springBreakBeachwear.trip = springBreakTrip
     
-    let familyVisitPackingList = PackingList(type: .packing, template: false, name: "Essentials", countAsDays: true)
-    familyVisitPackingList.addItem(Item(name: "Shirts", category: "Clothing", count: 5, isPacked: false))
-    familyVisitPackingList.addItem(Item(name: "Shorts", category: "Clothing", count: 3, isPacked: true))
-    familyVisitPackingList.addItem(Item(name: "Shoes", category: "Clothing", count: 1, isPacked: true))
-    familyVisitPackingList.addItem(Item(name: "Gifts", category: "Accessories", count: 2, isPacked: false))
-    familyVisitPackingList.user = userTodd
-    familyVisitPackingList.trip = familyVisitTrip
+    let familyVisitEssentials = PackingList(template: false, name: "Essentials", countAsDays: true)
+    let fvItem1 = Item(name: "Shirts", category: "Clothing", count: 5, isPacked: false, type: .packing)
+    fvItem1.user = userTodd
+    let fvItem2 = Item(name: "Shorts", category: "Clothing", count: 3, isPacked: true, type: .packing)
+    fvItem2.user = userTodd
+    let fvItem3 = Item(name: "Shoes", category: "Clothing", count: 1, isPacked: true, type: .packing)
+    fvItem3.user = userTodd
+    let fvItem4 = Item(name: "Gifts", category: "Accessories", count: 2, isPacked: false, type: .packing)
+    fvItem4.user = userTodd
+    familyVisitEssentials.addItem(fvItem1)
+    familyVisitEssentials.addItem(fvItem2)
+    familyVisitEssentials.addItem(fvItem3)
+    familyVisitEssentials.addItem(fvItem4)
+    familyVisitEssentials.trip = familyVisitTrip
     
-    let workTripPackingList = PackingList(type: .packing, template: false, name: "Business Attire", countAsDays: false)
-    workTripPackingList.addItem(Item(name: "Suit Jacket", category: "Clothing", count: 1, isPacked: false))
-    workTripPackingList.addItem(Item(name: "Dress Shirt", category: "Clothing", count: 3, isPacked: true))
-    workTripPackingList.addItem(Item(name: "Dress", category: "Clothing", count: 1, isPacked: true))
-    workTripPackingList.addItem(Item(name: "Shoes", category: "Accessories", count: 2, isPacked: false))
-    workTripPackingList.user = userEmma
-    workTripPackingList.trip = workTrip
+    let workTripBizAttire = PackingList(template: false, name: "Business Attire", countAsDays: false)
+    let wtItem1 = Item(name: "Suit Jacket", category: "Clothing", count: 1, isPacked: false, type: .packing)
+    wtItem1.user = userEmma
+    let wtItem2 = Item(name: "Dress Shirt", category: "Clothing", count: 3, isPacked: true, type: .packing)
+    wtItem2.user = userEmma
+    let wtItem3 = Item(name: "Dress", category: "Clothing", count: 1, isPacked: true, type: .packing)
+    wtItem3.user = userEmma
+    let wtItem4 = Item(name: "Shoes", category: "Accessories", count: 2, isPacked: false, type: .packing)
+    wtItem4.user = userEmma
+    workTripBizAttire.addItem(wtItem1)
+    workTripBizAttire.addItem(wtItem2)
+    workTripBizAttire.addItem(wtItem3)
+    workTripBizAttire.addItem(wtItem4)
+    workTripBizAttire.trip = workTrip
     
-    let workTripToDoList = PackingList(type: .task, template: false, name: "International Travel Checklist", countAsDays: false)
-    workTripToDoList.addItem(Item(name: "Find Passport", category: "Task", count: 1, isPacked: false))
-    workTripToDoList.addItem(Item(name: "File for travel visa", category: "Task", count: 1, isPacked: true))
-    workTripToDoList.user = userEmma
-    workTripToDoList.trip = workTrip
+    let workTripChecklist = PackingList(template: false, name: "International Travel Checklist", countAsDays: false)
+    let chkItem1 = Item(name: "Find Passport", category: "Task", count: 1, isPacked: false, type: .task)
+    chkItem1.user = userEmma
+    let chkItem2 = Item(name: "File for travel visa", category: "Task", count: 1, isPacked: true, type: .task)
+    chkItem2.user = userEmma
+    workTripChecklist.addItem(chkItem1)
+    workTripChecklist.addItem(chkItem2)
+    workTripChecklist.trip = workTrip
     
-    let workTripDayOfList = PackingList(type: .packing, template: false, name: "Morning Of", countAsDays: true, isDayOf: true)
-    workTripDayOfList.addItem(Item(name: "Take Out Trash", category: "Task", count: 1, isPacked: false))
-    workTripDayOfList.addItem(Item(name: "Kiss Todd", category: "Task", count: 1, isPacked: true))
-    workTripDayOfList.user = userEmma
-    workTripDayOfList.trip = workTrip
+    let workTripMorningOf = PackingList(template: false, name: "Morning Of", countAsDays: true)
+    let moItem1 = Item(name: "Take Out Trash", category: "Task", count: 1, isPacked: false, type: .task, isDayOf: true)
+    moItem1.user = userEmma
+    let moItem2 = Item(name: "Kiss Todd", category: "Task", count: 1, isPacked: true, type: .task, isDayOf: true)
+    moItem2.user = userEmma
+    workTripMorningOf.addItem(moItem1)
+    workTripMorningOf.addItem(moItem2)
+    workTripMorningOf.trip = workTrip
     
-    // Default catch-all lists for each trip
-    let springBreakDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    springBreakDefaultPacking.isDefault = true
-    springBreakDefaultPacking.user = userEmma
-    springBreakDefaultPacking.trip = springBreakTrip
+    // One default catch-all list per trip (v2 model)
+    let springBreakDefault = PackingList(template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    springBreakDefault.isDefault = true
+    springBreakDefault.trip = springBreakTrip
 
-    let springBreakDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    springBreakDefaultTask.isDefault = true
-    springBreakDefaultTask.user = userEmma
-    springBreakDefaultTask.trip = springBreakTrip
+    let familyVisitDefault = PackingList(template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    familyVisitDefault.isDefault = true
+    familyVisitDefault.trip = familyVisitTrip
 
-    let familyVisitDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    familyVisitDefaultPacking.isDefault = true
-    familyVisitDefaultPacking.user = userTodd
-    familyVisitDefaultPacking.trip = familyVisitTrip
+    let workTripDefault = PackingList(template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
+    workTripDefault.isDefault = true
+    workTripDefault.trip = workTrip
 
-    let familyVisitDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    familyVisitDefaultTask.isDefault = true
-    familyVisitDefaultTask.user = userTodd
-    familyVisitDefaultTask.trip = familyVisitTrip
+    // Template lists
+    let defaultPackingList = PackingList(template: true, name: "Essential Clothing", countAsDays: true)
+    defaultPackingList.addItem(Item(name: "Shirts", category: "Clothing", count: 1, isPacked: false, type: .packing))
+    defaultPackingList.addItem(Item(name: "Pants", category: "Clothing", count: 3, isPacked: true, type: .packing))
+    defaultPackingList.addItem(Item(name: "Underwear", category: "Clothing", count: 1, isPacked: true, type: .packing))
+    defaultPackingList.addItem(Item(name: "Socks", category: "Accessories", count: 2, isPacked: false, type: .packing))
 
-    let workTripDefaultPacking = PackingList(type: .packing, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    workTripDefaultPacking.isDefault = true
-    workTripDefaultPacking.user = userEmma
-    workTripDefaultPacking.trip = workTrip
+    let defaultElectronicsPackingList = PackingList(template: true, name: "Electronics", countAsDays: false)
+    defaultElectronicsPackingList.addItem(Item(name: "Phone", category: "Electronics", count: 1, isPacked: false, type: .packing))
+    defaultElectronicsPackingList.addItem(Item(name: "Phone Charger", category: "Electronics", count: 1, isPacked: true, type: .packing))
+    defaultElectronicsPackingList.addItem(Item(name: "Laptop", category: "Electronics", count: 1, isPacked: true, type: .packing))
+    defaultElectronicsPackingList.addItem(Item(name: "Laptop Charger", category: "Electronics", count: 1, isPacked: false, type: .packing))
 
-    let workTripDefaultTask = PackingList(type: .task, template: false, name: PackingList.defaultListName, countAsDays: false, sortOrder: -1)
-    workTripDefaultTask.isDefault = true
-    workTripDefaultTask.user = userEmma
-    workTripDefaultTask.trip = workTrip
-
-    // Default Packing Lists (templates)
-    let defaultPackingList = PackingList(type: .packing, template: true, name: "Essential Clothing", countAsDays: true)
-    defaultPackingList.addItem(Item(name: "Shirts", category: "Clothing", count: 1, isPacked: false))
-    defaultPackingList.addItem(Item(name: "Pants", category: "Clothing", count: 3, isPacked: true))
-    defaultPackingList.addItem(Item(name: "Underwear", category: "Clothing", count: 1, isPacked: true))
-    defaultPackingList.addItem(Item(name: "Socks", category: "Accessories", count: 2, isPacked: false))
-    defaultPackingList.user = userTodd
-
-    let defaultElectronicsPackingList = PackingList(type: .packing, template: true, name: "Essential Clothing", countAsDays: false)
-    defaultElectronicsPackingList.addItem(Item(name: "Phone", category: "Clothing", count: 1, isPacked: false))
-    defaultElectronicsPackingList.addItem(Item(name: "Phone Charger", category: "Clothing", count: 3, isPacked: true))
-    defaultElectronicsPackingList.addItem(Item(name: "Laptop", category: "Clothing", count: 1, isPacked: true))
-    defaultElectronicsPackingList.addItem(Item(name: "Laptop Charger", category: "Accessories", count: 2, isPacked: false))
-    defaultElectronicsPackingList.user = userTodd
+    container.mainContext.insert(userTodd)
+    container.mainContext.insert(userEmma)
     
     container.mainContext.insert(defaultPackingList)
     container.mainContext.insert(defaultElectronicsPackingList)
 
-    container.mainContext.insert(springBreakDefaultPacking)
-    container.mainContext.insert(springBreakDefaultTask)
-    container.mainContext.insert(familyVisitDefaultPacking)
-    container.mainContext.insert(familyVisitDefaultTask)
-    container.mainContext.insert(workTripDefaultPacking)
-    container.mainContext.insert(workTripDefaultTask)
+    container.mainContext.insert(springBreakDefault)
+    container.mainContext.insert(familyVisitDefault)
+    container.mainContext.insert(workTripDefault)
 
     container.mainContext.insert(springBreakTrip)
     container.mainContext.insert(familyVisitTrip)
-    container.mainContext.insert(workTripPackingList)
-    
-//    container.mainContext.insert(Preferences())
+    container.mainContext.insert(workTrip)
 }

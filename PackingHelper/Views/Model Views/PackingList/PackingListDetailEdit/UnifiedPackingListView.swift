@@ -2,12 +2,8 @@
 //  UnifiedPackingListView.swift
 //  PackingHelper
 //
-//  A view that allows multiple modes of use:
-//      1. Unified packing (the default). Pass in multiple lists, optionally pass in
-//          the users of those lists, and be able to edit all the lists in a single
-//          unified interface.
-//      2. Detailed edit. Used when you want to edit just a single list. Pass in a
-//          single list, no users, and editing will work!
+//  Helper views shared between SectionedPackingListView and the single-list
+//  rendering path inside PackingListContainerView.
 //
 //  Created by Todd Louison on 9/16/25.
 //
@@ -16,214 +12,7 @@ import SwiftUI
 import SwiftData
 import OSLog
 
-enum UnifiedPackingListMode: String {
-    case unified, detail, templating
-}
-
-struct UnifiedPackingListView: View {
-    @Environment(\.modelContext) private var modelContext
-
-    let trip: Trip?
-    let lists: [PackingList]
-    let users: [User]?
-
-    let title: String?
-
-    let mode: UnifiedPackingListMode
-
-    // Bindings from container (optional - for shared toolbar)
-    @Binding var isAddingNewItem: Bool
-    @Binding var editingList: PackingList?
-    @Binding var showingAddListSheet: Bool
-    @Binding var isApplyingDefaultPackingList: Bool
-    @Binding var selectedUser: User?
-    @Binding var scrollToPlaceholder: Bool
-
-    // Local state
-    @State private var editingItemId: PersistentIdentifier?
-
-    // Target list for placeholder display (set by container)
-    let newItemList: PackingList?
-
-    init(
-        trip: Trip? = nil,
-        lists: [PackingList] = [],
-        users: [User]?,
-        title: String?,
-        mode: UnifiedPackingListMode,
-        newItemList: PackingList? = nil,
-        isAddingNewItem: Binding<Bool> = .constant(false),
-        editingList: Binding<PackingList?> = .constant(nil),
-        showingAddListSheet: Binding<Bool> = .constant(false),
-        isApplyingDefaultPackingList: Binding<Bool> = .constant(false),
-        selectedUser: Binding<User?> = .constant(nil),
-        scrollToPlaceholder: Binding<Bool> = .constant(false)
-    ) {
-        self.trip = trip
-        self.lists = lists
-        self.users = users
-        self.title = title
-        self.mode = mode
-        self.newItemList = newItemList
-        self._isAddingNewItem = isAddingNewItem
-        self._editingList = editingList
-        self._showingAddListSheet = showingAddListSheet
-        self._isApplyingDefaultPackingList = isApplyingDefaultPackingList
-        self._selectedUser = selectedUser
-        self._scrollToPlaceholder = scrollToPlaceholder
-    }
-    
-    var hasMultiplePackers: Bool {
-        guard let users = users else { return false }
-        return users.count > 1
-    }
-    
-    var sortedLists: [PackingList] {
-        return PackingList.sorted(lists, sortOrder: .byDate)
-    }
-    
-    var allItems: [Item] {
-        var allItems: [Item] = []
-        for list in sortedLists {
-            if let items = list.items {
-                allItems.append(contentsOf: items)
-            }
-        }
-        // Sort by unified order for proper display after reordering
-        return Item.sorted(allItems, sortOrder: .byUnifiedOrder)
-    }
-    
-    func getFilteredItems(packed: Bool) -> [Item] {
-        let filteredItems = allItems.filter { item in
-            packed ? item.isPacked : !item.isPacked
-        }
-        return Item.sorted(filteredItems, sortOrder: .byUnifiedOrder)
-    }
-    
-    var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(spacing: 16) {
-                    // If we are working on a template, put all items in a section
-                    // together. Otherwise, separate them by packed/unpacked
-                    if mode == .templating {
-                        ReorderableItemsSection(
-                            items: allItems,
-                            mode: mode,
-                            editingItemId: $editingItemId,
-                            onTogglePacked: togglePacked,
-                            onUpdateItem: updateItem,
-                            onDeleteItem: deleteItem,
-                            onReorder: handleUnifiedReorder
-                        )
-
-                        // Insertion placeholder (templating mode)
-                        if isAddingNewItem {
-                            InsertionPlaceholder()
-                                .id("insertionPlaceholder")
-                        }
-
-                        // Empty state
-                        if (allItems.isEmpty && !isAddingNewItem) {
-                            EmptyStateView()
-                                .padding(.top, 60)
-                        }
-                    } else {
-                        // Unpacked items
-                        let unpackedItems = getFilteredItems(packed: false)
-                        if !unpackedItems.isEmpty {
-                            ReorderableItemsSection(
-                                items: unpackedItems,
-                                mode: mode,
-                                editingItemId: $editingItemId,
-                                onTogglePacked: togglePacked,
-                                onUpdateItem: updateItem,
-                                onDeleteItem: deleteItem,
-                                onReorder: handleUnifiedReorder
-                            )
-                        }
-
-                        // Insertion placeholder (after unpacked items)
-                        if isAddingNewItem {
-                            InsertionPlaceholder()
-                                .id("insertionPlaceholder")
-                        }
-
-                        let packedItems = getFilteredItems(packed: true)
-                        // Packed items
-                        if !packedItems.isEmpty {
-                            PackedItemsSection(
-                                items: packedItems,
-                                onTogglePacked: togglePacked,
-                                onDeleteItem: deleteItem,
-                                horizontalPadding: 4
-                            )
-                        }
-
-                        // Empty state
-                        if (packedItems.isEmpty && unpackedItems.isEmpty && !isAddingNewItem) {
-                            Spacer()
-                            EmptyStateView()
-                        }
-                    }
-                }
-                .padding(.horizontal, 8)
-            }
-            .onChange(of: isAddingNewItem) { _, isAdding in
-                if isAdding {
-                    withAnimation {
-                        proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
-                    }
-                }
-            }
-            .onChange(of: newItemList) { _, _ in
-                if isAddingNewItem {
-                    withAnimation {
-                        proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
-                    }
-                }
-            }
-            .onChange(of: scrollToPlaceholder) { _, shouldScroll in
-                if shouldScroll {
-                    scrollToPlaceholder = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            proxy.scrollTo("insertionPlaceholder", anchor: .bottom)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private func togglePacked(_ item: Item) {
-        withAnimation(.packingSpring) {
-            item.isPacked.toggle()
-        }
-    }
-    
-    private func updateItem(_ item: Item, name: String, count: Int) {
-        withAnimation {
-            item.name = name
-            item.count = count
-            editingItemId = nil
-        }
-    }
-    
-    private func deleteItem(_ item: Item) {
-        withAnimation(.packingSpring) {
-            modelContext.delete(item)
-        }
-    }
-
-    private func handleUnifiedReorder(item: Item, newIndex: Int) {
-        withAnimation(.packingSpring) {
-            // For templating/detail mode, include all items; for unified mode, only unpacked items
-            let includeAll = (mode == .templating || mode == .detail)
-            SortOrderManager.reorderUnifiedItems(in: sortedLists, moving: item, to: newIndex, includeAllItems: includeAll)
-        }
-    }
-}
+// MARK: - User Selector
 
 struct UserSelector: View {
     let users: [User]
@@ -263,11 +52,11 @@ struct UserSelector: View {
     }
 }
 
-// MARK: - View for displaying items with edit capabilities
+// MARK: - Unpacked Items Section
 
 struct UnpackedItemsSection: View {
     let items: [Item]
-    var mode: UnifiedPackingListMode = .unified
+    var isTemplating: Bool = false
     
     @Binding var editingItemId: PersistentIdentifier?
     let onTogglePacked: (Item) -> Void
@@ -280,7 +69,7 @@ struct UnpackedItemsSection: View {
                 if editingItemId == item.persistentModelID {
                     EditableItemRow(
                         item: item,
-                        mode: mode,
+                        isTemplating: isTemplating,
                         onCommit: { name, count in
                             onUpdateItem(item, name, count)
                         },
@@ -291,7 +80,7 @@ struct UnpackedItemsSection: View {
                 } else {
                     UnifiedItemRow(
                         item: item,
-                        mode: mode,
+                        isTemplating: isTemplating,
                         onTogglePacked: { onTogglePacked(item) },
                         onEdit: { editingItemId = item.persistentModelID },
                         onDelete: { onDeleteItem(item) }
@@ -301,6 +90,8 @@ struct UnpackedItemsSection: View {
         }
     }
 }
+
+// MARK: - Empty State
 
 struct EmptyStateView: View {
     var body: some View {
@@ -320,6 +111,8 @@ struct EmptyStateView: View {
         }
     }
 }
+
+// MARK: - No List Selected
 
 struct NoListSelectedView: View {
     let onCreateList: () -> Void
@@ -352,24 +145,3 @@ struct NoListSelectedView: View {
         .padding()
     }
 }
-
-
-private struct CategoryChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(isSelected ? Color.blue : Color.gray.opacity(0.2))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .clipShape(.rect(cornerRadius: 15))
-        }
-    }
-}
-

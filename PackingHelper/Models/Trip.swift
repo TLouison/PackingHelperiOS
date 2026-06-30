@@ -215,38 +215,47 @@ extension Trip {
 
 // List-related Trip Code
 extension Trip {
+    // Flat array of all items across all sections
+    var allItems: [Item] {
+        (lists ?? []).flatMap { $0.items ?? [] }
+    }
+
+    // MARK: Item counts (item-level attributes)
+    var totalItemsCount: Int { allItems.count }
+    var packedItemsCount: Int { allItems.filter { $0.isPacked }.count }
+    var incompleteItemsCount: Int { allItems.filter { !$0.isPacked }.count }
+
     // MARK: Default list accessors
     var defaultPackingList: PackingList? {
-        lists?.first(where: { $0.isDefault && $0.type == .packing })
+        lists?.first(where: { $0.isDefault })
     }
 
-    var defaultTaskList: PackingList? {
-        lists?.first(where: { $0.isDefault && $0.type == .task })
-    }
+    // Legacy accessor — always nil in v2 model (single default list per trip)
+    var defaultTaskList: PackingList? { nil }
 
     var hasDefaultLists: Bool {
-        defaultPackingList != nil && defaultTaskList != nil
+        defaultPackingList != nil
     }
 
-    // MARK: List metadata
+    // MARK: List metadata (item-based)
     var hasMultiplePackers: Bool {
         return self.packers.count > 1
     }
-    
+
     var packers: [User] {
-        return Array(Set(self.lists?.compactMap( { $0.user } ) ?? []))
+        return Array(Set(allItems.compactMap { $0.user }))
     }
 
     var containsListTypes: [ListType] {
-        return Set(self.lists?.compactMap( { $0.type } ) ?? []).sorted()
+        return Array(Set(allItems.map { $0.type })).sorted()
     }
 
     var containsDayOfPacking: Bool {
-        return self.lists?.contains { $0.type == .packing && $0.isDayOf } ?? false
+        return allItems.contains { $0.isDayOf && $0.type == .packing }
     }
 
     var containsDayOfTask: Bool {
-        return self.lists?.contains { $0.type == .task && $0.isDayOf } ?? false
+        return allItems.contains { $0.isDayOf && $0.type == .task }
     }
 
     var listsFromTemplates: [PackingList] {
@@ -257,91 +266,60 @@ extension Trip {
         return self.listsFromTemplates.compactMap { $0.appliedFromTemplate }
     }
 
-    // MARK: List counts
-    // Gets amount of Items stored in related lists regardless of type
-    var totalListEntries: Int {
-        return self.lists?.reduce(0, {x,y in
-            x + (y.items?.count ?? 0)
-        }) ?? 0
-    }
+    // MARK: Item counts — item-based (replaces list-type-filtered overloads)
+    var totalListEntries: Int { totalItemsCount }
 
     var totalIncompletePackingItemsEntries: Int {
-        return self.lists?.filter{$0.type != .task}.reduce(0, {x,y in
-            x + y.incompleteItems.count
-        }) ?? 0
+        allItems.filter { !$0.isPacked && $0.type == .packing }.count
     }
 
-    func getTotalItems(for listType: ListType) -> Int {
-        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
-            x + (y.items?.count ?? 0)
-        }) ?? 0
+    func getTotalItems(for itemType: ListType) -> Int {
+        return allItems.filter { $0.type == itemType }.count
     }
 
-    func getTotalItems(for listType: ListType, isDayOf: Bool) -> Int {
-        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
-            x + (y.items?.count ?? 0)
-        }) ?? 0
+    func getTotalItems(for itemType: ListType, isDayOf: Bool) -> Int {
+        return allItems.filter { $0.type == itemType && $0.isDayOf == isDayOf }.count
     }
 
-    func getIncompleteItems(for listType: ListType) -> Int {
-        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
-            x + y.incompleteItems.count
-        }) ?? 0
+    func getIncompleteItems(for itemType: ListType) -> Int {
+        return allItems.filter { $0.type == itemType && !$0.isPacked }.count
     }
 
-    func getIncompleteItems(for listType: ListType, isDayOf: Bool) -> Int {
-        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
-            x + y.incompleteItems.count
-        }) ?? 0
+    func getIncompleteItems(for itemType: ListType, isDayOf: Bool) -> Int {
+        return allItems.filter { $0.type == itemType && $0.isDayOf == isDayOf && !$0.isPacked }.count
     }
 
-    func getCompleteItems(for listType: ListType) -> Int {
-        return self.lists?.filter {$0.type == listType}.reduce(0, {x, y in
-            x + y.completeItems.count
-        }) ?? 0
+    func getCompleteItems(for itemType: ListType) -> Int {
+        return allItems.filter { $0.type == itemType && $0.isPacked }.count
     }
 
-    func getCompleteItems(for listType: ListType, isDayOf: Bool) -> Int {
-        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf}.reduce(0, {x, y in
-            x + y.completeItems.count
-        }) ?? 0
+    func getCompleteItems(for itemType: ListType, isDayOf: Bool) -> Int {
+        return allItems.filter { $0.type == itemType && $0.isDayOf == isDayOf && $0.isPacked }.count
     }
 
-    func allItemsComplete(for listType: ListType) -> Bool {
-        return self.getTotalItems(for: listType) == self.getCompleteItems(for: listType)
+    func allItemsComplete(for itemType: ListType) -> Bool {
+        return self.getTotalItems(for: itemType) == self.getCompleteItems(for: itemType)
     }
 
     // MARK: Get Lists
     func getLists(for listType: ListType) -> [PackingList] {
-        return self.lists?.filter {$0.type == listType} ?? []
+        return self.lists?.filter { $0.type == listType } ?? []
     }
 
     func getLists(for listType: ListType, isDayOf: Bool) -> [PackingList] {
-        return self.lists?.filter {$0.type == listType && $0.isDayOf == isDayOf} ?? []
+        return self.lists?.filter { $0.type == listType && $0.isDayOf == isDayOf } ?? []
     }
 
     func getLists(for user: User?) -> [PackingList] {
-        if let user {
-            return self.lists?.filter {$0.user == user} ?? []
-        } else {
-            return self.lists ?? []
-        }
+        return self.lists ?? []
     }
 
     func getLists(for user: User?, ofType listType: ListType) -> [PackingList] {
-        if let user {
-            return self.getLists(for: user).filter {$0.type == listType }
-        } else {
-            return self.getLists(for: listType)
-        }
+        return self.getLists(for: listType)
     }
 
     func getLists(for user: User?, ofType listType: ListType, isDayOf: Bool) -> [PackingList] {
-        if let user {
-            return self.getLists(for: user).filter {$0.type == listType && $0.isDayOf == isDayOf}
-        } else {
-            return self.getLists(for: listType, isDayOf: isDayOf)
-        }
+        return self.getLists(for: listType, isDayOf: isDayOf)
     }
 
     // MARK: CRUD Lists

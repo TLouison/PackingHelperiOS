@@ -17,9 +17,12 @@ final class User: Comparable {
     
     var name: String = "Packer"
     var created: Date = Date.now
-    var profileImageData: Data? // Store image data
+    var profileImageData: Data?
     
+    // Legacy: sections were assigned to users; new code assigns users to items
     @Relationship(deleteRule: .cascade, inverse: \PackingList.user) var lists: [PackingList]?
+    // Items assigned to this packer
+    @Relationship(deleteRule: .nullify, inverse: \Item.user) var items: [Item]?
     @Relationship(deleteRule: .nullify) var defaultLocation: TripLocation?
 
     var colorHex: String = Color.teal.toHex() ?? "008080"
@@ -50,18 +53,12 @@ final class User: Comparable {
     }
 }
 
-// All non-init CRUD functions go here
 extension User {
-    // Attempts to delete the user, but may fail for various reasons. Returns true
-    // if the delete was successful, false otherwise.
     static func delete(_ user: User, from context: ModelContext) -> Bool {
-        // Try and delete all related packing lists first, then delete the user
-        if let userLists = user.lists {
-            for packingList in userLists {
-                AppLogger.user.debug("Deleting packing list for user \(user.name) for trip \(packingList.trip?.name ?? "Unknown Name")")
-                context.delete(packingList)
-            }
-        }
+        // Nullify PackingList.user to prevent cascade-deleting trip sections
+        user.lists?.forEach { $0.user = nil }
+        // Nullify Item.user so items remain, just unassigned
+        user.items?.forEach { $0.user = nil }
         AppLogger.user.info("Deleting user \(user.name)")
         context.delete(user)
         return true
@@ -84,7 +81,6 @@ extension User {
     }
 }
 
-// Profile Picture methods
 extension User {
     func setProfileImage(_ image: UIImage) {
         AppLogger.user.debug("Setting profile image")
@@ -94,7 +90,6 @@ extension User {
         }
     }
 
-    // Add persistence check method
     func verifyImageData() {
         if let data = profileImageData {
             AppLogger.user.debug("Profile image data exists: \(data.count) bytes")
@@ -174,4 +169,3 @@ extension User {
         }
     }
 }
-

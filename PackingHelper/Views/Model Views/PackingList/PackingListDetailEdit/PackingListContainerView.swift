@@ -2,8 +2,9 @@
 //  PackingListContainerView.swift
 //  PackingHelper
 //
-//  A container view that manages switching between UnifiedPackingListView
-//  and SectionedPackingListView, and provides shared toolbar functionality.
+//  Container that renders the packing screen.
+//  Trip context: SectionedPackingListView with filter state.
+//  Single-list context: inline single-section view (templates/detail).
 //
 //  Created by Claude on 1/11/26.
 //
@@ -19,8 +20,6 @@ struct PackingListContainerView: View {
 
     let context: PackingListContext
     let users: [User]?
-    let listType: ListType?
-    let isDayOf: Bool?
     let title: String?
 
     @State private var editingList: PackingList? = nil
@@ -28,6 +27,8 @@ struct PackingListContainerView: View {
     @State private var isApplyingDefaultPackingList: Bool = false
     @State private var isAddingNewItem: Bool = false
     @State private var selectedUser: User?
+    @State private var selectedType: ListType? = nil
+    @State private var showDayOfOnly: Bool = false
     @State private var isReorderingSections: Bool = false
 
     // Centralized add-item state
@@ -44,32 +45,22 @@ struct PackingListContainerView: View {
     @State private var isShowingSaveSuccessful: Bool = false
     @State private var isDeleted: Bool = false
 
-    @AppStorage("packingListViewMode") private var viewMode:
-        PackingListViewMode = .unified
+    // Single list mode item editing (trip context manages this inside SectionedPackingListView)
+    @State private var singleListEditingItemId: PersistentIdentifier? = nil
 
     // MARK: - Initializers
 
     /// Initialize with a single packing list (template or trip list)
     init(packingList: PackingList) {
         self.context = .singleList(packingList)
-        self.users = packingList.user != nil ? [packingList.user!] : nil
-        self.listType = packingList.type
-        self.isDayOf = packingList.isDayOf
+        self.users = nil
         self.title = packingList.name
     }
 
-    /// Initialize with a trip (for backwards compatibility)
-    init(
-        trip: Trip,
-        users: [User]?,
-        listType: ListType?,
-        isDayOf: Bool?,
-        title: String?
-    ) {
+    /// Initialize with a trip
+    init(trip: Trip, users: [User]?, title: String?) {
         self.context = .trip(trip)
         self.users = users
-        self.listType = listType
-        self.isDayOf = isDayOf
         self.title = title
     }
 
@@ -89,30 +80,8 @@ struct PackingListContainerView: View {
         return users.count > 1
     }
 
-    private var filteredLists: [PackingList] {
-        if listType != nil && isDayOf != nil {
-            let filtered = lists.filter { list in
-                let typeMatch = list.type == listType && list.isDayOf == isDayOf
-                if let selectedUser = selectedUser {
-                    return list.user == selectedUser && typeMatch
-                } else {
-                    return typeMatch
-                }
-            }
-            return filtered
-        } else {
-            return lists
-        }
-    }
-
-    /// Determines the mode for UnifiedPackingListView based on context
-    private var unifiedMode: UnifiedPackingListMode {
-        if context.isTrip {
-            return .unified
-        } else if let singleList = context.singleList {
-            return singleList.template ? .templating : .detail
-        }
-        return .unified
+    private var isTemplating: Bool {
+        context.singleList?.template == true
     }
 
     /// Whether to show the user selector
@@ -128,11 +97,6 @@ struct PackingListContainerView: View {
             return !singleList.template
         }
         return false
-    }
-
-    /// Whether to show the view mode toggle
-    private var showViewModeToggle: Bool {
-        context.isTrip
     }
 
     private var baseView: some View {
@@ -155,7 +119,7 @@ struct PackingListContainerView: View {
             }
         }
         .navigationTitle(title ?? "Packing")
-        .navigationBarTitleDisplayMode(context.singleList?.template == true ? .large : .inline)
+        .navigationBarTitleDisplayMode(isTemplating ? .large : .inline)
         .sheet(item: $editingList) { list in
             if let trip = context.trip {
                 PackingListEditView(
@@ -171,10 +135,7 @@ struct PackingListContainerView: View {
                 PackingListEditView(
                     packingList: nil,
                     trip: trip,
-                    forceListType: listType,
-                    forceDayOf: isDayOf,
                     onListCreated: { newList in
-                        newItemUser = newList.user
                         newItemList = newList
                     }, isDeleted: .constant(false)
                 )
@@ -183,7 +144,7 @@ struct PackingListContainerView: View {
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
             if let trip = context.trip {
-                PackingListApplyDefaultView(trip: trip, listType: listType, isDayOf: isDayOf)
+                PackingListApplyDefaultView(trip: trip)
             }
         }
         .sheet(isPresented: $isShowingListSettings) {
@@ -211,12 +172,6 @@ struct PackingListContainerView: View {
         .onChange(of: isDeleted) {
             dismiss()
         }
-        .onChange(of: newItemUser) {
-            // Don't reset if current list already belongs to the new user (e.g., just created)
-            if newItemList?.user != newItemUser {
-                newItemList = visibleListsForNewItem.first
-            }
-        }
         .onChange(of: newItemFieldFocused) { _, isFocused in
             if !isFocused && isAddingNewItem {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
@@ -231,20 +186,16 @@ struct PackingListContainerView: View {
         }
         .onAppear {
             newItemUser = users?.first
-            newItemList = filteredLists.first(where: { $0.isDefault }) ?? filteredLists.first
+            newItemList = lists.first(where: { $0.isDefault }) ?? lists.first
         }
     }
 
     // MARK: - Floating Input Bar
 
-    private var visibleListsForNewItem: [PackingList] {
-        filteredLists.filter { $0.user == newItemUser }
-    }
-
     private var listPickerChips: some View {
         HStack(spacing: 8) {
             Menu {
-                ForEach(visibleListsForNewItem, id: \.id) { list in
+                ForEach(lists, id: \.id) { list in
                     Button {
                         newItemList = list
                     } label: {
@@ -269,7 +220,7 @@ struct PackingListContainerView: View {
                 .padding(.vertical, 8)
                 .opaqueGlassCapsule()
             }
-            .disabled(visibleListsForNewItem.count <= 1)
+            .disabled(lists.count <= 1)
 
             if hasMultiplePackers {
                 UserPickerView(
@@ -348,21 +299,30 @@ struct PackingListContainerView: View {
                 )
             }
 
-            Group {
-                // For trip context, allow view mode switching
-                if context.isTrip, let trip = context.trip {
-                    multiListView(trip: trip)
-                }
-                // For single list context, always use unified view
-                else if context.isSingleList, let singleList = context.singleList
-                {
-                    singleListView(list: singleList)
-                }
+            if context.isTrip, let trip = context.trip {
+                SectionedPackingListView(
+                    users: users,
+                    lists: lists,
+                    title: title,
+                    trip: trip,
+                    isAddingNewItem: $isAddingNewItem,
+                    newItemList: $newItemList,
+                    editingList: $editingList,
+                    showingAddListSheet: $showingAddListSheet,
+                    isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                    selectedUser: $selectedUser,
+                    selectedType: $selectedType,
+                    showDayOfOnly: $showDayOfOnly,
+                    isReorderingSections: $isReorderingSections,
+                    scrollToPlaceholder: $scrollToPlaceholder
+                )
+            } else if let singleList = context.singleList {
+                singleListView(list: singleList)
             }
 
             // Summary bar hidden when adding to prevent stacking with input bar
             if showSummaryBar && !isAddingNewItem {
-                PackingSummaryBar(packingLists: filteredLists)
+                PackingSummaryBar(packingLists: lists)
             }
         }
         .simultaneousGesture(
@@ -378,50 +338,82 @@ struct PackingListContainerView: View {
     }
 
     @ViewBuilder
-    private func multiListView(trip: Trip) -> some View {
-        switch viewMode {
-        case .unified:
-            UnifiedPackingListView(
-                lists: filteredLists,
-                users: users,
-                title: title,
-                mode: unifiedMode,
-                newItemList: newItemList,
-                isAddingNewItem: $isAddingNewItem,
-                editingList: $editingList,
-                showingAddListSheet: $showingAddListSheet,
-                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
-                selectedUser: $selectedUser,
-                scrollToPlaceholder: $scrollToPlaceholder
-            )
-        case .sectioned:
-            SectionedPackingListView(
-                users: users,
-                lists: filteredLists,
-                title: title,
-                trip: trip,
-                isAddingNewItem: $isAddingNewItem,
-                newItemList: $newItemList,
-                editingList: $editingList,
-                showingAddListSheet: $showingAddListSheet,
-                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
-                selectedUser: $selectedUser,
-                isReorderingSections: $isReorderingSections,
-                scrollToPlaceholder: $scrollToPlaceholder
-            )
-        }
-    }
-
     private func singleListView(list: PackingList) -> some View {
-        UnifiedPackingListView(
-            lists: [list],
-            users: users,
-            title: title,
-            mode: unifiedMode,
-            newItemList: newItemList,
-            isAddingNewItem: $isAddingNewItem,
-            scrollToPlaceholder: $scrollToPlaceholder
-        )
+        let allItems = Item.sorted(list.items ?? [], sortOrder: .byCustomOrder)
+        let unpackedItems = Item.sorted(list.incompleteItems, sortOrder: .byCustomOrder)
+
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 0) {
+                    if isTemplating {
+                        ReorderableItemsSection(
+                            items: allItems,
+                            isTemplating: true,
+                            editingItemId: $singleListEditingItemId,
+                            onTogglePacked: { _ in },
+                            onUpdateItem: { item, name, count in
+                                withAnimation { item.name = name; item.count = count; singleListEditingItemId = nil }
+                            },
+                            onDeleteItem: { item in
+                                withAnimation(.packingSpring) { modelContext.delete(item) }
+                            },
+                            onReorder: { item, newIndex in
+                                withAnimation(.packingSpring) {
+                                    SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
+                                }
+                            }
+                        )
+                    } else {
+                        ReorderableItemsSection(
+                            items: unpackedItems,
+                            isTemplating: false,
+                            editingItemId: $singleListEditingItemId,
+                            onTogglePacked: { item in
+                                withAnimation(.packingSpring) { item.isPacked.toggle() }
+                            },
+                            onUpdateItem: { item, name, count in
+                                withAnimation { item.name = name; item.count = count; singleListEditingItemId = nil }
+                            },
+                            onDeleteItem: { item in
+                                withAnimation(.packingSpring) { modelContext.delete(item) }
+                            },
+                            onReorder: { item, newIndex in
+                                withAnimation(.packingSpring) {
+                                    SortOrderManager.reorderItems(in: list, moving: item, to: newIndex)
+                                }
+                            }
+                        )
+                    }
+
+                    if isAddingNewItem {
+                        InsertionPlaceholder()
+                            .id("insertionPlaceholder")
+                    }
+
+                    if allItems.isEmpty && !isAddingNewItem {
+                        EmptyStateView()
+                            .padding(.top, 60)
+                    }
+
+                    if !isTemplating {
+                        let packedItems = Item.sorted(list.completeItems, sortOrder: .byCustomOrder)
+                        if !packedItems.isEmpty {
+                            PackedItemsSection(
+                                items: packedItems,
+                                onTogglePacked: { item in withAnimation(.packingSpring) { item.isPacked.toggle() } },
+                                onDeleteItem: { item in withAnimation(.packingSpring) { modelContext.delete(item) } }
+                            )
+                        }
+                    }
+                }
+                .padding()
+            }
+            .onChange(of: isAddingNewItem) { _, isAdding in
+                if isAdding {
+                    withAnimation { proxy.scrollTo("insertionPlaceholder", anchor: .bottom) }
+                }
+            }
+        }
     }
 
     @ToolbarContentBuilder
@@ -451,37 +443,24 @@ struct PackingListContainerView: View {
     private var tripToolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                if showViewModeToggle {
-                    Button {
-                        viewMode = viewMode == .unified ? .sectioned : .unified
-                    } label: {
-                        Label(
-                            viewMode == .unified ? "View by List" : "View Unified",
-                            systemImage: viewMode == .unified ? "list.bullet.indent" : "list.bullet"
-                        )
-                    }
-                    Divider()
-                }
-
                 Button {
                     showingAddListSheet.toggle()
                 } label: {
-                    Label("Create List", systemImage: "plus")
+                    Label("Create Section", systemImage: "plus")
                 }
 
                 Button {
                     isApplyingDefaultPackingList.toggle()
                 } label: {
-                    Label("Apply Template List", systemImage: "doc.on.doc")
+                    Label("Apply Template", systemImage: "doc.on.doc")
                 }
 
-                if viewMode == .sectioned {
-                    Divider()
-                    Button {
-                        isReorderingSections = true
-                    } label: {
-                        Label("Reorder Sections", systemImage: "arrow.up.arrow.down")
-                    }
+                Divider()
+
+                Button {
+                    isReorderingSections = true
+                } label: {
+                    Label("Reorder Sections", systemImage: "arrow.up.arrow.down")
                 }
             } label: {
                 Label("Options", systemImage: "ellipsis.circle")
@@ -532,23 +511,20 @@ struct PackingListContainerView: View {
     }
 
     private func addNewItemAndContinue() {
-        guard let list = newItemList else { return }
-        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            return
-        }
+        guard let list = context.isTrip ? newItemList : context.singleList else { return }
+        guard !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
 
         withAnimation(.packingSpring) {
-            let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-            let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
-
             let newItem = Item(
                 name: newItemName,
                 category: "",
                 count: newItemCount,
                 isPacked: false,
-                sortOrder: nextSortOrder,
-                unifiedSortOrder: nextUnifiedSortOrder
+                sortOrder: SortOrderManager.nextSortOrder(for: list),
+                type: .packing,
+                isDayOf: false
             )
+            newItem.user = context.isTrip ? newItemUser : nil
             modelContext.insert(newItem)
             list.addItem(newItem)
 
@@ -560,21 +536,21 @@ struct PackingListContainerView: View {
     }
 
     private func addNewItemAndClose() {
+        let list = context.isTrip ? newItemList : context.singleList
         if !newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-           let list = newItemList
+           let list = list
         {
             withAnimation(.packingSpring) {
-                let nextSortOrder = SortOrderManager.nextSortOrder(for: list)
-                let nextUnifiedSortOrder = SortOrderManager.nextUnifiedSortOrder(in: filteredLists)
-
                 let newItem = Item(
                     name: newItemName,
                     category: "",
                     count: newItemCount,
                     isPacked: false,
-                    sortOrder: nextSortOrder,
-                    unifiedSortOrder: nextUnifiedSortOrder
+                    sortOrder: SortOrderManager.nextSortOrder(for: list),
+                    type: .packing,
+                    isDayOf: false
                 )
+                newItem.user = context.isTrip ? newItemUser : nil
                 modelContext.insert(newItem)
                 list.addItem(newItem)
             }

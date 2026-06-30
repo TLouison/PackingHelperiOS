@@ -16,20 +16,11 @@ struct PackingListEditView: View {
     var isTemplate: Bool = false
 
     var trip: Trip? = nil
-    var forceListType: ListType? = nil
-    var forceDayOf: Bool? = nil
     var onListCreated: ((PackingList) -> Void)? = nil
 
-    @Query private var users: [User]
-    @State private var selectedUser: User?
-
     @State private var listName = ""
-    @State private var listType: ListType = .packing
-    @State private var countAsDays: Bool = false
-    @State private var isDayOf: Bool = false
 
     @State private var isDeleting: Bool = false
-    @State private var featureFlags = FeatureFlags.shared
     @Binding var isDeleted: Bool
     
     var formIsValid: Bool {
@@ -43,75 +34,26 @@ struct PackingListEditView: View {
     }
     
     var titleString: String {
-        packingList == nil ? "Add List" : "Edit List"
+        packingList == nil ? "Add Section" : "Edit Section"
     }
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Form {
-                    Section("List Details") {
-                        if packingList?.isDefault ?? false {
-                            HStack {
-                                Text("List Name")
-                                Spacer()
-                                Text(listName)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } else {
-                            TextField("List Name", text: $listName)
+            Form {
+                Section("Section Details") {
+                    if packingList?.isDefault ?? false {
+                        HStack {
+                            Text("Name")
+                            Spacer()
+                            Text(listName)
+                                .foregroundStyle(.secondary)
                         }
-
-                        if let forceListType {
-                            HStack {
-                                Text("List Type")
-                                Spacer()
-                                Text(forceListType.rawValue)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } else {
-                            Picker("List Type", selection: $listType) {
-                                ForEach(ListType.allCases, id: \.rawValue) { type in
-                                    Text(type.rawValue).tag(type)
-                                }
-                            }
-                        }
+                    } else {
+                        TextField("Section Name", text: $listName)
                     }
-                    
-                    Section {
-                        if let forceDayOf {
-                            Toggle(isOn: .constant(forceDayOf)) {
-                                Label { Text("Day-of") } icon: { PackingList.iconImage(listType: listType, isDayOf: true) }
-                            }.disabled(true)
-                        } else {
-                            Toggle(isOn: $isDayOf) {
-                                Label { Text("Day-of") } icon: { PackingList.iconImage(listType: listType, isDayOf: true) }
-                            }
-                        }
-                    } header: {
-                        EmptyView()
-                    } footer: {
-                        Text("Day-of lists are separate from your standard lists. They keep track of things that you only need to remember the day you leave.")
-                    }
-                    
-                    if featureFlags.showingMultiplePackers && users.count > 1 {
-                        Section("Packer") {
-                            UserPickerBaseView(selectedUser: $selectedUser, allowAll: false)
-                        }
-                    }
-                }
-                
-                Spacer()
-                
-                if packingList != nil && !(packingList?.isDefault ?? false) {
-                    Button("Delete", role: .destructive) {
-                        isDeleting.toggle()
-                    }
-                    .roundedBox()
-                    .shaded()
                 }
             }
-            .navigationBarTitleDisplayMode(.inline) 
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text(titleString)
@@ -130,43 +72,29 @@ struct PackingListEditView: View {
                     }
                 }
             }
+
+            if packingList != nil && !(packingList?.isDefault ?? false) {
+                Button("Delete", role: .destructive) {
+                    isDeleting.toggle()
+                }
+                .roundedBox()
+                .shaded()
+                .padding()
+            }
         }
         .onAppear {
             if let packingList {
-                // Edit the incoming item.
-                selectedUser = packingList.user
                 listName = packingList.name
-                listType = packingList.type
-                countAsDays = packingList.countAsDays
-                isDayOf = packingList.isDayOf
-            } else {
-                // If there is no list, we should get a default user
-                if users.isEmpty {
-                    // This state shouldn't be possible, but create a fallback user if we get here
-                    let newUser = User(name: "Default Packer")
-                    modelContext.insert(newUser)
-                    selectedUser = newUser
-                } else {
-                    selectedUser = users.sorted(by: { $0.created < $1.created }).first!
-                }
-            }
-            
-            if let forceListType {
-                listType = forceListType
-            }
-            
-            if let forceDayOf {
-                isDayOf = forceDayOf
             }
         }
-        .alert("Delete \(packingList?.name ?? "list")?", isPresented: $isDeleting) {
-            Button("Yes, delete \(packingList?.name ?? "list")", role: .destructive) {
+        .alert("Delete \(packingList?.name ?? "section")?", isPresented: $isDeleting) {
+            Button("Yes, delete \(packingList?.name ?? "section")", role: .destructive) {
                 delete(packingList!)
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             if packingList?.appliedFromTemplate != nil {
-                Text("This list will be removed from your trip. The template it was applied from will not be deleted.")
+                Text("This section will be removed from your trip. The template it was applied from will not be deleted.")
             }
         }
     }
@@ -175,11 +103,7 @@ struct PackingListEditView: View {
         let newList = PackingList.save(
             packingList,
             name: listName,
-            type: listType,
             template: isTemplate,
-            countAsDays: countAsDays,
-            isDayOf: isDayOf,
-            user: selectedUser!,
             in: modelContext,
             for: trip
         )
@@ -199,7 +123,7 @@ struct PackingListEditView: View {
 #Preview(traits: .sampleData) {
     PackingListEditView(isDeleted: .constant(false))
         .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
-        .previewDisplayName("New PackingList")
+        .previewDisplayName("New Section")
 }
 
 @available(iOS 18.0, *)
@@ -207,5 +131,5 @@ struct PackingListEditView: View {
     @Previewable @Query var lists: [PackingList]
     PackingListEditView(packingList: lists.first, isTemplate: true, isDeleted: .constant(false))
         .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro Max"))
-        .previewDisplayName("Edit PackingList")
+        .previewDisplayName("Edit Section")
 }

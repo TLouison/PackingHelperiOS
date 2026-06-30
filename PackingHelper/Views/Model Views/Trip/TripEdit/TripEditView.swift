@@ -409,10 +409,9 @@ struct TripEditView: View {
             )
             modelContext.insert(newTrip)
 
-            // Auto-create default packing and task lists (if enabled in settings)
-            if autoCreateDefaultLists, let firstUser = users.sorted(by: { $0.created < $1.created }).first {
-                PackingList.createDefaultList(for: newTrip, user: firstUser, type: .packing, in: modelContext)
-                PackingList.createDefaultList(for: newTrip, user: firstUser, type: .task, in: modelContext)
+            // Auto-create one default catch-all section (if enabled in settings)
+            if autoCreateDefaultLists {
+                PackingList.createDefaultList(for: newTrip, in: modelContext)
             }
         }
 

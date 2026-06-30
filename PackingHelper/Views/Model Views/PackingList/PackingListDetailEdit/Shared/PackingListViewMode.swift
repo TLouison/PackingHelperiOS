@@ -8,11 +8,6 @@
 import SwiftUI
 import SwiftData
 
-enum PackingListViewMode: String {
-    case unified
-    case sectioned
-}
-
 enum PackingListContext {
     case trip(Trip)
     case singleList(PackingList)

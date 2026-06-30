@@ -16,6 +16,11 @@ struct PackingListSection: View {
     @Binding var isExpanded: Bool
     @Binding var editingItemId: PersistentIdentifier?
 
+    // Item-level filters (applied within each section)
+    var selectedUser: User? = nil
+    var selectedType: ListType? = nil
+    var showDayOfOnly: Bool = false
+
     let onTogglePacked: (Item) -> Void
     let onUpdateItem: (Item, String, Int) -> Void
     let onDeleteItem: (Item) -> Void
@@ -32,7 +37,17 @@ struct PackingListSection: View {
     var targetList: PackingList? = nil
 
     private var unpackedItems: [Item] {
-        Item.sorted(packingList.incompleteItems, sortOrder: .byCustomOrder)
+        var items = packingList.incompleteItems
+        if let user = selectedUser {
+            items = items.filter { $0.user?.persistentModelID == user.persistentModelID }
+        }
+        if let type = selectedType {
+            items = items.filter { $0.type == type }
+        }
+        if showDayOfOnly {
+            items = items.filter { $0.isDayOf }
+        }
+        return Item.sorted(items, sortOrder: .byCustomOrder)
     }
 
     private var isTargetList: Bool {
@@ -40,7 +55,7 @@ struct PackingListSection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: isReorderMode ? 4 : 4) {
+        VStack(alignment: .leading, spacing: 4) {
             // Section header
             PackingListSectionHeader(
                 packingList: packingList,
@@ -66,7 +81,7 @@ struct PackingListSection: View {
                 } else {
                     ReorderableItemsSection(
                         items: unpackedItems,
-                        mode: .unified,
+                        isTemplating: false,
                         targetList: packingList,
                         editingItemId: $editingItemId,
                         onTogglePacked: onTogglePacked,

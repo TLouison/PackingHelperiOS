@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ReorderableItemsSection: View {
     let items: [Item]
-    var mode: UnifiedPackingListMode = .unified
+    var isTemplating: Bool = false
     var targetList: PackingList? = nil  // For sectioned view cross-list drops
 
     @Binding var editingItemId: PersistentIdentifier?
@@ -33,7 +33,7 @@ struct ReorderableItemsSection: View {
                 if editingItemId == item.persistentModelID {
                     EditableItemRow(
                         item: item,
-                        mode: mode,
+                        isTemplating: isTemplating,
                         onCommit: { name, count in
                             onUpdateItem(item, name, count)
                         },
@@ -42,7 +42,7 @@ struct ReorderableItemsSection: View {
                 } else {
                     UnifiedItemRow(
                         item: item,
-                        mode: mode,
+                        isTemplating: isTemplating,
                         onTogglePacked: { onTogglePacked(item) },
                         onEdit: { editingItemId = item.persistentModelID },
                         onDelete: { onDeleteItem(item) }
@@ -51,7 +51,7 @@ struct ReorderableItemsSection: View {
                         // Drag preview
                         UnifiedItemRow(
                             item: item,
-                            mode: mode,
+                            isTemplating: isTemplating,
                             onTogglePacked: {},
                             onEdit: {},
                             onDelete: {}

@@ -2,10 +2,8 @@
 //  SectionedPackingListView.swift
 //  PackingHelper
 //
-//  A view that displays packing items grouped by their parent list names
-//  as collapsible sections, similar to Apple Reminders. This is separate
-//  from UnifiedPackingListView which shows a flat list organized by
-//  packed/unpacked status.
+//  The single packing view: displays items grouped by their parent section (PackingList)
+//  as collapsible sections, with item-level filtering by user/type/day-of.
 //
 //  Created by Claude on 1/11/26.
 //
@@ -29,6 +27,8 @@ struct SectionedPackingListView: View {
     @Binding var showingAddListSheet: Bool
     @Binding var isApplyingDefaultPackingList: Bool
     @Binding var selectedUser: User?
+    @Binding var selectedType: ListType?
+    @Binding var showDayOfOnly: Bool
     @Binding var isReorderingSections: Bool
     @Binding var scrollToPlaceholder: Bool
 
@@ -47,14 +47,23 @@ struct SectionedPackingListView: View {
     }
 
     var sortedLists: [PackingList] {
-        // Sort by custom order for manual reordering
         return PackingList.sorted(lists, sortOrder: .byCustomOrder)
     }
 
     var allPackedItems: [Item] {
         var packedItems: [Item] = []
         for list in lists {
-            packedItems.append(contentsOf: list.completeItems)
+            var listPacked = list.completeItems
+            if let user = selectedUser {
+                listPacked = listPacked.filter { $0.user?.persistentModelID == user.persistentModelID }
+            }
+            if let type = selectedType {
+                listPacked = listPacked.filter { $0.type == type }
+            }
+            if showDayOfOnly {
+                listPacked = listPacked.filter { $0.isDayOf }
+            }
+            packedItems.append(contentsOf: listPacked)
         }
         return Item.sorted(packedItems, sortOrder: .byCustomOrder)
     }
@@ -97,6 +106,9 @@ struct SectionedPackingListView: View {
                             users: users,
                             isExpanded: isExpanded(for: list),
                             editingItemId: $editingItemId,
+                            selectedUser: selectedUser,
+                            selectedType: selectedType,
+                            showDayOfOnly: showDayOfOnly,
                             onTogglePacked: togglePacked,
                             onUpdateItem: updateItem,
                             onDeleteItem: deleteItem,
@@ -348,4 +360,3 @@ struct SectionedPackingListView: View {
         SectionCollapseStateManager.saveCollapsedSections(collapsedSections, for: trip.persistentModelID)
     }
 }
-

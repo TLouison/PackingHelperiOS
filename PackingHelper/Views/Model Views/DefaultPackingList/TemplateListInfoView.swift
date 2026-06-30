@@ -17,6 +17,11 @@ struct TemplateListInfoView: View {
 
     private static let dateFormatter: Date.FormatStyle = .dateTime.month(.abbreviated).day().year()
 
+    private var allItems: [Item] { list.items ?? [] }
+    private var packingItemCount: Int { allItems.filter { $0.type == .packing && !$0.isDayOf }.count }
+    private var taskItemCount: Int { allItems.filter { $0.type == .task }.count }
+    private var dayOfItemCount: Int { allItems.filter { $0.isDayOf }.count }
+
     @ViewBuilder
     private func infoRow(_ title: String, _ detail: some View) -> some View {
         HStack {
@@ -34,13 +39,17 @@ struct TemplateListInfoView: View {
         NavigationStack {
             List {
                 Section("List Details") {
-                    infoRow("Type", Text(list.type.localizedDisplayName))
+                    infoRow("Total Items", Text("\(list.totalItems)"))
 
-                    if list.isDayOf {
-                        infoRow("Day-of List", Text("Yes"))
+                    if packingItemCount > 0 {
+                        infoRow("Packing Items", Text("\(packingItemCount)"))
                     }
-
-                    infoRow("Items", Text("\(list.totalItems)"))
+                    if taskItemCount > 0 {
+                        infoRow("Tasks", Text("\(taskItemCount)"))
+                    }
+                    if dayOfItemCount > 0 {
+                        infoRow("Day-of Items", Text("\(dayOfItemCount)"))
+                    }
 
                     infoRow(
                         "Created",

@@ -11,168 +11,63 @@ import SwiftData
 struct TripDetailPackingView: View {
     let trip: Trip
 
-    @Query var lists: [PackingList]
-
     @Binding var isAddingNewPackingList: Bool
     @Binding var isApplyingDefaultPackingList: Bool
 
-    @State private var selectedUser: User?
-    
-    var filteredLists: [PackingList] {
-        lists.filter { $0.trip?.id == trip.id }
-    }
-    
     var body: some View {
         TripDetailCustomSectionView {
             HStack {
                 Text("Packing Lists")
                     .font(.title)
                 Spacer()
-                
+
                 headerMenu
             }
         } content: {
-            if filteredLists.isEmpty {
-                ContentUnavailableView{
+            if (trip.lists ?? []).isEmpty {
+                ContentUnavailableView {
                     Label("No Packing Lists", systemImage: suitcaseIcon)
                 } description: {
                     Text("You haven't added any packing lists to this trip!")
                 } actions: {
                     CreateListMenu(
                         isAddingNewPackingList: $isAddingNewPackingList,
-                        isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                        isApplyingDefaultPackingList: $isApplyingDefaultPackingList
                     )
                 }
-            }
-            if !filteredLists.isEmpty {
-                VStack(alignment: .center) {
-                    if trip.hasMultiplePackers {
-                        UserPickerView(selectedUser: $selectedUser)
-                            .transition(.scale)
-                    }
-
-                    // Regular list sections (non-Day-of)
-                    ForEach(ListType.allCases, id: \.rawValue) { listType in
-                        let regularLists = filteredLists.filter { $0.type == listType && !$0.isDayOf }
-                        if !regularLists.isEmpty {
-                            NavigationLink {
-                                PackingListContainerView(
-                                    trip: trip, users: trip.packers,
-                                    listType: listType,
-                                    isDayOf: false,
-                                    title: trip.name
-                                )
-                            } label: {
-                                HStack {
-                                    Text(listType.rawValue).font(.headline)
-                                    Spacer()
-                                    TripDetailPackingProgressView(
-                                        val: Double(trip.getCompleteItems(for: listType, isDayOf: false)),
-                                        total: Double(trip.getTotalItems(for: listType, isDayOf: false)),
-                                        image: PackingList.iconImage(listType: listType)
-                                    )
-                                    .scaleEffect(x: 0.75, y: 0.75)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: 30)
-                            .roundedBox(background: .ultraThick)
-                            .shaded()
-                        }
-                    }
-
-                    // Day-of section divider (only if Day-of lists exist)
-                    if trip.containsDayOfPacking || trip.containsDayOfTask {
-                        Divider()
-                            .padding(.vertical, 8)
-
-                        Text("Day-of")
+            } else {
+                NavigationLink {
+                    PackingListContainerView(
+                        trip: trip,
+                        users: trip.packers.isEmpty ? nil : trip.packers,
+                        title: trip.name
+                    )
+                } label: {
+                    HStack {
+                        Image(systemName: suitcaseIcon)
+                        Text("Packing")
                             .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-                    // Day-of Packing section
-                    let dayOfPackingLists = filteredLists.filter { $0.type == .packing && $0.isDayOf }
-                    if !dayOfPackingLists.isEmpty {
-                        NavigationLink {
-                            PackingListContainerView(
-                                trip: trip, users: trip.packers,
-                                listType: .packing,
-                                isDayOf: true,
-                                title: "\(trip.name) - Day-of Packing"
-                            )
-                        } label: {
-                            HStack {
-                                HStack(spacing: 4) {
-                                    PackingList.iconImage(listType: .packing, isDayOf: true)
-                                    Text("Day-of Packing").font(.headline)
-                                }
-                                Spacer()
-                                TripDetailPackingProgressView(
-                                    val: Double(trip.getCompleteItems(for: .packing, isDayOf: true)),
-                                    total: Double(trip.getTotalItems(for: .packing, isDayOf: true)),
-                                    image: PackingList.iconImage(listType: .packing, isDayOf: true)
-                                )
-                                .scaleEffect(x: 0.75, y: 0.75)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: 30)
-                        .roundedBox(background: .ultraThick)
-                        .shaded()
-                    }
-
-                    // Day-of Task section
-                    let dayOfTaskLists = filteredLists.filter { $0.type == .task && $0.isDayOf }
-                    if !dayOfTaskLists.isEmpty {
-                        NavigationLink {
-                            PackingListContainerView(
-                                trip: trip, users: trip.packers,
-                                listType: .task,
-                                isDayOf: true,
-                                title: "\(trip.name) - Day-of Tasks"
-                            )
-                        } label: {
-                            HStack {
-                                HStack(spacing: 4) {
-                                    PackingList.iconImage(listType: .task, isDayOf: true)
-                                    Text("Day-of Tasks").font(.headline)
-                                }
-                                Spacer()
-                                TripDetailPackingProgressView(
-                                    val: Double(trip.getCompleteItems(for: .task, isDayOf: true)),
-                                    total: Double(trip.getTotalItems(for: .task, isDayOf: true)),
-                                    image: PackingList.iconImage(listType: .task, isDayOf: true)
-                                )
-                                .scaleEffect(x: 0.75, y: 0.75)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: 30)
-                        .roundedBox(background: .ultraThick)
-                        .shaded()
+                        Spacer()
+                        TripDetailPackingProgressView(
+                            val: Double(trip.packedItemsCount),
+                            total: Double(trip.totalItemsCount),
+                            image: Image(systemName: suitcaseIcon)
+                        )
+                        .scaleEffect(x: 0.75, y: 0.75)
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: 30)
+                .roundedBox(background: .ultraThick)
+                .shaded()
             }
         }
     }
-    
+
     var headerMenu: some View {
         Menu {
-            NavigationLink {
-                PackingListContainerView(
-                    trip: trip, users: trip.packers,
-                    listType: nil,
-                    isDayOf: nil,
-                    title: trip.name
-                )
-            } label: {
-                Text("View All Items")
-            }
-            
-            Divider()
-            
             CreateListMenu(
                 isAddingNewPackingList: $isAddingNewPackingList,
-                isApplyingDefaultPackingList: $isApplyingDefaultPackingList,
+                isApplyingDefaultPackingList: $isApplyingDefaultPackingList
             )
         } label: {
             Label("Menu", systemImage: "ellipse")

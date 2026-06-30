@@ -94,6 +94,7 @@ enum PackingListSortOrder: String, SortOrderOption {
 final class PackingList {
     var created: Date = Date.now
 
+    // Legacy: type/user/isDayOf are now stored on Item; kept for migration reads
     var type: ListType = ListType.packing
     var typeString: String {
         type.rawValue
@@ -104,25 +105,26 @@ final class PackingList {
     // Unique identifier for drag-and-drop transfers
     var uuid: UUID = UUID()
 
-    // Default Packing List Variables
+    // Legacy template variables (template system still uses these)
     var template: Bool = false
-    var countAsDays: Bool = false // Should we set the count of all items to the days of the trip?
-    var isDayOf: Bool = false // Is this a Day-of list?
-    var appliedFromTemplate: PackingList? = nil // What template list did we create this list from?
+    var countAsDays: Bool = false
+    var isDayOf: Bool = false
+    var appliedFromTemplate: PackingList? = nil
     @Relationship(deleteRule:.noAction, inverse: \PackingList.appliedFromTemplate) var appliedToLists: [PackingList]?
 
     // Sort order for section ordering in sectioned view
     var sortOrder: Int = 0
 
-    // Whether this is a protected default catch-all list (undeletable, name-locked)
+    // Whether this is a protected default catch-all section (undeletable, name-locked)
     var isDefault: Bool = false
 
+    // Legacy: user is now on Item; kept for migration reads
     var user: User?
     var trip: Trip?
 
     @Relationship(deleteRule: .cascade, inverse: \Item.list) var items: [Item]?
 
-    init(type: ListType, template: Bool, name: String, countAsDays: Bool, isDayOf: Bool = false, sortOrder: Int = 0) {
+    init(type: ListType = .packing, template: Bool, name: String, countAsDays: Bool, isDayOf: Bool = false, sortOrder: Int = 0) {
         self.created = Date.now
         self.type = type
         self.template = template
@@ -166,12 +168,12 @@ final class PackingList {
     }
 
     var icon: String {
-        return PackingList.icon(listType: self.type, isDayOf: self.isDayOf)
+        return "list.bullet"
     }
 
     @ViewBuilder
     var iconImage: some View {
-        PackingList.iconImage(listType: self.type, isDayOf: self.isDayOf)
+        Image(systemName: "list.bullet")
     }
 
     static func icon(listType: ListType, isDayOf: Bool = false) -> String {
@@ -217,6 +219,17 @@ extension PackingList {
             .lowercased() == defaultListName.lowercased()
     }
 
+    // Creates a single default catch-all section for a trip (v2 model)
+    @discardableResult
+    static func createDefaultList(for trip: Trip, in context: ModelContext) -> PackingList {
+        let list = PackingList(template: false, name: defaultListName, countAsDays: false, sortOrder: -1)
+        list.isDefault = true
+        context.insert(list)
+        trip.addList(list)
+        return list
+    }
+
+    // Legacy overload kept for migration code; demoted = no longer creates default packing/task pairs
     @discardableResult
     static func createDefaultList(for trip: Trip, user: User, type: ListType, in context: ModelContext) -> PackingList {
         let list = PackingList(type: type, template: false, name: defaultListName, countAsDays: false, sortOrder: -1)
@@ -233,11 +246,7 @@ extension PackingList {
     static func save(
         _ packingList: PackingList?,
         name: String,
-        type: ListType,
         template: Bool,
-        countAsDays: Bool,
-        isDayOf: Bool,
-        user: User,
         in context: ModelContext,
         for trip: Trip?
     ) -> PackingList? {
@@ -245,14 +254,9 @@ extension PackingList {
         if let packingList {
             AppLogger.packingList.debug("Packing list already exists. Updating with new info.")
             packingList.name = name
-            packingList.type = type
-            packingList.user = user
-            packingList.countAsDays = countAsDays
-            packingList.isDayOf = isDayOf
         } else {
             AppLogger.packingList.debug("Packing list does not already exist. Creating with new info.")
-            let newPackingList = PackingList(type: type, template: template, name: name, countAsDays: countAsDays, isDayOf: isDayOf)
-            newPackingList.user = user
+            let newPackingList = PackingList(template: template, name: name, countAsDays: false)
 
             context.insert(newPackingList)
 
@@ -302,11 +306,8 @@ extension PackingList {
 
 extension PackingList {
     static func filtered(user: User?, _ lists: [PackingList]) -> [PackingList] {
-        if let user {
-            return lists.filter{ $0.user == user }
-        } else {
-            return lists
-        }
+        // User filtering is now at the item level; return all lists
+        return lists
     }
 
     static func sorted(_ lists: [PackingList], sortOrder: PackingListSortOrder = .byDate) -> [PackingList] {
@@ -316,14 +317,7 @@ extension PackingList {
             case .byNameDesc:
                 return lists.sorted { $0.name > $1.name}
             case .byUser:
-                return lists.sorted { lhs, rhs in
-                    switch (lhs.user, rhs.user) {
-                    case (nil, nil): return false
-                    case (nil, _): return true
-                    case (_, nil): return false
-                    case let (l?, r?): return l.name < r.name
-                    }
-                }
+                return lists.sorted { $0.name < $1.name }
             case .byDate:
                 return lists.sorted { $0.created < $1.created }
             case .byCustomOrder:
@@ -332,7 +326,8 @@ extension PackingList {
     }
 
     static func containsMultiplePackers(_ lists: [PackingList]) -> Bool {
-        return Set(lists.compactMap { $0.user?.persistentModelID }).count > 1
+        let allItems = lists.flatMap { $0.items ?? [] }
+        return Set(allItems.compactMap { $0.user?.persistentModelID }).count > 1
     }
 }
 
@@ -360,18 +355,17 @@ extension PackingList {
 
 extension PackingList {
     static func samplePackingList() -> PackingList {
-        return PackingList(type: .packing, template: false, name: "Packing List", countAsDays: false)
+        return PackingList(template: false, name: "Packing List", countAsDays: false)
     }
 
-
     static func sampleDefaultList() -> PackingList {
-        return PackingList(type: .packing, template: true, name: "Template List", countAsDays: false)
+        return PackingList(template: true, name: "Template List", countAsDays: false)
     }
 }
 
 extension PackingList {
     private static func _copy(_ packingList: PackingList, for trip: Trip? = nil, template: Bool = false) -> PackingList {
-        let newList = PackingList(type: packingList.type, template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays, isDayOf: packingList.isDayOf)
+        let newList = PackingList(template: packingList.template, name: packingList.name, countAsDays: packingList.countAsDays)
         AppLogger.packingList.info("Copied list.")
 
         if let items = packingList.items {
@@ -383,7 +377,7 @@ extension PackingList {
                 } else {
                     newItem = Item.copy(item)
                 }
-                // Modify the numbers on the list based on number of days if desired
+                // Scale count to trip duration if countAsDays was set
                 if !template && packingList.countAsDays {
                     let itemCount = trip?.duration ?? newItem.count
                     AppLogger.packingList.info("Original list is marked as 'countAsDays=true', setting item count to \(itemCount)")
@@ -394,7 +388,6 @@ extension PackingList {
             }
         }
 
-        newList.user = packingList.user
         return newList
     }
 
@@ -403,7 +396,7 @@ extension PackingList {
         let newList = PackingList._copy(list, for: trip, template: false)
         newList.template = false
 
-        // Make sure to note what default packing list this was created from
+        // Note what template this was created from
         if list.template {
             newList.appliedFromTemplate = list
         }
@@ -415,7 +408,8 @@ extension PackingList {
         let newList = PackingList.copy(list, for: trip)
         if let user {
             AppLogger.packingList.info("Copied packing list \(list.name) to apply to a trip for user \(user.name).")
-            newList.user = user
+            // Assign user to all copied items (not the list itself)
+            newList.items?.forEach { $0.user = user }
         }
         return newList
     }
