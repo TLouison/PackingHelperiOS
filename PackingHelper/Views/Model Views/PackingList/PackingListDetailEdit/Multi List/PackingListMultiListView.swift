@@ -120,7 +120,6 @@ struct PackingListMultiListView: View {
         }
         .sheet(isPresented: $isApplyingDefaultPackingList) {
             PackingListApplyDefaultView(trip: trip)
-                .presentationDetents([.height(300)])
         }
         .onChange(of: user) {
             if user != nil {

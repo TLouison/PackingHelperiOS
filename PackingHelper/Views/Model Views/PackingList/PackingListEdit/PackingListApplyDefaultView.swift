@@ -19,146 +19,10 @@ struct PackingListApplyDefaultView: View {
     @State private var selectedUser: User?
     @State private var selectedLists: [PackingList] = []
     @State private var featureFlags = FeatureFlags.shared
-
-    private var canSave: Bool {
-        !selectedLists.isEmpty
-    }
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                if featureFlags.showingMultiplePackers {
-                    // User Selection Section
-                    Section {
-                    UserSelectionRow(selectedUser: $selectedUser)
-                        .onChange(of: selectedUser) {
-                            // Clear selection when user changes
-                            selectedLists.removeAll()
-                        }
-                    } header: {
-                        Text("Select Packer")
-                    } footer: {
-                        Text(selectedUser == nil ?
-                             "Lists will be applied to the packer who created it" :
-                                "Lists will be applied to \(selectedUser?.name ?? "")")
-                    }
-                }
-                
-                // List Selection Section
-                Section {
-                    NavigationLink {
-                        ListSelectionView(
-                            selectedLists: $selectedLists,
-                            user: selectedUser,
-                            trip: trip,
-                            listType: listType,
-                            isDayOf: isDayOf
-                        )
-                    } label: {
-                        HStack {
-                            Label("Select Lists", systemImage: "checklist")
-                            Spacer()
-                            Text("\(selectedLists.count) selected")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    
-                    if !selectedLists.isEmpty {
-                        SelectedListsView(lists: selectedLists)
-                    }
-                } header: {
-                    Text("Packing Lists")
-                }
-                
-                // Already Applied Lists Section
-                if !trip.alreadyUsedTemplates.isEmpty {
-                    Section {
-                        AppliedListsView(lists: trip.alreadyUsedTemplates)
-                    } header: {
-                        Text("Already Applied")
-                    } footer: {
-                        Text("These lists have already been applied and cannot be selected again")
-                    }
-                }
-            }
-            .navigationTitle("Apply Template Lists")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Apply") {
-                        save()
-                        dismiss()
-                    }
-                    .disabled(!canSave)
-                }
-            }
-        }
-    }
-    
-    private func save() {
-        trip.applyDefaultLists(to: selectedUser, lists: selectedLists, in: modelContext)
-    }
-}
-
-// MARK: - Supporting Views
-
-struct UserSelectionRow: View {
-    @Binding var selectedUser: User?
-    
-    var body: some View {
-        HStack {
-            UserPickerView(selectedUser: $selectedUser, style: .inline)
-        }
-        .contentShape(Rectangle())
-    }
-}
-
-struct SelectedListsView: View {
-    let lists: [PackingList]
-    
-    var body: some View {
-        ForEach(lists) { list in
-            HStack {
-                Label(list.name, systemImage: "suitcase")
-                Spacer()
-                Text("\(list.items?.count ?? 0) items")
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-struct AppliedListsView: View {
-    let lists: [PackingList]
-    
-    var body: some View {
-        ForEach(lists) { list in
-            HStack {
-                Label(list.name, systemImage: "suitcase.fill")
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-            }
-        }
-    }
-}
-
-struct ListSelectionView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-
-    @Binding var selectedLists: [PackingList]
-    let user: User?
-    let trip: Trip
-    var listType: ListType? = nil
-    var isDayOf: Bool? = nil
+    @State private var searchText = ""
+    @State private var selectedListType: ListType?
+    @State private var showingFilters = false
+    @State private var showingOtherLists = false
 
     @Query(
         filter: #Predicate<PackingList> { $0.template == true },
@@ -167,19 +31,15 @@ struct ListSelectionView: View {
     )
     private var defaultPackingLists: [PackingList]
 
-    @State private var searchText = ""
-    @State private var selectedListType: ListType?
-    @State private var showingFilters = false
-    @State private var showingOtherLists = false
+    private var canSave: Bool { !selectedLists.isEmpty }
 
     private var filteredLists: [PackingList] {
-        defaultPackingLists
-            .filter { list in
-                !trip.alreadyUsedTemplates.contains(list) &&
-                (user == nil || list.user == user) &&
-                (listType != nil ? list.type == listType : selectedListType == nil || list.type == selectedListType) &&
-                (searchText.isEmpty || list.name.localizedCaseInsensitiveContains(searchText))
-            }
+        defaultPackingLists.filter { list in
+            !trip.alreadyUsedTemplates.contains(list) &&
+            (selectedUser == nil || list.user == selectedUser) &&
+            (listType != nil ? list.type == listType : selectedListType == nil || list.type == selectedListType) &&
+            (searchText.isEmpty || list.name.localizedCaseInsensitiveContains(searchText))
+        }
     }
 
     private var primaryLists: [PackingList] {
@@ -192,12 +52,12 @@ struct ListSelectionView: View {
         return filteredLists.filter { $0.isDayOf != isDayOf }
     }
 
-    private var primarySectionTitle: String {
-        guard let isDayOf else { return "Lists" }
-        if isDayOf { return "Day-Of Lists" }
+    private var templateSectionTitle: String {
+        guard let isDayOf else { return "Templates" }
+        if isDayOf { return "Day-Of Templates" }
         switch listType {
-        case .task: return "Task Lists"
-        default: return "Packing Lists"
+        case .task: return "Task Templates"
+        default: return "Packing Templates"
         }
     }
 
@@ -212,7 +72,7 @@ struct ListSelectionView: View {
                     PackingListFilterSection(
                         searchText: $searchText,
                         selectedListType: $selectedListType,
-                        selectedUser: .constant(user),
+                        selectedUser: .constant(selectedUser),
                         users: [],
                         showUserFilter: false,
                         showTypeFilter: listType == nil,
@@ -222,37 +82,82 @@ struct ListSelectionView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
                 }
 
-                if filteredLists.isEmpty {
-                    PackingListEmptyStateView(
-                        hasFilters: hasActiveFilters,
-                        message: hasActiveFilters ?
-                            "Try adjusting your filters" :
-                            "No lists available to select",
-                        actionButtonTitle: hasActiveFilters ?
-                            "Clear All Filters" : "Done",
-                        onAction: hasActiveFilters ?
-                            clearFilters : { dismiss() }
-                    )
-                    .frame(maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        if isDayOf != nil {
-                            sectionedListsView
-                                .padding(.top)
+                List {
+                    if featureFlags.showingMultiplePackers {
+                        Section {
+                            UserSelectionRow(selectedUser: $selectedUser)
+                                .onChange(of: selectedUser) {
+                                    selectedLists.removeAll()
+                                }
+                        } header: {
+                            Text("Select Packer")
+                        } footer: {
+                            Text(selectedUser == nil ?
+                                 "Lists will be applied to the packer who created it" :
+                                 "Lists will be applied to \(selectedUser?.name ?? "")")
+                        }
+                    }
+
+                    Section {
+                        if filteredLists.isEmpty {
+                            Text(hasActiveFilters ?
+                                 "No templates match your filters" :
+                                 "No templates available to select")
+                                .foregroundStyle(.secondary)
+                                .font(.subheadline)
                         } else {
-                            listCardsView(filteredLists)
-                                .padding(.horizontal)
-                                .padding(.top)
+                            ForEach(isDayOf != nil ? primaryLists : filteredLists) { list in
+                                templateRow(list)
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text(templateSectionTitle)
+                            if !selectedLists.isEmpty {
+                                Spacer()
+                                Button("Clear All") {
+                                    withAnimation { selectedLists.removeAll() }
+                                }
+                                .foregroundStyle(.red)
+                                .font(.footnote)
+                                .fontWeight(.regular)
+                                .textCase(nil)
+                            }
+                        }
+                    }
+
+                    if !secondaryLists.isEmpty {
+                        Section {
+                            DisclosureGroup(isExpanded: $showingOtherLists) {
+                                ForEach(secondaryLists) { list in
+                                    templateRow(list)
+                                }
+                            } label: {
+                                Text("Other Templates")
+                            }
+                        }
+                    }
+
+                    if !trip.alreadyUsedTemplates.isEmpty {
+                        Section {
+                            AppliedListsView(lists: trip.alreadyUsedTemplates)
+                        } header: {
+                            Text("Already Applied")
+                        } footer: {
+                            Text("These templates have already been applied and cannot be selected again")
                         }
                     }
                 }
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Select Lists")
+            .navigationTitle("Apply Templates")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color(.systemGroupedBackground), for: .navigationBar)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", role: .cancel) {
+                        dismiss()
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         withAnimation(.spring(response: 0.3)) {
@@ -265,78 +170,54 @@ struct ListSelectionView: View {
                     }
                 }
 
-                if !selectedLists.isEmpty {
-                    ToolbarItem(placement: .bottomBar) {
-                        selectionSummary
-                    }
-                }
-
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("Apply") {
+                        save()
                         dismiss()
                     }
+                    .disabled(!canSave)
                 }
             }
         }
     }
 
-    private var sectionedListsView: some View {
-        LazyVStack(alignment: .leading, spacing: 16) {
-            if !primaryLists.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(primarySectionTitle)
-                        .font(.headline)
-                        .padding(.horizontal)
-                    listCardsView(primaryLists)
-                        .padding(.horizontal)
-                }
-            }
+    @ViewBuilder
+    private func templateRow(_ list: PackingList) -> some View {
+        Button(action: { toggleSelection(for: list) }) {
+            HStack(spacing: 12) {
+                HStack(spacing: 8) {
+                    Text(list.name)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                        .foregroundStyle(.primary)
 
-            if !secondaryLists.isEmpty {
-                DisclosureGroup(isExpanded: $showingOtherLists) {
-                    listCardsView(secondaryLists)
-                        .padding(.top, 8)
-                } label: {
-                    Text("Other Lists")
-                        .font(.headline)
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-
-    private func listCardsView(_ lists: [PackingList]) -> some View {
-        LazyVStack(spacing: 8) {
-            ForEach(lists) { list in
-                SelectablePackingListCard(
-                    list: list,
-                    isSelected: selectedLists.contains(list)
-                ) {
-                    toggleSelection(for: list)
-                }
-            }
-        }
-    }
-    
-    private var selectionSummary: some View {
-        HStack {
-            if !selectedLists.isEmpty {
-                Text("\(selectedLists.count) list\(selectedLists.count == 1 ? "" : "s") selected")
-                    .foregroundStyle(.secondary)
-                
-                Spacer()
-                
-                Button("Clear All") {
-                    withAnimation {
-                        selectedLists.removeAll()
+                    if selectedLists.contains(list) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.blue)
                     }
                 }
-                .foregroundStyle(.red)
+
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Text("\(list.totalItems)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    list.iconImage
+                        .foregroundStyle(Color.accentColor)
+                        .font(.subheadline)
+                }
             }
         }
-        .padding(.horizontal)
+        .buttonStyle(.plain)
     }
-    
+
+    private func save() {
+        trip.applyDefaultLists(to: selectedUser, lists: selectedLists, in: modelContext)
+    }
+
     private func toggleSelection(for list: PackingList) {
         withAnimation {
             if selectedLists.contains(list) {
@@ -346,7 +227,7 @@ struct ListSelectionView: View {
             }
         }
     }
-    
+
     private func clearFilters() {
         withAnimation {
             searchText = ""
@@ -355,47 +236,31 @@ struct ListSelectionView: View {
     }
 }
 
-struct SelectablePackingListCard: View {
-    let list: PackingList
-    let isSelected: Bool
-    let onTap: () -> Void
-    
+// MARK: - Supporting Views
+
+struct UserSelectionRow: View {
+    @Binding var selectedUser: User?
+
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                // Left side: Name and selection indicator
-                HStack(spacing: 8) {
-                    Text(list.name)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                    
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.blue)
-                    }
-                }
-                
-                Spacer()
-                
-                // Right side: Count and type icon
-                HStack(spacing: 8) {
-                    HStack(spacing: 4) {
-                        Text("\(list.totalItems)")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            
-                        list.iconImage
-                            .foregroundStyle(Color.accentColor)
-                            .font(.subheadline)
-                    }
-                }
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(.rect(cornerRadius: 12))
+        HStack {
+            UserPickerView(selectedUser: $selectedUser, style: .inline)
         }
-        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+    }
+}
+
+struct AppliedListsView: View {
+    let lists: [PackingList]
+
+    var body: some View {
+        ForEach(lists) { list in
+            HStack {
+                Label(list.name, systemImage: "suitcase.fill")
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
+        }
     }
 }

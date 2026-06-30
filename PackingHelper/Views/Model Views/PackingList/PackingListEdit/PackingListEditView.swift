@@ -33,14 +33,16 @@ struct PackingListEditView: View {
         return true
     }
     
+    private var noun: String { isTemplate ? "Template" : "Section" }
+
     var titleString: String {
-        packingList == nil ? "Add Section" : "Edit Section"
+        packingList == nil ? "Add \(noun)" : "Edit \(noun)"
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
-                Section("Section Details") {
+                Section("\(noun) Details") {
                     if packingList?.isDefault ?? false {
                         HStack {
                             Text("Name")
@@ -49,7 +51,7 @@ struct PackingListEditView: View {
                                 .foregroundStyle(.secondary)
                         }
                     } else {
-                        TextField("Section Name", text: $listName)
+                        TextField("\(noun) Name", text: $listName)
                     }
                 }
             }
@@ -87,8 +89,8 @@ struct PackingListEditView: View {
                 listName = packingList.name
             }
         }
-        .alert("Delete \(packingList?.name ?? "section")?", isPresented: $isDeleting) {
-            Button("Yes, delete \(packingList?.name ?? "section")", role: .destructive) {
+        .alert("Delete \(packingList?.name ?? noun.lowercased())?", isPresented: $isDeleting) {
+            Button("Yes, delete \(packingList?.name ?? noun.lowercased())", role: .destructive) {
                 delete(packingList!)
             }
             Button("Cancel", role: .cancel) {}
